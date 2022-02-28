@@ -60,6 +60,7 @@ class Kiwoom(QAxWidget):
         self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         self.not_signed_account()  # 미체결내역 얻어오기
         self.get_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
+        self.get_stock_basic_info()
         
         # self.update_day_kiwoom_db() # DB 업데이트
         # self.granvile_theory()  # DB 구축 상태일 때만 유망한 종목을 뽑을 수 있음
@@ -487,6 +488,53 @@ class Kiwoom(QAxWidget):
             self.save_day_kiwoom_db(stock_code, True)
             self.calculator_list.clear()
             self.calculator_event_loop.exit()
+        
+        elif sRQName == "주식기본정보요청":
+            stock_code = self.dynamicCall(
+                "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "종목코드")
+            #six_hundred_data = self.dynamicCall("GetCommDataEx(QString, QString)", sTrCode, sRQName)
+
+            stock_code = stock_code.strip()
+            cnt = self.dynamicCall(
+                "GetRepeatCnt(QString, QString)", sTrCode, sRQName)  # 최대 600일
+
+            for i in range(cnt):
+                calculator_list = []
+
+                current_price = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "현재가")
+                volume = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "거래량")
+                trade_price = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "거래대금")
+                date = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "일자")
+                start_price = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "시가")
+                high_price = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "고가")
+                low_price = self.dynamicCall(
+                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "저가")
+
+                calculator_list.append("")
+                calculator_list.append(int(current_price))
+                calculator_list.append(int(volume))
+                calculator_list.append(int(trade_price))
+                calculator_list.append(int(date))
+                calculator_list.append(int(start_price))
+                calculator_list.append(int(high_price))
+                calculator_list.append(int(low_price))
+                calculator_list.append("")
+
+                self.calculator_list.append(calculator_list.copy())
+
+            if sPrevNext == "2":
+                self.day_kiwoom_db(stock_code, None, 2)
+            else:
+                self.save_day_kiwoom_db(stock_code)
+                self.calculator_list.clear()
+                self.calculator_event_loop.exit()
+        
 
     def cancel_screen_number(self, sScrNo):
         self.dynamicCall("DisconnectRealData(QString)", sScrNo)
@@ -519,6 +567,12 @@ class Kiwoom(QAxWidget):
             print("SK하이닉스")
             self.day_kiwoom_db("000660")    # SK하이닉스
 
+    def get_stock_basic_info(self):
+        stock_code_list=["005930", "035720", "035420", "000660"]    # 삼성전자, 카카오, 네이버, SK하이닉스
+        for code in stock_code_list:
+            print("code")
+            self.basic_kiwoom_db(code)
+
     def day_kiwoom_db(self, stock_code=None, date=None, nPrevNext=0, isUpdate=False):
         QTest.qWait(3600)  # 3.6초마다 딜레이
 
@@ -534,6 +588,20 @@ class Kiwoom(QAxWidget):
         else:
             self.dynamicCall("CommRqData(QString, QString, int, QString)",
                              "주식일봉차트조회요청", "opt10081", nPrevNext, self.screen_calculation_stock)
+
+        if not self.calculator_event_loop.isRunning():
+            self.calculator_event_loop.exec_()
+
+    def basic_kiwoom_db(self, stock_code=None, date=None, nPrevNext=0, isUpdate=False):
+        QTest.qWait(3600)  # 3.6초마다 딜레이
+
+        self.dynamicCall("SetInputValue(QString, QString)", "종목코드", stock_code)
+        # if isUpdate:
+        #     self.dynamicCall("CommRqData(QString, QString, int, QString)",
+        #                      "주식기본정보업데이트요청", "opt10001", nPrevNext, self.screen_calculation_stock)
+        # else:
+        self.dynamicCall("CommRqData(QString, QString, int, QString)",
+                             "주식기본정보요청", "opt10001", nPrevNext, self.screen_calculation_stock)
 
         if not self.calculator_event_loop.isRunning():
             self.calculator_event_loop.exec_()
