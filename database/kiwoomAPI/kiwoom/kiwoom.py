@@ -52,16 +52,16 @@ class Kiwoom(QAxWidget):
         input()
 
         # DB 연결
-        self.conn = sqlite3.connect("db/four_stocks.db", isolation_level=None)
+        self.conn = sqlite3.connect("db/stocks.db", isolation_level=None)
         self.cursor = self.conn.cursor()
 
         self.get_account_info()  # 계좌 번호만 얻어오기
         self.get_deposit_info()  # 예수금 관련된 정보 얻어오기
         self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         self.not_signed_account()  # 미체결내역 얻어오기
-        self.get_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
+        self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
         
-        # self.get_stock_basic_info()
+        self.get_stock_basic_info()
         
         # self.update_day_kiwoom_db() # DB 업데이트
         # self.granvile_theory()  # DB 구축 상태일 때만 유망한 종목을 뽑을 수 있음
@@ -496,62 +496,155 @@ class Kiwoom(QAxWidget):
             #six_hundred_data = self.dynamicCall("GetCommDataEx(QString, QString)", sTrCode, sRQName)
 
             stock_code = stock_code.strip()
-            cnt = self.dynamicCall(
-                "GetRepeatCnt(QString, QString)", sTrCode, sRQName)  # 최대 600일
+            # cnt = self.dynamicCall(
+            #     "GetRepeatCnt(QString, QString)", sTrCode, sRQName)  # 최대 600일
 
-            for i in range(cnt):
-                calculator_list = []
+            # for i in range(cnt):
+            calculator_list = []
+            종목코드 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "종목코드")
+            종목명 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "종목명")
+            액면가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "액면가")
+            자본금 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "자본금")
+            상장주식 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "상장주식")
+            신용비율 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "신용비율")
+            연중최고 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "연중최고")
+            연중최저= self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "연중최저")
+            시가총액 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "시가총액")
+            외인소진률 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "외인소진률")
+            대용가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "대용가")
+            PER = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "PER")
+            EPS = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "EPS")
+            ROE = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "ROE")
+            PBR = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "PBR")
+            EV = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "EV")
+            BPS = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "BPS")
+            매출액 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "매출액")
+            영업이익 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "영업이익")
+            당기순이익 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "당기순이익")
+            최고250 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "250최고")
+            최저250 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "250최저")
+            시가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "시가")
+            고가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "고가")
+            저가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "저가")
+            상한가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "상한가")
+            하한가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "하한가")
+            기준가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "기준가")
+            예상체결가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "예상체결가")
+            예상체결수량 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "예상체결수량")
+            최고가일250 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "250최고가일")
+            최고가대비율250 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "250최고가대비율")
+            최저가일250 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "250최저가일")
+            최저가대비율250 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "250최저가대비율")
+            현재가 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "현재가")
+            대비기호 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "대비기호")
+            전일대비 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "전일대비")
+            등락율 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "등락율")
+            거래량 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "거래량")
+            거래대비 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "거래대비")
+            유통주식 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "유통주식")
+            유통비율 = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "유통비율")
 
-                current_price = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "현재가")
-                volume = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "거래량")
-                trade_price = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "거래대금")
-                date = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "일자")
-                start_price = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "시가")
-                high_price = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "고가")
-                low_price = self.dynamicCall(
-                    "GetCommData(QString, QString, int, QString)", sTrCode, sRQName, i, "저가")
+            calculator_list.append("")
+            calculator_list.append(종목코드.strip())
+            calculator_list.append(종목명.strip())
+            calculator_list.append(int(액면가))
+            calculator_list.append(int(자본금))
+            calculator_list.append(int(상장주식))
+            calculator_list.append(신용비율.strip())
+            calculator_list.append(연중최고.strip())
+            calculator_list.append(연중최저.strip())
+            calculator_list.append(int(시가총액))
+            calculator_list.append(외인소진률.strip())
+            calculator_list.append(int(대용가))
+            calculator_list.append(PER.strip())
+            calculator_list.append(int(EPS))
+            calculator_list.append(PBR.strip())
+            calculator_list.append(EV.strip())
+            calculator_list.append(ROE.strip())
+            calculator_list.append(BPS.strip())
+            calculator_list.append(int(매출액))
+            calculator_list.append(int(영업이익))
+            calculator_list.append(int(당기순이익))
+            calculator_list.append(최고250.strip())
+            calculator_list.append(최저250.strip())
+            calculator_list.append(시가.strip())
+            calculator_list.append(고가.strip())
+            calculator_list.append(저가.strip())
+            calculator_list.append(상한가.strip())
+            calculator_list.append(하한가.strip())
+            calculator_list.append(int(기준가))
+            calculator_list.append(예상체결가.strip())
+            calculator_list.append(int(예상체결수량))
+            calculator_list.append(int(최고가일250))
+            calculator_list.append(최고가대비율250.strip())
+            calculator_list.append(int(최저가일250))
+            calculator_list.append(최저가대비율250.strip())
+            calculator_list.append(현재가.strip())
+            calculator_list.append(int(대비기호))
+            calculator_list.append(전일대비.strip())
+            calculator_list.append(등락율.strip())
+            calculator_list.append(int(거래량))
+            calculator_list.append(거래대비.strip())
+            calculator_list.append(int(유통주식))
+            calculator_list.append(유통비율.strip())
+            calculator_list.append("")
 
-                calculator_list.append("")
-                calculator_list.append(int(current_price))
-                calculator_list.append(int(volume))
-                calculator_list.append(int(trade_price))
-                calculator_list.append(int(date))
-                calculator_list.append(int(start_price))
-                calculator_list.append(int(high_price))
-                calculator_list.append(int(low_price))
-                calculator_list.append("")
+            print(calculator_list)
+            self.calculator_list.append(calculator_list.copy())
 
-                self.calculator_list.append(calculator_list.copy())
 
-            if sPrevNext == "2":
-                self.day_kiwoom_db(stock_code, None, 2)
-            else:
-                self.save_day_kiwoom_db(stock_code)
-                self.calculator_list.clear()
-                self.calculator_event_loop.exit()
+            query = "SELECT name FROM sqlite_master WHERE type='table'"
+            self.cursor.execute(query)
+            table_name = "basic_info"
+
+            # for row in self.cursor.fetchall():
+            #     if row[0] == stock_name:
+            #         return
+            query = "CREATE TABLE IF NOT EXISTS {} \
+                (종목코드 varchar, 종목명 varchar, 액면가 integer, 자본금 integer, 상장주식 integer, 신용비율 varchar, \
+                연중최고 varchar, 연중최저 varchar, 시가총액 integer, 외인소진률 varchar, 대용가 integer, PER VARCHAR, EPS INTEGER, \
+                ROE varchar, PBR varchar, EV varchar, BPS integer, 매출액 integer, 영업이익 integer, 당기순이익 integer, 최고250 varchar, \
+                최저250 varchar, 시가 varchar, 고가 varchar, 저가 varchar, 상한가 varchar, 하한가 varchar, 기준가 integer, 예상체결가 varchar, \
+                예상체결수량 integer, 최고가일250 integer, 최고가대비율250 varchar, 최저가일250 integer, 최저가대비율250 varchar, \
+                현재가 varchar, 대비기호 integer, 전일대비 varchar, 등락율 varchar, 거래량 integer, 거래대비 varchar, 유통주식 integer, 유통비율 varchar)".format(table_name)
+            self.cursor.execute(query)
+
+            for item in self.calculator_list:
+                calculator_tuple = tuple(item[1:-1])    # 41개
+                query = "INSERT INTO {} (종목코드, 종목명, 액면가, 자본금, 상장주식, 신용비율, \
+                연중최고, 연중최저, 시가총액, 외인소진률, 대용가, PER, EPS, \
+                ROE, PBR, EV, BPS, 매출액, 영업이익, 당기순이익, 최고250, \
+                최저250, 시가, 고가, 저가, 상한가, 하한가, 기준가, 예상체결가, \
+                예상체결수량, 최고가일250, 최고가대비율250, 최저가일250, 최저가대비율250, \
+                현재가, 대비기호, 전일대비, 등락율, 거래량, 거래대비, 유통주식, 유통비율) \
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
+                self.cursor.execute(query, calculator_tuple)
+
+
+            # if sPrevNext == "2":
+            #     self.day_kiwoom_db(stock_code, None, 2)
+            # else:
+            #     self.save_day_kiwoom_db(stock_code)
+            self.calculator_list.clear()
+            self.calculator_event_loop.exit()
         
 
     def cancel_screen_number(self, sScrNo):
         self.dynamicCall("DisconnectRealData(QString)", sScrNo)
 
     def get_stock_list_by_kosdaq(self, isHaveDayData=False):
-        # kosdaq_list = self.dynamicCall(
-        #     "GetCodeListByMarket(QString)", "10")
-        # kosdaq_list = kosdaq_list.split(";")[:-1]
+        kosdaq_list = self.dynamicCall(
+            "GetCodeListByMarket(QString)", "10")
+        kosdaq_list = kosdaq_list.split(";")[:-1]
 
-        # for stock_code in kosdaq_list:
-        #     stock_name = self.dynamicCall(
-        #         "GetMasterCodeName(QString)", stock_code)
-        #     if not stock_name in self.kosdaq_dict:
-        #         self.kosdaq_dict[stock_name] = stock_code
+        for stock_code in kosdaq_list:
+            stock_name = self.dynamicCall(
+                "GetMasterCodeName(QString)", stock_code)
+            if not stock_name in self.kosdaq_dict:
+                self.kosdaq_dict[stock_name] = stock_code
 
         if not isHaveDayData:
+            # 모든 데이터
             # for idx, stock_name in enumerate(self.kosdaq_dict):
             #     self.dynamicCall("DisconnectRealData(QString)",
             #                      self.screen_calculation_stock)
@@ -559,7 +652,9 @@ class Kiwoom(QAxWidget):
             #     print(
             #         f"{idx + 1} / {len(self.kosdaq_dict)} : KOSDAQ Stock Code : {self.kosdaq_dict[stock_name]} is updating...")
             #     self.day_kiwoom_db(self.kosdaq_dict[stock_name])
-            # print("삼성전자")
+
+            # 아래 주석 풀고 해당 데이터만 추가
+            print("삼성전자")
             # self.day_kiwoom_db("005930")    # 삼성전자
             # print("카카오")
             # self.day_kiwoom_db("035720")    # 카카오
@@ -567,11 +662,12 @@ class Kiwoom(QAxWidget):
             # self.day_kiwoom_db("035420")    # 네이버
             # print("SK하이닉스")
             # self.day_kiwoom_db("000660")    # SK하이닉스
-            self.day_kiwoom_db("005380")
+            # self.day_kiwoom_db("005380")
+            # print("현대차")
+
     def get_stock_basic_info(self):
-        stock_code_list=["005930", "035720", "035420", "000660"]    # 삼성전자, 카카오, 네이버, SK하이닉스
+        stock_code_list=["005930", "035720", "035420", "000660", "005380"]    # 삼성전자, 카카오, 네이버, SK하이닉스, 현대차
         for code in stock_code_list:
-            print("code")
             self.basic_kiwoom_db(code)
 
     def day_kiwoom_db(self, stock_code=None, date=None, nPrevNext=0, isUpdate=False):
@@ -595,7 +691,6 @@ class Kiwoom(QAxWidget):
 
     def basic_kiwoom_db(self, stock_code=None, date=None, nPrevNext=0, isUpdate=False):
         QTest.qWait(3600)  # 3.6초마다 딜레이
-
         self.dynamicCall("SetInputValue(QString, QString)", "종목코드", stock_code)
         # if isUpdate:
         #     self.dynamicCall("CommRqData(QString, QString, int, QString)",
