@@ -541,15 +541,15 @@ class Kiwoom(QAxWidget):
         self.dynamicCall("DisconnectRealData(QString)", sScrNo)
 
     def get_stock_list_by_kosdaq(self, isHaveDayData=False):
-        kosdaq_list = self.dynamicCall(
-            "GetCodeListByMarket(QString)", "10")
-        kosdaq_list = kosdaq_list.split(";")[:-1]
+        # kosdaq_list = self.dynamicCall(
+        #     "GetCodeListByMarket(QString)", "10")
+        # kosdaq_list = kosdaq_list.split(";")[:-1]
 
-        for stock_code in kosdaq_list:
-            stock_name = self.dynamicCall(
-                "GetMasterCodeName(QString)", stock_code)
-            if not stock_name in self.kosdaq_dict:
-                self.kosdaq_dict[stock_name] = stock_code
+        # for stock_code in kosdaq_list:
+        #     stock_name = self.dynamicCall(
+        #         "GetMasterCodeName(QString)", stock_code)
+        #     if not stock_name in self.kosdaq_dict:
+        #         self.kosdaq_dict[stock_name] = stock_code
 
         if not isHaveDayData:
             # for idx, stock_name in enumerate(self.kosdaq_dict):
