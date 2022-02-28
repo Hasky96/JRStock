@@ -60,7 +60,8 @@ class Kiwoom(QAxWidget):
         self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         self.not_signed_account()  # 미체결내역 얻어오기
         self.get_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
-        self.get_stock_basic_info()
+        
+        # self.get_stock_basic_info()
         
         # self.update_day_kiwoom_db() # DB 업데이트
         # self.granvile_theory()  # DB 구축 상태일 때만 유망한 종목을 뽑을 수 있음
@@ -86,7 +87,7 @@ class Kiwoom(QAxWidget):
         if err_code == 0:
             print("로그인에 성공하였습니다.")
         else:
-            os.system('cls')
+            # os.system('cls')
             print("에러 내용 :", errors(err_code)[1])
             self.conn.close()
             sys.exit(0)
@@ -100,7 +101,7 @@ class Kiwoom(QAxWidget):
     def menu(self):
         sel = ""
         while True:
-            os.system('cls')
+            # os.system('cls')
             print("1. 현재 로그인 상태 확인")
             print("2. 사용자 정보 조회")
             print("3. 예수금 조회")
@@ -125,7 +126,7 @@ class Kiwoom(QAxWidget):
                 self.print_not_signed_account()
 
     def print_login_connect_state(self):
-        os.system('cls')
+        # os.system('cls')
         isLogin = self.dynamicCall("GetConnectState()")
         if isLogin == 1:
             print("\n현재 계정은 로그인 상태입니다.")
@@ -134,7 +135,7 @@ class Kiwoom(QAxWidget):
         input()
 
     def print_my_info(self):
-        os.system('cls')
+        # os.system('cls')
         user_name = self.dynamicCall("GetLoginInfo(QString)", "USER_NAME")
         user_id = self.dynamicCall("GetLoginInfo(QString)", "USER_ID")
         account_count = self.dynamicCall(
@@ -147,14 +148,14 @@ class Kiwoom(QAxWidget):
         input()
 
     def print_get_deposit_info(self):
-        os.system('cls')
+        # os.system('cls')
         print(f"\n예수금 : {self.deposit}원")
         print(f"출금 가능 금액 : {self.withdraw_deposit}원")
         print(f"주문 가능 금액 : {self.order_deposit}원")
         input()
 
     def print_get_account_evaulation_balance_info(self):
-        os.system('cls')
+        # os.system('cls')
         print("\n<싱글 데이터>")
         print(f"총 매입 금액 : {self.total_buy_money}원")
         print(f"총 평가 금액 : {self.total_evaluation_money}원")
@@ -217,7 +218,7 @@ class Kiwoom(QAxWidget):
         return table
 
     def print_not_signed_account(self):
-        os.system('cls')
+        # os.system('cls')
         print()
         table = self.make_table("실시간미체결요청")
         if len(self.not_signed_account_dict) == 0:
@@ -540,15 +541,15 @@ class Kiwoom(QAxWidget):
         self.dynamicCall("DisconnectRealData(QString)", sScrNo)
 
     def get_stock_list_by_kosdaq(self, isHaveDayData=False):
-        # kosdaq_list = self.dynamicCall(
-        #     "GetCodeListByMarket(QString)", "10")
-        # kosdaq_list = kosdaq_list.split(";")[:-1]
+        kosdaq_list = self.dynamicCall(
+            "GetCodeListByMarket(QString)", "10")
+        kosdaq_list = kosdaq_list.split(";")[:-1]
 
-        # for stock_code in kosdaq_list:
-        #     stock_name = self.dynamicCall(
-        #         "GetMasterCodeName(QString)", stock_code)
-        #     if not stock_name in self.kosdaq_dict:
-        #         self.kosdaq_dict[stock_name] = stock_code
+        for stock_code in kosdaq_list:
+            stock_name = self.dynamicCall(
+                "GetMasterCodeName(QString)", stock_code)
+            if not stock_name in self.kosdaq_dict:
+                self.kosdaq_dict[stock_name] = stock_code
 
         if not isHaveDayData:
             # for idx, stock_name in enumerate(self.kosdaq_dict):
@@ -558,15 +559,15 @@ class Kiwoom(QAxWidget):
             #     print(
             #         f"{idx + 1} / {len(self.kosdaq_dict)} : KOSDAQ Stock Code : {self.kosdaq_dict[stock_name]} is updating...")
             #     self.day_kiwoom_db(self.kosdaq_dict[stock_name])
-            print("삼성전자")
-            self.day_kiwoom_db("005930")    # 삼성전자
-            print("카카오")
-            self.day_kiwoom_db("035720")    # 카카오
-            print("네이버")
-            self.day_kiwoom_db("035420")    # 네이버
-            print("SK하이닉스")
-            self.day_kiwoom_db("000660")    # SK하이닉스
-
+            # print("삼성전자")
+            # self.day_kiwoom_db("005930")    # 삼성전자
+            # print("카카오")
+            # self.day_kiwoom_db("035720")    # 카카오
+            # print("네이버")
+            # self.day_kiwoom_db("035420")    # 네이버
+            # print("SK하이닉스")
+            # self.day_kiwoom_db("000660")    # SK하이닉스
+            self.day_kiwoom_db("005380")
     def get_stock_basic_info(self):
         stock_code_list=["005930", "035720", "035420", "000660"]    # 삼성전자, 카카오, 네이버, SK하이닉스
         for code in stock_code_list:
@@ -608,7 +609,7 @@ class Kiwoom(QAxWidget):
 
     def save_day_kiwoom_db(self, stock_code=None, isUpdate=False):
         stock_name = self.dynamicCall("GetMasterCodeName(QString)", stock_code)
-        table_name = "\"" + stock_name + "\""
+        table_name = "\"" + stock_code + "\""
 
         if isUpdate:
             for item in self.calculator_list:
@@ -660,7 +661,7 @@ class Kiwoom(QAxWidget):
             if not is_stock_name_in_db:
                 self.day_kiwoom_db(self.kosdaq_dict[stock_name])
                 # return
-            print(stock_name)
+            print(self.kosdaq_dict[stock_name], stock_name)
 
         # 튜플 내에서 가장 최근 날짜를 찾고, 오늘 날짜와 다르다면
         # 오늘 날짜부터 (가장 최근 날짜 + 1)까지 새롭게 일봉 데이터를 추가.
@@ -669,7 +670,7 @@ class Kiwoom(QAxWidget):
         self.cursor.execute(query)
         print(today, query)
         for (idx, row) in enumerate(self.cursor.fetchall()):
-            table_name = "\"" + row[0] + "\""
+            table_name = "\"" + self.kosdaq_dict[row[0]] + "\""
             query = "SELECT * from {}".format(table_name)
             self.cursor.execute(query)
             data_list = self.cursor.fetchall()
@@ -690,7 +691,7 @@ class Kiwoom(QAxWidget):
         self.cursor.execute(query)
 
         for row in self.cursor.fetchall():
-            table_name = "\"" + row[0] + "\""
+            table_name = "\"" + self.kosdaq_dict[row[0]] + "\""
             query = "SELECT * from {}".format(table_name)
             self.cursor.execute(query)
             calculator_list = []
