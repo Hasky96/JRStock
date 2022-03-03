@@ -25,10 +25,12 @@ function App() {
         </div>
       )}
 
-      <div>
-        <div>
-          <Header></Header>
-        </div>
+      <div className={showSideBar ? "ml-20 mr-12" : ""}>
+        {showSideBar && (
+          <div>
+            <Header></Header>
+          </div>
+        )}
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />

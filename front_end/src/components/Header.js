@@ -2,10 +2,10 @@ export default function Header({ category }) {
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
-      <div className="fixed top-0 left-0 right-0">
+      <div className="fixed w-full">
         <div className="grid grid-cols-6 p-6 px-12">
           {/* 카테고리 그리드 */}
-          <div className="col-span-2 text-4xl my-auto">{category}</div>
+          <div className="col-span-2 text-4xl my-auto">category</div>
           {/* 검색 그리드 */}
           <div className="col-span-3 grid content-center">
             <div className="relative">
@@ -35,7 +35,7 @@ export default function Header({ category }) {
             </div>
           </div>
           {/* 사진 그리드 */}
-          <div className="grid justify-items-end mr-8">
+          <div className="grid justify-items-center mr-8">
             {/* 프로필 */}
             <div class="w-20">
               <img
