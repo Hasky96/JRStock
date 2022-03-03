@@ -34,6 +34,7 @@ class Kiwoom(QAxWidget):
 
         # 종목 분석 관련 변수
         self.kosdaq_dict = {"삼성전자": "005930", "카카오": "035720", "네이버": "035420", "SK하이닉스": "000660", "현대차": "005380"}
+        self.kospi_dict = {}
         self.calculator_list = []
 
         # 종목 정보 가져오기 관련 변수
@@ -52,16 +53,17 @@ class Kiwoom(QAxWidget):
         input()
 
         # DB 연결
-        # self.conn = sqlite3.connect("db/stocks.db", isolation_level=None)
-        self.conn = sqlite3.connect("db/15min_stock.db", isolation_level=None)
+        self.conn = sqlite3.connect("db/stocks.db", isolation_level=None)
+        # self.conn = sqlite3.connect("db/15min_stock.db", isolation_level=None)
         self.cursor = self.conn.cursor()
 
         self.get_account_info()  # 계좌 번호만 얻어오기
         self.get_deposit_info()  # 예수금 관련된 정보 얻어오기
         self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         self.not_signed_account()  # 미체결내역 얻어오기
+        self.get_stock_list_by_kospi200(False)
         # self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
-        self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
+        # self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
         
         # self.get_stock_basic_info()   # 주식기본정보요청
         
@@ -414,7 +416,7 @@ class Kiwoom(QAxWidget):
             if sPrevNext == "2":
                 self.day_kiwoom_db(stock_code, None, 2)
             else:
-                self.day_hour_kiwoom_db(stock_code)
+                self.save_day_kiwoom_db(stock_code)
                 self.calculator_list.clear()
                 self.calculator_event_loop.exit()
 
@@ -625,25 +627,25 @@ class Kiwoom(QAxWidget):
 
         if not isHaveDayData:
             # 모든 데이터
-            # for idx, stock_name in enumerate(self.kosdaq_dict):
-            #     self.dynamicCall("DisconnectRealData(QString)",
-            #                      self.screen_calculation_stock)
+            for idx, stock_name in enumerate(self.kosdaq_dict):
+                self.dynamicCall("DisconnectRealData(QString)",
+                                 self.screen_calculation_stock)
 
-            #     print(
-            #         f"{idx + 1} / {len(self.kosdaq_dict)} : KOSDAQ Stock Code : {self.kosdaq_dict[stock_name]} is updating...")
-            #     self.day_kiwoom_db(self.kosdaq_dict[stock_name])
+                print(
+                    f"{idx + 1} / {len(self.kosdaq_dict)} : KOSDAQ Stock Code : {self.kosdaq_dict[stock_name]} is updating...")
+                self.day_kiwoom_db(self.kosdaq_dict[stock_name])
 
             # 아래 주석 풀고 해당 데이터만 추가
-            print("삼성전자")
-            self.day_kiwoom_db("005930")    # 삼성전자
-            print("카카오")
-            self.day_kiwoom_db("035720")    # 카카오
-            print("네이버")
-            self.day_kiwoom_db("035420")    # 네이버
-            print("SK하이닉스")
-            self.day_kiwoom_db("000660")    # SK하이닉스
-            print("현대차")
-            self.day_kiwoom_db("005380")    # 현대차
+            # print("삼성전자")
+            # self.day_kiwoom_db("005930")    # 삼성전자
+            # print("카카오")
+            # self.day_kiwoom_db("035720")    # 카카오
+            # print("네이버")
+            # self.day_kiwoom_db("035420")    # 네이버
+            # print("SK하이닉스")
+            # self.day_kiwoom_db("000660")    # SK하이닉스
+            # print("현대차")
+            # self.day_kiwoom_db("005380")    # 현대차
 
     def get_hour_stock_list_by_kosdaq(self, isHaveHourData=False):
         # kosdaq_list = self.dynamicCall("GetCodeListByMarket(QString)", "10")
@@ -676,6 +678,22 @@ class Kiwoom(QAxWidget):
             # self.day_kiwoom_db("005380")
             # print("현대차")
 
+    def get_stock_list_by_kospi200(self, isHaveDayData=False):
+        query = "SELECT * FROM kospi200"
+        self.cursor.execute(query)
+        for row in self.cursor.fetchall():
+            # print(row)
+            self.kospi_dict[row[0]] = row[1]    # row[0]: 회사명, row[1]: 종목코드
+
+
+        if not isHaveDayData:
+            for idx, stock_name in enumerate(self.kospi_dict):
+                stock_code=self.kospi_dict[stock_name]
+                if (stock_code[0]=='0'):
+                    print(idx, stock_name, stock_code)
+                    self.day_kiwoom_db(stock_code)
+
+
     def get_stock_basic_info(self):
         stock_code_list=["005930", "035720", "035420", "000660", "005380"]    # 삼성전자, 카카오, 네이버, SK하이닉스, 현대차
         for code in stock_code_list:
@@ -691,11 +709,9 @@ class Kiwoom(QAxWidget):
             self.dynamicCall("SetInputValue(QString, QString)", "기준일자", date)
 
         if isUpdate:
-            self.dynamicCall("CommRqData(QString, QString, int, QString)",
-                             "주식일봉차트업데이트요청", "opt10081", nPrevNext, self.screen_calculation_stock)
+            self.dynamicCall("CommRqData(QString, QString, int, QString)", "주식일봉차트업데이트요청", "opt10081", nPrevNext, self.screen_calculation_stock)
         else:
-            self.dynamicCall("CommRqData(QString, QString, int, QString)",
-                             "주식일봉차트조회요청", "opt10081", nPrevNext, self.screen_calculation_stock)
+            self.dynamicCall("CommRqData(QString, QString, int, QString)", "주식일봉차트조회요청", "opt10081", nPrevNext, self.screen_calculation_stock)
 
         if not self.calculator_event_loop.isRunning():
             self.calculator_event_loop.exec_()
