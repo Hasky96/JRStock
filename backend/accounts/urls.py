@@ -9,6 +9,8 @@ login_patterns = [
 ]
 
 urlpatterns = [
-    path('signup/', views.signup, name='signup'),
+    path('create/', views.signup, name='signup'),
+    path('detail/', views.user_detail, name='user_detail'),
     path('login/', include(login_patterns)),
+    path('email_confirm/<str:uidb64>/<str:token>', views.email_confirm, name='email_confirm'),
 ]
