@@ -10,5 +10,6 @@ login_patterns = [
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
+    path('detail/', views.user_detail, name='user_detail'),
     path('login/', include(login_patterns)),
 ]
