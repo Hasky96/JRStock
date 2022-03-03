@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -20,6 +21,14 @@ from allauth.socialaccount.providers.google import views as google_view
 from accounts.models import User
 from django.http import JsonResponse
 import requests
+
+# 이메일 관련 import
+from .email import account_activation_token, message
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
+from django.core.mail import EmailMessage
+
+
 
 BASE_URL = 'http://localhost:8000/'
 
@@ -46,9 +55,34 @@ def signup(request):
         user = serializer.save()
         user.set_password(password)
         user.save()
+        
+        # 이메일 인증 전송
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = account_activation_token.make_token(user)
+        message_data = message(uidb64, token)
+        
+        mail_title = "JRstock 이메일 인증 안내"
+        mail_to = email
+        send_email = EmailMessage(mail_title, message_data, to=[mail_to])
+        send_email.content_subtype = "html"
+        send_email.send()
+        # 여기까지
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def email_confirm(request, **kwargs):
+    uidb64 = kwargs['uidb64']
+    token = kwargs['token']
+    uid = force_text(urlsafe_base64_decode(uidb64))
+    user = get_object_or_404(User, pk=uid)
+    
+    if account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        
+        return redirect(BASE_URL)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -58,7 +92,7 @@ def login(request):
 
     user = authenticate(email=email, password=password)
     if user is None:
-        return Response({'message': '아이디 또는 비밀번호가 일치하지 않습니다.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'message': '이메일 인증이 완료되지 않았거나, 아이디 또는 비밀번호가 일치하지 않습니다.'}, status=status.HTTP_401_UNAUTHORIZED)
 
     refresh = RefreshToken.for_user(user)
     update_last_login(None, user)
