@@ -32,6 +32,7 @@ class UserManager(BaseUserManager):
         socialaccount = SocialAccount.objects.get(user_id=user_pk)
         user.name = socialaccount.extra_data['name']
         user.profile_img_url = socialaccount.extra_data['picture']
+        user.is_active = True
         user.save()
 
         return user
