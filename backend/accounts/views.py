@@ -57,7 +57,7 @@ page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
 size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
                         description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
 sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
-                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
+                        description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
 @swagger_auto_schema(
     method='get',
     operation_id='회원 정보 전체 조회',
@@ -82,7 +82,6 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
 @authentication_classes([JWTAuthentication])
 def user_list(request):
     sort = request.GET.get('sort')
-    user_list = None
     
     if not sort == None:
         user_list = User.objects.all().order_by(sort) # 전달 받은 값 기준 정렬
@@ -143,6 +142,43 @@ def signup(request):
         # 여기까지
 
         return Response(status=status.HTTP_201_CREATED)
+    
+@swagger_auto_schema(
+    method='get',
+    operation_id='이메일 중복 확인',
+    operation_description='이메일 중복 확인을 진행합니다',
+    tags=['유저'],
+    responses={200: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email_check': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="중복 확인"),
+            }
+        )
+    ),
+            409: openapi.Response(
+        description="409 이미 생성된 이메일",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email_check': openapi.Schema(type=openapi.TYPE_BOOLEAN, default=False, description="중복 확인"),
+            }
+        )
+    )}
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def email_check(request, email):
+    try:
+        user = User.objects.get(email=email)
+    except:
+        user = None
+        
+    if user is None:
+        return Response({'email_check': 'True'}, status=status.HTTP_200_OK)
+    
+    return Response({'email_check' : 'False'}, status=status.HTTP_409_CONFLICT)
 
 @swagger_auto_schema(
     method='get',
@@ -202,7 +238,7 @@ def login(request):
     update_last_login(None, user)
 
     return Response({'access_token': str(refresh.access_token),
-                     'refresh_token': str(refresh),}, status=status.HTTP_200_OK)
+                    'refresh_token': str(refresh),}, status=status.HTTP_200_OK)
 
 @swagger_auto_schema(
     method='post',
