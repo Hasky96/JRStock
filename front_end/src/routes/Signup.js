@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./background.css";
-import { validEmail } from "./../regex";
+import { validEmail, validPassword } from "./../regex";
+import { useNavigate } from "react-router-dom";
+import { registerUser, checkDuplication } from "./../api/user";
+import { ReactComponent as PasswordLook } from "./../assets/passwordLook.svg";
+import { ReactComponent as PasswordNoLook } from "./../assets/passwordNoLook.svg";
 
 export default function Signup() {
   const [name, setName] = useState(null);
@@ -11,6 +15,9 @@ export default function Signup() {
   const [passwordErr, setPasswordErr] = useState(false);
   const [emailErr, setEmailErr] = useState(false);
   const [duplicateCheck, setDuplicateCheck] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(true);
+  const [lookPassword, setLookPassword] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -34,7 +41,16 @@ export default function Signup() {
               else if (passwordErr) alert("비밀번호를 올바르게 입력하세요!");
               else {
                 // 회원가입 정보 보내기
-                alert("회원가입 정보 전송!");
+                const res = registerUser({
+                  name: name,
+                  email: email,
+                  password: password,
+                }).catch((err) => {
+                  console.log(err);
+                });
+
+                // 화면 이동
+                navigate(`/`);
               }
             }}
           >
@@ -91,6 +107,13 @@ export default function Signup() {
                   onClick={(e) => {
                     e.preventDefault();
                     // 이메일 중복 확인 요청 보내기
+                    /*
+                      const res = checkDuplication(email);
+                      if(res === 'true')
+                        setDuplicateCheck(true);
+                      else
+                        setDuplicateCheck(false);
+                    */
                     setDuplicateCheck(true);
                   }}
                   className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
@@ -102,7 +125,7 @@ export default function Signup() {
                 )}
               </div>
               {/* 비밀번호 input 부분 */}
-              <div className="my-5">
+              <div className="my-5 relative">
                 <label htmlFor="password">비밀번호</label>
                 <input
                   id="password"
@@ -114,12 +137,39 @@ export default function Signup() {
                     // 비밀번호 일치 여부 검증
                     if (e.target.value === password2) setPasswordErr(false);
                     else setPasswordErr(true);
+                    // 비밀번호 유효성 검증
+                    if (validPassword.test(e.target.value))
+                      setPasswordValid(true);
+                    else setPasswordValid(false);
+
                     setPassword(e.target.value);
                   }}
                   required
                   className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
+                  placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
                 />
+                {lookPassword ? (
+                  <PasswordNoLook
+                    className="absolute right-2 top-8 z-20 hover:opacity-50"
+                    onClick={(e) => {
+                      const password = document.getElementById("password");
+                      password.type = "password";
+                      setLookPassword(false);
+                    }}
+                  />
+                ) : (
+                  <PasswordLook
+                    className="absolute right-2 top-8 z-20 hover:opacity-50"
+                    onClick={(e) => {
+                      const password = document.getElementById("password");
+                      password.type = "text";
+                      setLookPassword(true);
+                    }}
+                  />
+                )}
+                {!passwordValid && (
+                  <p className="text-red-500">비밀번호가 유효하지 않습니다.</p>
+                )}
               </div>
               {/* 비밀번호 확인 input 부분 */}
               <div className="my-5">
@@ -137,7 +187,7 @@ export default function Signup() {
                   }}
                   required
                   className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
+                  placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
                 />
                 {passwordErr && (
                   <p className="text-red-500">비밀번호가 일치하지 않습니다.</p>
