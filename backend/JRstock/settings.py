@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'drf_yasg',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'accounts',
     'notice',
 ]
+
+BASE_URL = 'http://localhost:8000/'
 
 SITE_ID = 1
 
