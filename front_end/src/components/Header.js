@@ -2,7 +2,7 @@ export default function Header({ category }) {
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
-      <div className="fixed w-full">
+      <div className="fixed w-full z-50">
         <div className="grid grid-cols-6 p-6 px-12">
           {/* 카테고리 그리드 */}
           <div className="col-span-2 text-4xl my-auto">category</div>

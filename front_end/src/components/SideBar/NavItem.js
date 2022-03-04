@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "./SideBar.css";
 
 export default function NavItem({ currentPath, linkPath, linkText, children }) {
   const active = "nav-link";
