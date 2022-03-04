@@ -3,21 +3,23 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./background.css";
 import React, { useState } from "react";
 import GoogleLogin from "react-google-login";
-import { login } from "../api/user";
+import { login, oauth } from "../api/user";
 
 export default function Login() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [isError, setIsError] = useState(false);
+  const clientId =
+    "138234037090-qflbfgu5st5hfj7v7v2pc6qp2i5ugt5r.apps.googleusercontent.com";
   let navigate = useNavigate();
   let location = useLocation();
 
   let { from } = location.state || { from: { pathname: "/" } };
 
+  // 로그인 요청 시 실행
   const tryLogin = async () => {
     try {
-      const result = await login({ email, password })
-      console.log(result)
+      const result = await login({ email, password });
       sessionStorage.setItem("access_token", result.data.access_token);
       navigate(from);
     } catch (e) {
@@ -26,12 +28,30 @@ export default function Login() {
     }
   };
 
+  // 이메일 입력 시 변수에 할당
   const inputEmail = (e) => {
     setEmail(e.target.value);
   };
 
+  // 비밀번호 입력 시 변수에 할당
   const inputPassword = (e) => {
     setPassword(e.target.value);
+  };
+
+  // 소셜 로그인 성공 시 실행
+  const onSuccess = async (response) => {
+    try {
+      const result = await oauth(response);
+      sessionStorage.setItem("access_token", result.data.access_token);
+      navigate(from);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // 소셜 로그인 실패 시 실행
+  const onFailure = (error) => {
+    console.log(error);
   };
 
   return (
@@ -133,7 +153,13 @@ export default function Login() {
                 </span>
                 로그인
               </button>
-              <GoogleLogin className="w-full mt-5 rounded-md" />
+              <GoogleLogin
+                className="w-full mt-5 rounded-md"
+                clientId={clientId}
+                responseType={"id_token"}
+                onSuccess={onSuccess}
+                onFailure={onFailure}
+              />
             </div>
           </form>
           <div className="flex justify-center">
