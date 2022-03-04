@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -13,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 from dj_rest_auth.registration.views import SocialLoginView
 
-from accounts.serializers import UserSerializer
+from accounts.serializers import UserSerializer, UserInfoSerializer
 
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
@@ -23,15 +24,26 @@ from accounts.models import User
 from django.http import JsonResponse
 import requests
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 # 이메일 관련 import
 from .email import account_activation_token, message
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.core.mail import EmailMessage
 
+from .parser import get_serializer
 
 BASE_URL = getattr(settings, 'BASE_URL', None)
 
+@swagger_auto_schema(
+    method='get',
+    operation_id='회원 정보 상세 조회',
+    operation_description='회원 정보를 조회 합니다',
+    tags=['유저'],
+    responses={status.HTTP_200_OK: UserInfoSerializer},
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
@@ -40,6 +52,68 @@ def user_detail(request):
     
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
+                        description="페이지 번호", type=openapi.TYPE_INTEGER)
+size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
+                        description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
+sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
+                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
+@swagger_auto_schema(
+    method='get',
+    operation_id='회원 정보 전체 조회',
+    operation_description='회원 정보를 전체를 조회 합니다',
+    tags=['유저'],
+    manual_parameters=[page, size, sort],
+    responses={200: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 회원 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer(UserInfoSerializer, "유저 정보"),
+            }
+        )
+    )}
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+@authentication_classes([JWTAuthentication])
+def user_list(request):
+    sort = request.GET.get('sort')
+    user_list = None
+    
+    if not sort == None:
+        user_list = User.objects.all().order_by(sort) # 전달 받은 값 기준 정렬
+    else:
+        user_list = User.objects.all()
+        
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+        
+    result = paginator.paginate_queryset(user_list, request)
+    serializers = UserInfoSerializer(result, many=True)
+    return paginator.get_paginated_response(serializers.data)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='일반 회원가입',
+    operation_description='회원가입을 진행합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호"),
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description="이름"),
+        }
+    ),
+    tags=['유저'],
+    responses={201: ""}
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
@@ -68,8 +142,15 @@ def signup(request):
         send_email.send()
         # 여기까지
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
+@swagger_auto_schema(
+    method='get',
+    operation_id='이메일 인증',
+    operation_description='이메일 인증 처리를 진행합니다',
+    tags=['유저'],
+    responses={status.HTTP_200_OK: ""}
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def email_confirm(request, **kwargs):
@@ -84,6 +165,29 @@ def email_confirm(request, **kwargs):
         
         return redirect(BASE_URL)
 
+@swagger_auto_schema(
+    method='post',
+    operation_id='일반 로그인',
+    operation_description='일반 회원 로그인을 진행합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호"),
+        }
+    ),
+    tags=['유저'],
+    responses={200: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'access_token': openapi.Schema(type=openapi.TYPE_STRING, description="Access Token"),
+                'refresh_token': openapi.Schema(type=openapi.TYPE_STRING, description="Refresh Token"),
+            }
+        )
+    )}
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
@@ -97,9 +201,31 @@ def login(request):
     refresh = RefreshToken.for_user(user)
     update_last_login(None, user)
 
-    return Response({'refresh_token': str(refresh),
-                     'access_token': str(refresh.access_token), }, status=status.HTTP_200_OK)
-    
+    return Response({'access_token': str(refresh.access_token),
+                     'refresh_token': str(refresh),}, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='구글 로그인',
+    operation_description='구글 소셜 로그인을 진행합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'accessToken': openapi.Schema(type=openapi.TYPE_STRING, description="구글 인증 토큰"),
+        }
+    ),
+    tags=['유저'],
+    responses={200: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'access_token': openapi.Schema(type=openapi.TYPE_STRING, description="Access Token"),
+                'refresh_token': openapi.Schema(type=openapi.TYPE_STRING, description="Refresh Token"),
+            }
+        )
+    )}
+)    
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def google_login(request):
