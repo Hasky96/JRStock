@@ -1,8 +1,8 @@
-from html.parser import HTMLParser
 import six
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.conf import settings
 
-BASE_URL = 'http://localhost:8000/'
+BASE_URL = getattr(settings, 'BASE_URL', None)
 
 class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
