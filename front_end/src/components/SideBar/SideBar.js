@@ -1,3 +1,5 @@
+import { Link, useLocation } from "react-router-dom";
+import NavItem from "./NavItem";
 import { ReactComponent as DashboardIconActive } from "../../assets/dashboardIconActive.svg";
 import { ReactComponent as StockList } from "../../assets/stockList.svg";
 import { ReactComponent as BackTest } from "../../assets/backTest.svg";
@@ -6,39 +8,50 @@ import { ReactComponent as Rocket } from "../../assets/sidebarRocket.svg";
 import "./SideBar.css";
 
 export default function SideBar() {
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const linkInfo = [
+    {
+      icon: <DashboardIconActive />,
+      linkPath: "/market",
+      linkText: "주요 시세 정보",
+    },
+    {
+      icon: <StockList />,
+      linkPath: "/stock",
+      linkText: "종목 리스트",
+    },
+    {
+      icon: <BackTest />,
+      linkPath: "/backtest",
+      linkText: "백테스트",
+    },
+    {
+      icon: <MyPage />,
+      linkPath: "/mypage",
+      linkText: "마이페이지",
+    },
+  ];
+
+  const paintNavItems = linkInfo.map((info, index) => (
+    <NavItem
+      key={index}
+      currentPath={currentPath}
+      linkPath={info.linkPath}
+      linkText={info.linkText}
+    >
+      {info.icon}
+    </NavItem>
+  ));
+
   return (
-    <div className="navbar h-screen bg-white flex flex-col items-center pt-10 pl-5 drop-shadow">
-      <ul className="w-full mt-10 flex flex-col gap-8">
+    <div className="navbar h-screen bg-white flex flex-col items-center pt-10 drop-shadow">
+      <ul className="w-full mt-10 flex flex-col">
         <li className="logo">
-          <a className="nav-link">
-            <span className="link-text">JRstock</span>
-            <Rocket />
-          </a>
+          <span className="link-text">JRstock</span>
+          <Rocket />
         </li>
-        <li className="nav-item">
-          <a className="nav-link">
-            <DashboardIconActive />
-            <span className="link-text">주요 시세 정보</span>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link">
-            <StockList />
-            <span className="link-text">종목 리스트</span>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link">
-            <BackTest />
-            <span className="link-text">백테스트</span>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link">
-            <MyPage />
-            <span className="link-text">마이페이지</span>
-          </a>
-        </li>
+        {paintNavItems}
       </ul>
     </div>
   );
