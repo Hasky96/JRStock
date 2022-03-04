@@ -37,9 +37,9 @@ export default function Header({ category }) {
           {/* 사진 그리드 */}
           <div className="grid justify-items-center mr-8">
             {/* 프로필 */}
-            <div class="w-20">
+            <div className="w-20">
               <img
-                class="rounded-full"
+                className="rounded-full"
                 src="https://source.unsplash.com/random/200x200"
                 alt="profile"
               />
