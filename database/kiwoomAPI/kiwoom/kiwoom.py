@@ -904,7 +904,7 @@ class Kiwoom(QAxWidget):
         self.cursor.execute(query)
 
         for row in self.cursor.fetchall():
-            if (row[0]=="basic_info"):
+            if (row[0][0] not in ['0', '1', '2', '3', '4']):    # 테이블 이름이 숫자로 시작해야함
                 continue
             table_name = "\"" + row[0] + "\""
             query = "SELECT * from {}".format(table_name)
@@ -924,14 +924,15 @@ class Kiwoom(QAxWidget):
             self.calculator(calculator_list, row[0])
 
     def calculator(self, calculator_list=None, stock_code=None):
-        pass_condition = False
+        # pass_condition = False
 
-        if calculator_list == None or len(calculator_list) < 120:
-            # print("pass")
-            pass
-        else:
+        if calculator_list == None or len(calculator_list) < 140:
+            continue
+        
+        list_len=len(calculator_list)
+        for cur in range(list_len-140):
+            pass_condition = False
             # 120일 이동 평균선의 가격을 구함.
-            list_len=len(calculator_list)
             total_price = 0
             for value in calculator_list[:120]:
                 total_price += int(value[1])
@@ -940,49 +941,55 @@ class Kiwoom(QAxWidget):
             # 오늘의 주가가 120일 이동 평균선에 걸쳐 있는가?
             is_stock_price_bottom = False
             today_price = None
-            if int(calculator_list[0][7]) <= moving_average_price and int(calculator_list[0][6]) >= moving_average_price:
+            if int(calculator_list[cur][7]) <= moving_average_price and int(calculator_list[cur][6]) >= moving_average_price:
                 is_stock_price_bottom = True
                 today_price = int(calculator_list[0][6])
                 # print("120일 안에 걸쳐있음")
 
             # 과거 20일 간의 일봉 데이터를 조회하면서 120일 이동 평균선보다 주가가 아래에 위치하는지 확인.
             prev_price = None
-            if is_stock_price_bottom:
-                moving_average_price_prev = 0
-                is_stock_price_prev_top = False
-                idx = 1
+            if not is_stock_price_bottom:
+                continue
 
-                while True:
-                    if len(calculator_list[idx:]) < 120:    # 120일 치가 있는지 계속 확인
-                        break
+            moving_average_price_prev = 0
+            is_stock_price_prev_top = False
+            # idx = cur+1
 
-                    total_price = 0
-                    for value in calculator_list[idx:idx+120]:
-                        total_price += int(value[1])
-                    moving_average_price_prev = total_price / 120
-                    print(int(calculator_list[idx][6]), moving_average_price_prev, int(calculator_list[idx][7]))
-                    if moving_average_price_prev <= int(calculator_list[idx][6]) and idx <= 20:
-                        break
+            # while True:
+            for idx in range(cur+1, cur+20):
+                # if len(calculator_list[idx:]) < 120:    # 120일 치가 있는지 계속 확인
+                #     break
 
-                    elif int(calculator_list[idx][7]) > moving_average_price_prev and idx > 20:
-                        is_stock_price_prev_top = True
-                        prev_price = int(calculator_list[idx][7])
-                        break
-                    idx += 1
+                total_price = 0
+                for value in calculator_list[idx:idx+120]:
+                    total_price += int(value[1])
+                moving_average_price_prev = total_price / 120
+                print(int(calculator_list[idx][6]), moving_average_price_prev, int(calculator_list[idx][7]))
+                if moving_average_price_prev <= int(calculator_list[idx][6]):
+                    break
 
-                if is_stock_price_prev_top:
-                    if moving_average_price > moving_average_price_prev and today_price > prev_price:
-                        pass_condition = True
-        # if (pass_condition):
-        #     print("pass_condition", pass_condition)
+                elif int(calculator_list[idx][7]) > moving_average_price_prev:
+                    is_stock_price_prev_top = True
+                    prev_price = int(calculator_list[idx][7])
+                    break
+                # idx += 1
+
+            if is_stock_price_prev_top:
+                if moving_average_price > moving_average_price_prev and today_price > prev_price:
+                    pass_condition = True
+
+            if not pass_condition:
+                continue
+
+            print("팝시다")
         
-        if pass_condition:
-            print("pass condition")
-            stock_name = self.dynamicCall("GetMasterCodeName(QString", stock_code)
-            f = open("files/condition_stock.txt", "a", encoding="UTF8")
-            f.write(
-                f"{stock_code}\t{stock_name}\t{str(calculator_list[0][1])}\n")
-            f.close()
+        # if pass_condition:
+            # print("pass condition")
+            # stock_name = self.dynamicCall("GetMasterCodeName(QString", stock_code)
+            # f = open("files/condition_stock.txt", "a", encoding="UTF8")
+            # f.write(
+            #     f"{stock_code}\t{stock_name}\t{str(calculator_list[0][1])}\n")
+            # f.close()
 
     def read_file(self):
         if os.path.exists("files/condition_stock.txt"):
