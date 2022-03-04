@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'notice',
 ]
 
+BASE_URL = 'http://localhost:8000/'
+
 SITE_ID = 1
 
 AUTH_USER_MODEL = 'accounts.User' # 커스텀 유저를 장고에서 사용하기 위함

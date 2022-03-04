@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.conf import settings
+
+BASE_URL = getattr(settings, 'BASE_URL', None)
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None):
@@ -46,7 +49,7 @@ class User(AbstractBaseUser):
     )
     name = models.CharField(max_length=30)
     profile_img = models.ImageField(null=True, blank=True) # 장고 내부에 저장된 이미지 파일용
-    profile_img_url = models.CharField(max_length=100, blank=True) # 장고 외부 url 프로필 이미지용
+    profile_img_url = models.CharField(max_length=100, default=f"{BASE_URL}media/default_profile.jpg") # 장고 외부 url 프로필 이미지용
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 

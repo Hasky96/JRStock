@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404, redirect
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -7,8 +6,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+from django.shortcuts import get_object_or_404, redirect
 
 from dj_rest_auth.registration.views import SocialLoginView
 
@@ -29,8 +30,7 @@ from django.utils.encoding import force_bytes, force_text
 from django.core.mail import EmailMessage
 
 
-
-BASE_URL = 'http://localhost:8000/'
+BASE_URL = getattr(settings, 'BASE_URL', None)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
