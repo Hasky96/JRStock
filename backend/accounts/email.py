@@ -11,7 +11,7 @@ class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
 account_activation_token = AccountActivationTokenGenerator()
 
 def message(uidb64, token):
-    url = f"{BASE_URL}api/user/email_confirm/{uidb64}/{token}"
+    url = f"{BASE_URL}api/user/email-confirm/{uidb64}/{token}"
     msg = """\
         <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
             <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
