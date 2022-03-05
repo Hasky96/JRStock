@@ -131,6 +131,21 @@ def user_update(request, pk):
         return Response(status=status.HTTP_200_OK)
 
 @swagger_auto_schema(
+    method='delete',
+    operation_id='회원 삭제',
+    operation_description='회원정보를 제거합니다',
+    tags=['유저'],
+    responses={200: ""}
+)    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def user_delete(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    user.delete()
+    return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
     method='post',
     operation_id='일반 회원가입',
     operation_description='회원가입을 진행합니다',
