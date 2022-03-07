@@ -1,9 +1,11 @@
 import PageContainer from "../components/PageContainer";
+import { useNavigate } from "react-router-dom";
 
 export default function StockItemList() {
+  const navigate = useNavigate()
   const stocks = [
     {
-      no: 1,
+      id: 1,
       name: "삼성전자",
       currentPrice: "72400",
       volatility: 200,
@@ -15,7 +17,7 @@ export default function StockItemList() {
       marketCapitalization: "430421300000000",
     },
     {
-      no: 2,
+      id: 2,
       name: "삼성전자",
       currentPrice: "72400",
       volatility: -500,
@@ -27,7 +29,7 @@ export default function StockItemList() {
       marketCapitalization: "430421300000000",
     },
     {
-      no: 3,
+      id: 3,
       name: "삼성전자",
       currentPrice: "72400",
       volatility: 2000,
@@ -39,7 +41,7 @@ export default function StockItemList() {
       marketCapitalization: "430421300000000",
     },
     {
-      no: 4,
+      id: 4,
       name: "삼성전자",
       currentPrice: "72400",
       volatility: -1500,
@@ -54,34 +56,42 @@ export default function StockItemList() {
 
   const stockList = () => {
     const result = [];
-    for (let stock of stocks) {
-      result.push(<hr></hr>);
+    for (let i = 0; i < stocks.length; i++) {
+      result.push(<hr key={i}></hr>);
       result.push(
-        <li key={stock.no} className="grid grid-cols-12 h-12">
-          <p className="col-span-1 my-auto">{stock.no}</p>
-          <p className="col-span-2 my-auto">{stock.name}</p>
-          <p className="col-span-1 my-auto">{stock.currentPrice}</p>
+        <li
+          key={"stock" + i}
+          className="grid grid-cols-12 h-12 hover:bg-yellow-50 hover:cursor-pointer"
+          onClick={goDetailPage.bind(this, stocks[i].id)}
+        >
+          <p className="col-span-1 my-auto">{i + 1}</p>
+          <p className="col-span-2 my-auto">{stocks[i].name}</p>
+          <p className="col-span-1 my-auto">{stocks[i].currentPrice}</p>
           <p
             className={
-              stock.volatility > 0
+              stocks[i].volatility > 0
                 ? "col-span-2 my-auto text-red-500"
                 : "col-span-2 my-auto text-blue-600"
             }
           >
-            {stock.volatility > 0
-              ? "▲ " + stock.volatility
-              : "▼ " + -stock.volatility}{" "}
-            ({stock.volatilityRate})
+            {stocks[i].volatility > 0
+              ? "▲ " + stocks[i].volatility
+              : "▼ " + -stocks[i].volatility}{" "}
+            ({stocks[i].volatilityRate})
           </p>
-          <p className="col-span-1 my-auto">{stock.volume}</p>
-          <p className="col-span-1 my-auto">{stock.marketPrice}</p>
-          <p className="col-span-1 my-auto">{stock.highPrice}</p>
-          <p className="col-span-1 my-auto">{stock.lowPrice}</p>
-          <p className="col-span-2 my-auto">{stock.marketCapitalization}</p>
+          <p className="col-span-1 my-auto">{stocks[i].volume}</p>
+          <p className="col-span-1 my-auto">{stocks[i].marketPrice}</p>
+          <p className="col-span-1 my-auto">{stocks[i].highPrice}</p>
+          <p className="col-span-1 my-auto">{stocks[i].lowPrice}</p>
+          <p className="col-span-2 my-auto">{stocks[i].marketCapitalization}</p>
         </li>
       );
     }
     return result;
+  };
+
+  const goDetailPage = (id) => {
+    navigate({pathname: `/stock/${id}`})
   };
   return (
     <PageContainer>
