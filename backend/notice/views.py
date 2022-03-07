@@ -10,6 +10,24 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Notice
 from notice.serializers import NoticeSerializer
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from .parser import get_serializer
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='공지사항 등록',
+    operation_description='공지사항을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING, description="공지사항 제목"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="공지사항 내용"),
+        }
+    ),
+    tags=['공지사항'],
+    responses={201: ""}
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])  # 어드민 유저만 공지사항 작성 가능
 @authentication_classes([JWTAuthentication])  # JWT 토큰 확인
@@ -22,6 +40,29 @@ def notice_create(request):
         serializer.save(user=request.user)
         return Response(status=status.HTTP_201_CREATED)
 
+page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
+                        description="페이지 번호", type=openapi.TYPE_INTEGER)
+size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
+                        description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
+@swagger_auto_schema(
+    method='get',
+    operation_id='공지사항 전체 조회',
+    operation_description='공지사항 전체를 조회합니다',
+    tags=['공지사항'],
+    manual_parameters=[page, size],
+    responses={200: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 공지사항 게시글 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer(NoticeSerializer, "공지사항 정보"),
+            }
+        )
+    )}
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])  # 글 확인은 로그인 없이 가능
 def notice_list(request):
@@ -38,7 +79,13 @@ def notice_list(request):
     serializers = NoticeSerializer(result, many=True)
     return paginator.get_paginated_response(serializers.data)
 
-
+@swagger_auto_schema(
+    method='get',
+    operation_id='공지사항 상세 조회',
+    operation_description='공지사항을 조회 합니다',
+    tags=['공지사항'],
+    responses={status.HTTP_200_OK: NoticeSerializer},
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])  # 글 확인은 로그인 없이 가능
 def notice_detail(request, pk):
@@ -47,7 +94,20 @@ def notice_detail(request, pk):
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+@swagger_auto_schema(
+    method='put',
+    operation_id='공지사항 수정',
+    operation_description='공지사항을 수정합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 공지사항 제목"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 공지사항 내용"),
+        }
+    ),
+    tags=['공지사항'],
+    responses={200: ""}
+)
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])  # 어드민 유저만 공지사항 수정 가능
 @authentication_classes([JWTAuthentication])  # JWT 토큰 확인
@@ -60,7 +120,13 @@ def notice_update(request, pk):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
 
-
+@swagger_auto_schema(
+    method='delete',
+    operation_id='공지사항 삭제',
+    operation_description='공지사항을 제거합니다',
+    tags=['공지사항'],
+    responses={200: ""}
+)    
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])  # 어드민 유저만 공지사항 삭제 가능
 @authentication_classes([JWTAuthentication])  # JWT 토큰 확인
