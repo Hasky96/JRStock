@@ -38,6 +38,10 @@ export default function Login() {
     setPassword(e.target.value);
   };
 
+  const rememberMe = (e) => {
+    console.log(e.target.checked)
+  }
+
   // 소셜 로그인 성공 시 실행
   const onSuccess = async (response) => {
     try {
@@ -123,6 +127,7 @@ export default function Login() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  onChange={rememberMe}
                   className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
                 />
                 <label
