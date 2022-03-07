@@ -27,7 +27,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
     operation_description='코스피 주식 종목 전체를 조회 합니다',
     tags=['주식'],
     manual_parameters=[page, size, sort],
-    responses={200: openapi.Response(
+    responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -59,3 +59,18 @@ def info_kospi_list(request):
     result = paginator.paginate_queryset(info_kospi_list, request)
     serializers = InfoKospiSerializer(result, many=True)
     return paginator.get_paginated_response(serializers.data)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='코스피 주식 상세 조회',
+    operation_description='공코스피 주식 상세 조회 합니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: InfoKospiSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def info_kospi_detail(request, code_number):
+    info_kospi = get_object_or_404(InfoKospi, pk=code_number)
+    serializer = InfoKospiSerializer(info_kospi)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
