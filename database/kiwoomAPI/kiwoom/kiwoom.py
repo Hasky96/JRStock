@@ -63,14 +63,14 @@ class Kiwoom(QAxWidget):
         self.get_deposit_info()  # 예수금 관련된 정보 얻어오기
         self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         self.not_signed_account()  # 미체결내역 얻어오기
-        self.get_stock_list_by_kospi(True)
+        # self.get_stock_list_by_kospi(True)
         # self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
-        # self.get_stock_list_by_konex(True)  # False : DB 구축 x, True : DB 구축 o
+        self.get_stock_list_by_konex(True)  # False : DB 구축 x, True : DB 구축 o
         # self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
         
-        # self.get_stock_kospi_financial_info()   # 코스피 주식기본정보요청       # 821개
+        # self.get_stock_kospi_financial_info()   # 코스피 주식기본정보요청     # 821개
         # self.get_stock_kosdaq_financial_info()   # 코스닥 주식기본정보요청    # 1552개
-        self.get_stock_konex_financial_info()   # 코넥스 주식기본정보요청
+        self.get_stock_konex_financial_info()   # 코넥스 주식기본정보요청       # 130개
         
         # self.update_day_kiwoom_db() # DB 업데이트
         # self.granvile_theory()  # DB 구축 상태일 때만 유망한 종목을 뽑을 수 있음
