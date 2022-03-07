@@ -71,13 +71,12 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-img">
         <div className="max-w-lg w-full space-y-8 border-2 p-12 rounded-md bg-white">
           <div>
-            <h2 className="text-3xl font-extrabold text-gray-900 text-center">
+            <h2 className="text-3xl font-extrabold text-yellow-900 text-center">
               JRstock
             </h2>
           </div>
           <div>
-            <p>Welcome back</p>
-            <h2 className="text-xl text-gray-900">Login in to your account</h2>
+            <h2 className="text-xl font-extrabold text-yellow-900">Login in to your account</h2>
           </div>
           {isError && (
             <div>
