@@ -6,6 +6,8 @@ import "../../routes/background.css";
 import { useNavigate } from "react-router-dom";
 
 export default function UserUpdate() {
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [accessPassword, setAccessPassword] = useState("");
   const navigate = useNavigate();
   const [values, setValues] = useState({
     name: "",
@@ -23,10 +25,8 @@ export default function UserUpdate() {
     "appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm";
   const disabledInputBoxStyle =
     "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-500 rounded-md sm:text-sm";
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    handleValueChange(name, value);
-  };
+  const buttonStyle =
+    "relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500";
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -45,6 +45,11 @@ export default function UserUpdate() {
     };
     fetchUserInfo();
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    handleValueChange(name, value);
+  };
 
   const handleValueChange = (name, value) => {
     setValues((prevValues) => ({
@@ -67,6 +72,13 @@ export default function UserUpdate() {
     handleValueChange("password2", e.target.value);
   };
 
+  const handleAccessPasswordChange = (e) => setAccessPassword(e.target.value);
+
+  const handleAccessPasswordSubmit = (e) => {
+    // axios
+    console.log("axios 요청");
+  };
+
   const handleSubmit = async () => {
     if (passwordErr) alert("비밀번호를 올바르게 입력하세요!");
     else {
@@ -86,88 +98,112 @@ export default function UserUpdate() {
 
   return (
     <div className="mt-8 w-96">
-      <form className="space-y-6">
-        {/* 이름 input 부분 */}
-        <div className="rounded-md shadow-sm">
-          <div className="my-5">
-            <label htmlFor="name">이름</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="off"
-              value={values.name}
-              onChange={(e) => handleInputChange(e)}
-              required
-              className={inputBoxStyle}
-              placeholder="Name"
-            />
+      {isAuthorized ? (
+        <form className="space-y-6">
+          {/* 이름 input 부분 */}
+          <div className="rounded-md shadow-sm">
+            <div className="my-5">
+              <label htmlFor="name">이름</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="off"
+                value={values.name}
+                onChange={(e) => handleInputChange(e)}
+                required
+                className={inputBoxStyle}
+                placeholder="Name"
+              />
+            </div>
+            {/* 이메일 input 부분 */}
+            <div className="my-5">
+              <label htmlFor="email-address">이메일</label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="off"
+                value={values.email}
+                disabled
+                className={disabledInputBoxStyle}
+              />
+            </div>
+            {/* 비밀번호 input 부분 */}
+            <div className="my-5 relative">
+              <label htmlFor="password">비밀번호</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                value={values.password}
+                onChange={(e) => handlePasswordChange(e)}
+                required
+                className={inputBoxStyle}
+                placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
+              />
+              <PasswordHide
+                lookPassword={lookPassword}
+                setLookPassword={setLookPassword}
+              />
+              {!passwordValid && (
+                <p className="text-red-500">비밀번호가 유효하지 않습니다.</p>
+              )}
+            </div>
+            {/* 비밀번호 확인 input 부분 */}
+            <div className="my-5">
+              <label htmlFor="password2">비밀번호 확인</label>
+              <input
+                id="password2"
+                name="password2"
+                type="password"
+                autoComplete="off"
+                onChange={(e) => handlePasswordCheckChange(e)}
+                required
+                className={inputBoxStyle}
+                placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
+              />
+              {passwordErr && (
+                <p className="text-red-500">비밀번호가 일치하지 않습니다.</p>
+              )}
+            </div>
           </div>
-          {/* 이메일 input 부분 */}
-          <div className="my-5">
-            <label htmlFor="email-address">이메일</label>
-            <input
-              id="email-address"
-              name="email"
-              type="email"
-              autoComplete="off"
-              value={values.email}
-              disabled
-              className={disabledInputBoxStyle}
-            />
+          {/* 회원가입 버튼 */}
+          <div>
+            <button
+              type="button"
+              onClick={() => handleSubmit()}
+              className={buttonStyle}
+            >
+              <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
+              회원 정보 수정
+            </button>
           </div>
-          {/* 비밀번호 input 부분 */}
-          <div className="my-5 relative">
-            <label htmlFor="password">비밀번호</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              value={values.password}
-              onChange={(e) => handlePasswordChange(e)}
-              required
-              className={inputBoxStyle}
-              placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
-            />
-            <PasswordHide
-              lookPassword={lookPassword}
-              setLookPassword={setLookPassword}
-            />
-            {!passwordValid && (
-              <p className="text-red-500">비밀번호가 유효하지 않습니다.</p>
-            )}
-          </div>
-          {/* 비밀번호 확인 input 부분 */}
-          <div className="my-5">
-            <label htmlFor="password2">비밀번호 확인</label>
-            <input
-              id="password2"
-              name="password2"
-              type="password"
-              autoComplete="off"
-              onChange={(e) => handlePasswordCheckChange(e)}
-              required
-              className={inputBoxStyle}
-              placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
-            />
-            {passwordErr && (
-              <p className="text-red-500">비밀번호가 일치하지 않습니다.</p>
-            )}
+        </form>
+      ) : (
+        <div className="my-5">
+          <input
+            id="accessPassword"
+            name="accessPassword"
+            type="password"
+            required
+            className={inputBoxStyle}
+            placeholder="password"
+            onChange={(e) => handleAccessPasswordChange(e)}
+          />
+          <div className="w-1/2 mx-auto mt-2">
+            <button
+              type="button"
+              onClick={() => handleAccessPasswordSubmit()}
+              className={buttonStyle}
+            >
+              <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
+              비밀번호 재검증
+            </button>
           </div>
         </div>
-        {/* 회원가입 버튼 */}
-        <div>
-          <button
-            type="button"
-            onClick={() => handleSubmit()}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-          >
-            <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
-            회원 정보 수정
-          </button>
-        </div>
-      </form>
+      )}
     </div>
   );
 }
