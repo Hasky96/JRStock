@@ -9,6 +9,8 @@ import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
 import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
@@ -23,12 +25,12 @@ function App() {
 
   return (
     <Router>
+      <ToastContainer hideProgressBar={true} />
       {showSideBar && (
         <div>
           <SideBar />
         </div>
       )}
-
       <div className={showSideBar ? "ml-20 bg-yellow-50 min-h-screen" : ""}>
         {showSideBar && (
           <div>
