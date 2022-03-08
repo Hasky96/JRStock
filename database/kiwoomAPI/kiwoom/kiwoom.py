@@ -63,15 +63,16 @@ class Kiwoom(QAxWidget):
         self.get_deposit_info()  # 예수금 관련된 정보 얻어오기
         self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         self.not_signed_account()  # 미체결내역 얻어오기
-        # self.get_stock_list_by_kospi(True)
+        self.get_stock_list_by_kospi(True)
         # self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
-        self.get_stock_list_by_konex(True)  # False : DB 구축 x, True : DB 구축 o
+        # self.get_stock_list_by_konex(False)  # False : DB 구축 x, True : DB 구축 o
         # self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
         
         # self.get_stock_kospi_financial_info()   # 코스피 주식기본정보요청     # 821개
         # self.get_stock_kosdaq_financial_info()   # 코스닥 주식기본정보요청    # 1552개
-        self.get_stock_konex_financial_info()   # 코넥스 주식기본정보요청       # 130개
+        # self.get_stock_konex_financial_info()   # 코넥스 주식기본정보요청       # 130개
         
+        self.update_day_stock_kospi() # 코스피 주식일봉차트 업데이트
         # self.update_day_kiwoom_db() # DB 업데이트
         # self.granvile_theory()  # DB 구축 상태일 때만 유망한 종목을 뽑을 수 있음
         # self.read_file()  # 포트폴리오 읽어오기
@@ -679,15 +680,16 @@ class Kiwoom(QAxWidget):
                 stock_code=self.kospi_dict[stock_name]
                 print(idx, stock_name, stock_code)
                 self.day_kiwoom_db(stock_code)
+        print("get stock list by kospi end")
 
     def get_stock_list_by_konex(self, isHaveDayData=False):
         query = "SELECT * FROM konex_basic_info"
         self.cursor.execute(query)
         for row in self.cursor.fetchall():
             self.konex_dict[row[0]] = row[1]    # row[0]: 회사명, row[1]: 종목코드
-
+        
         if not isHaveDayData:
-            for idx, stock_name in enumerate(self.kospi_dict):
+            for idx, stock_name in enumerate(self.konex_dict):
                 stock_code=self.konex_dict[stock_name]
                 print(idx, stock_name, stock_code)
                 self.day_kiwoom_db(stock_code)
@@ -792,6 +794,40 @@ class Kiwoom(QAxWidget):
                     start_price, high_price, low_price) VALUES(?, ?, ?, ?, ?, ?, ?)".format(table_name)
                 self.cursor.execute(query, calculator_tuple)
 
+    def update_day_stock_kospi(self):
+        # 코스피 종목 중 db에 없는 종목은 새롭게 일봉 데이터를 추가. (오늘 날짜부터)
+        for (idx, stock_name) in enumerate(self.kospi_dict):
+            is_stock_name_in_db = False
+            query = "SELECT name FROM sqlite_master WHERE type='table'"
+            self.cursor.execute(query)
+            for row in self.cursor.fetchall():
+                if self.kospi_dict[stock_name] == row[0]:
+                    is_stock_name_in_db = True
+                    break
+            if not is_stock_name_in_db:
+                print("add: ",end="")
+                self.day_kiwoom_db(self.kospi_dict[stock_name])
+                # return
+            print(idx, self.kospi_dict[stock_name], stock_name)
+
+        # # 튜플 내에서 가장 최근 날짜를 찾고, 오늘 날짜와 다르다면
+        # # 오늘 날짜부터 (가장 최근 날짜 + 1)까지 새롭게 일봉 데이터를 추가.
+        # today = int(date.today().isoformat().replace('-', ''))
+        # query = "SELECT name FROM sqlite_master WHERE type='table'"
+        # self.cursor.execute(query)
+        # print(today, query)
+        # for (idx, row) in enumerate(self.cursor.fetchall()):
+        #     table_name = "\"" + self.kospi_dict[row[0]] + "\""
+        #     query = "SELECT * from {}".format(table_name)
+        #     self.cursor.execute(query)
+        #     data_list = self.cursor.fetchall()
+        #     if len(data_list) == 0:
+        #         continue
+        #     prev = data_list[len(data_list) - 1][3]
+
+        #     if (prev < today):
+        #         self.day_kiwoom_db(self.kosdaq_dict[row[0]], None, 0, True)
+            
     def update_day_kiwoom_db(self):
         # 코스닥 종목 중 db에 없는 종목은 새롭게 일봉 데이터를 추가. (오늘 날짜부터)
         for stock_name in self.kosdaq_dict:
