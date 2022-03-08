@@ -12,6 +12,7 @@ urlpatterns = [
     path('create/', views.signup, name='signup'),
     path('detail/', views.user_detail, name='user_detail'),
     path('', views.user_list, name='user_list'),
+    path('password-check/', views.password_check, name='password_check'),
     path('update/<int:pk>', views.user_update, name='user_update'),
     path('delete/<int:pk>', views.user_delete, name='user_delete'),
     path('login/', include(login_patterns)),
