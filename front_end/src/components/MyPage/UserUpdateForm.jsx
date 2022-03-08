@@ -74,13 +74,15 @@ export default function UserUpdate() {
   };
 
   const handleSubmit = async () => {
-    if (!passwordValid) {
+    if (!validPassword.test(values.password)) {
       alert("비밀번호를 올바르게 입력하세요!");
+      setPasswordValid(false);
       return;
     }
 
-    if (passwordErr) {
+    if (values.password !== values.password2) {
       alert("비밀번호가 서로 일치하지 않습니다.");
+      setPasswordErr(false);
       return;
     }
 
@@ -92,7 +94,6 @@ export default function UserUpdate() {
     };
     await userUpdate(userId, data)
       .then((res) => {
-        console.log("@@", res);
         alert("회원 정보가 수정되었습니다.");
         window.location.reload();
       })

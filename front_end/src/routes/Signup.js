@@ -39,6 +39,7 @@ export default function Signup() {
               if (emailErr) alert("유효한 이메일을 입력하세요!");
               else if (!duplicateCheck) alert("이메일 중복을 체크해주세요");
               else if (passwordErr) alert("비밀번호를 올바르게 입력하세요!");
+              else if (!passwordValid) alert("비밀번호를 올바르게 입력하세요!");
               else {
                 // 회원가입 정보 보내기
                 const res = registerUser({
