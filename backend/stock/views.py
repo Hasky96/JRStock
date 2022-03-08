@@ -7,9 +7,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import InfoKospiSerializer
+from .serializers import BoardKospiSerializer, InfoKospiSerializer
 
-from .models import InfoKospi
+from .models import BoardKospi, InfoKospi
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -25,7 +25,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
     method='get',
     operation_id='코스피 주식 종목 전체 조회',
     operation_description='코스피 주식 종목 전체를 조회 합니다',
-    tags=['주식'],
+    tags=['주식_코스피'],
     manual_parameters=[page, size, sort],
     responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
@@ -64,7 +64,7 @@ def info_kospi_list(request):
     method='get',
     operation_id='코스피 주식 상세 조회',
     operation_description='공코스피 주식 상세 조회 합니다',
-    tags=['주식'],
+    tags=['주식_코스피'],
     responses={status.HTTP_200_OK: InfoKospiSerializer},
 )
 @api_view(['GET'])
@@ -74,3 +74,31 @@ def info_kospi_detail(request, code_number):
     serializer = InfoKospiSerializer(info_kospi)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='종목게시판 글 등록',
+    operation_description='종목게시판에 글을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING, description="공지사항 제목"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="공지사항 내용"),
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="종목 코드"),
+        }
+    ),
+    tags=['주식_코스피'],
+    responses={201: ""}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_create_kospi(request):
+    serializer = BoardKospiSerializer(data=request.data)
+    code_number = request.data.get('code_number')
+    info_kospi = get_object_or_404(InfoKospi, pk=code_number)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user, info_kospi=info_kospi)
+        return Response(status=status.HTTP_201_CREATED)
+    
