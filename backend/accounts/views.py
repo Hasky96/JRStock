@@ -9,6 +9,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import update_last_login
 from django.shortcuts import get_object_or_404, redirect
 
@@ -98,6 +99,48 @@ def user_list(request):
     serializers = UserInfoSerializer(result, many=True)
     return paginator.get_paginated_response(serializers.data)
 
+@swagger_auto_schema(
+    method='post',
+    operation_id='비밀번호 확인',
+    operation_description='비밀번호를 확인합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description="확인할 비밀번호"),
+        }
+    ),
+    tags=['유저'],
+    responses={200: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'password_check': openapi.Schema(type=openapi.TYPE_BOOLEAN, default=True, description="비밀번호 확인"),
+            }
+        )
+    ),
+            409: openapi.Response(
+        description="409 이미 생성된 이메일",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'password_check': openapi.Schema(type=openapi.TYPE_BOOLEAN, default=False, description="비밀번호 확인"),
+            }
+        )
+    )}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def password_check(request):
+    user = request.user
+    password = request.data.get('password')
+    
+    if not check_password(password, user.password):
+        return Response({'password_check': 'False'}, status=status.HTTP_409_CONFLICT)
+    
+    return Response({'password_check': 'True'}, status=status.HTTP_200_OK)
+    
 @swagger_auto_schema(
     method='put',
     operation_id='회원정보 수정',
@@ -200,7 +243,7 @@ def signup(request):
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'email_check': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="중복 확인"),
+                'email_check': openapi.Schema(type=openapi.TYPE_BOOLEAN, default=True, description="중복 확인"),
             }
         )
     ),

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     
     'accounts',
     'notice',
+    'stock',
 ]
 
 BASE_URL = 'http://localhost:8000/'
@@ -80,10 +81,20 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'SIGNING_KEY': secrets["SECRET_KEY"],
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS' :{
+        'Bearer':{
+            'type':'apiKey',
+            'name':'Authorization',
+            'in':'header'
+        }
+    }
 }
 
 MIDDLEWARE = [
