@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class InfoKospi(models.Model):
     code_number = models.CharField(max_length=20, primary_key=True)
@@ -16,6 +17,7 @@ class InfoKospi(models.Model):
     
 class BoardKospi(models.Model):
     info_kospi = models.ForeignKey(InfoKospi, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
