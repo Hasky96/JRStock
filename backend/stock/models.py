@@ -14,6 +14,33 @@ class InfoKospi(models.Model):
     
     class Meta:
         ordering = ['code_number']
+
+class FinancialKospi(models.Model):
+    info_kospi = models.OneToOneField(InfoKospi, on_delete=models.CASCADE, primary_key=True)
+    face_value = models.CharField(max_length=20)
+    capital_stock = models.CharField(max_length=20)
+    number_of_listings = models.CharField(max_length=20)
+    credit_rate = models.CharField(max_length=20)
+    year_high_price = models.CharField(max_length=20)
+    year_low_price = models.CharField(max_length=20)
+    market_cap = models.CharField(max_length=20)
+    foreigner_percent = models.CharField(max_length=20)
+    substitute_price = models.CharField(max_length=20)
+    per = models.CharField(max_length=20)
+    eps = models.CharField(max_length=20)
+    roe = models.CharField(max_length=20)
+    pbr = models.CharField(max_length=20)
+    ev = models.CharField(max_length=20)
+    bps = models.CharField(max_length=20)
+    sales_revenue = models.CharField(max_length=20)
+    operating_income = models.CharField(max_length=20)
+    net_income = models.CharField(max_length=20)
+    shares_outstanding = models.CharField(max_length=20)
+    shares_outstanding_rate = models.CharField(max_length=20)
+    
+    class Meta:
+        ordering = ['info_kospi']
+    
     
 class BoardKospi(models.Model):
     info_kospi = models.ForeignKey(InfoKospi, on_delete=models.CASCADE)
