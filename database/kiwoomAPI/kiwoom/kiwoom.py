@@ -963,7 +963,7 @@ class Kiwoom(QAxWidget):
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
                 self.cursor.execute(query, calculator_tuple)
 
-                # breaka
+                # break
             # if not is_stock_name_in_db:
             #     print("add: ",end="")
             #     self.day_kiwoom_db(self.kospi_dict[stock_name])
