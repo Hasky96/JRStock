@@ -49,26 +49,26 @@ class Kiwoom(QAxWidget):
         self.screen_order_stock = "4000"  # 종목별 할당할 주문용 화변 번호
 
         ########## 초기 작업 시작
-        self.create_kiwoom_instance()
-        self.event_collection()  # 이벤트와 슬롯을 메모리에 먼저 생성.
-        self.login()
-        input()
+        # self.create_kiwoom_instance()
+        # self.event_collection()  # 이벤트와 슬롯을 메모리에 먼저 생성.
+        # self.login()
+        # input()
 
         # DB 연결
         self.conn = sqlite3.connect("../db/stocks.db", isolation_level=None)
         # self.conn = sqlite3.connect("db/15min_stock.db", isolation_level=None)
         self.cursor = self.conn.cursor()
 
-        self.get_account_info()  # 계좌 번호만 얻어오기
-        self.get_deposit_info()  # 예수금 관련된 정보 얻어오기
-        self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
-        self.not_signed_account()  # 미체결내역 얻어오기
-        # self.get_stock_list_by_kospi(True)
-        self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
+        # self.get_account_info()  # 계좌 번호만 얻어오기
+        # self.get_deposit_info()  # 예수금 관련된 정보 얻어오기
+        # self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
+        # self.not_signed_account()  # 미체결내역 얻어오기
+        self.get_stock_list_by_kospi(True)
+        # self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
         # self.get_stock_list_by_konex(False)  # False : DB 구축 x, True : DB 구축 o
         # self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
         
-        self.change_table_name()
+        self.merge_day_stock_kospi()
 
         # self.get_stock_kospi_financial_info()   # 코스피 주식기본정보요청     # 821개
         # self.get_stock_kosdaq_financial_info()   # 코스닥 주식기본정보요청    # 1552개
@@ -947,9 +947,30 @@ class Kiwoom(QAxWidget):
     #             print(
     #                 f"{idx + 1} / {len(self.kosdaq_dict)} : KOSDAQ Stock Code : {self.kosdaq_dict[row[0]]} is already updated!")
 
-    def change_table_name(self):
-        for row in self.kosdaq_dict:
-            
+    def merge_day_stock_kospi(self):
+        table_name="kospi_day_stock"
+        for (idx, stock_name) in enumerate(self.kospi_dict):
+            # is_stock_name_in_db = False
+            stock_code=self.kospi_dict[stock_name]
+            query = "SELECT * from [{}]".format(stock_code)
+            self.cursor.execute(query)
+            for row in self.cursor.fetchall():
+                calculator_list=[stock_code]
+                for item in row:
+                    calculator_list.append(item)
+                calculator_tuple = tuple(calculator_list)
+                query = "INSERT INTO {} (code_number, current_price, volume, trade_price, date, start_price, high_price, low_price) \
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
+                self.cursor.execute(query, calculator_tuple)
+
+                # breaka
+            # if not is_stock_name_in_db:
+            #     print("add: ",end="")
+            #     self.day_kiwoom_db(self.kospi_dict[stock_name])
+            #     # return
+            # break
+            print(idx, self.kospi_dict[stock_name], stock_name)
+
 
 
     def granvile_theory(self):
