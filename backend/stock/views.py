@@ -7,9 +7,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import BoardKospiSerializer, InfoKospiSerializer
+from .serializers import BoardKospiSerializer, FinancialKospiSerializer, InfoKospiSerializer
 
-from .models import BoardKospi, InfoKospi
+from .models import BoardKospi, FinancialKospi, InfoKospi
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -32,10 +32,10 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 회원 수"),
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
                 'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
                 'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("infokospi", "유저 정보"),
+                'results' : get_serializer("infokospi", "종목 정보"),
             }
         )
     )}
@@ -63,7 +63,7 @@ def info_kospi_list(request):
 @swagger_auto_schema(
     method='get',
     operation_id='코스피 주식 상세 조회',
-    operation_description='공코스피 주식 상세 조회 합니다',
+    operation_description='코스피 주식 상세 조회 합니다',
     tags=['주식_코스피'],
     responses={status.HTTP_200_OK: InfoKospiSerializer},
 )
@@ -72,6 +72,21 @@ def info_kospi_list(request):
 def info_kospi_detail(request, code_number):
     info_kospi = get_object_or_404(InfoKospi, pk=code_number)
     serializer = InfoKospiSerializer(info_kospi)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='코스피 주식 재무제표 상세 조회',
+    operation_description='코스피 주식 재무제표를 상세 조회 합니다',
+    tags=['주식_코스피'],
+    responses={status.HTTP_200_OK: FinancialKospiSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def financial_kospi_detail(request, code_number):
+    financial_kospi = get_object_or_404(FinancialKospi, pk=code_number)
+    serializer = FinancialKospiSerializer(financial_kospi)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
 
