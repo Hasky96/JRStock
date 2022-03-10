@@ -32,7 +32,7 @@ export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
             onClick={(e) => {
               e.preventDefault();
               setSelected(e.target.innerText);
-              // onClickFilter();
+              onClickFilter(e.target.innerText);
             }}
           >
             {element}
@@ -95,9 +95,9 @@ export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
             id="price"
             className="hover:border-yellow-300 focus:ring-yellow-300 focus:border-yellow-300 text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
             placeholder="Search..."
-            onSubmit={(e) => {
+            onChange={(e) => {
               e.preventDefault();
-              // onSearch();
+              onSearch(e.target.value);
             }}
           />
         </div>
