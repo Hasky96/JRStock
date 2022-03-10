@@ -5,7 +5,9 @@ import Signup from "./routes/Signup";
 import Market from "./routes/Market";
 import StockItemList from "./routes/StockItemList";
 import StockItemDetail from "./routes/StockItemDetail";
-import BackTest from "./routes/BackTest";
+import BackTestList from "./routes/BackTestList";
+import BackTestCreate from "./routes/BackTestCreate";
+import BackTestDetail from "./routes/BackTestDetail";
 import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
@@ -44,7 +46,9 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id" element={<StockItemDetail />} />
-          <Route path="/backtest" element={<BackTest />} />
+          <Route path="/backtest" element={<BackTestList />} />
+          <Route path="/backtest/create" element={<BackTestCreate />} />
+          <Route path="/backtest/:id" element={<BackTestDetail />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/announcement" element={<Announcement />} />
         </Routes>
