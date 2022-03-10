@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
-from .models import FinancialKosdaq, FinancialKospi, InfoKosdaq, InfoKospi, BoardKospi
+from .models import FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi, BoardKospi
 
 # ====================================================================== 코스피 ======================================================================
 class InfoKospiSerializer(serializers.ModelSerializer):
@@ -35,4 +35,17 @@ class FinancialKosdaqSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FinancialKosdaq
+        fields = '__all__'
+        
+# ====================================================================== 코넥스 ======================================================================
+class InfoKonexSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfoKonex
+        fields = '__all__'
+        
+class FinancialKonexSerializer(serializers.ModelSerializer):
+    info_konex = InfoKonexSerializer(read_only=True)
+    
+    class Meta:
+        model = FinancialKonex
         fields = '__all__'
