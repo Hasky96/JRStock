@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import TabItem from "./TabItem";
 import "./TabBar.css";
 
@@ -16,8 +15,8 @@ export default function TabBar({ setCurrentTab, tabInfo }) {
     setCurrentTab(text);
   };
 
-  const paintTabItem = tabInfo.map((text) => (
-    <TabItem handleOnClick={handleOnClick} text={text} />
+  const paintTabItem = tabInfo.map((text, index) => (
+    <TabItem key={index} handleOnClick={handleOnClick} text={text} link={``} />
   ));
 
   return (

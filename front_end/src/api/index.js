@@ -19,7 +19,7 @@ function fileApiInstance() {
   return instance;
 }
 function loginApiInstance() {
-  const jwtToken = sessionStorage.getItem("accessToken");
+  const jwtToken = sessionStorage.getItem("access_token");
   const instance = axios.create({
     baseURL: API_BASE_URL,
     headers: {
