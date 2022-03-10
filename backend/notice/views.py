@@ -16,7 +16,7 @@ from .parser import get_serializer
 
 @swagger_auto_schema(
     method='post',
-    operation_id='공지사항 등록',
+    operation_id='공지사항 등록(어드민)',
     operation_description='공지사항을 등록합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -46,7 +46,7 @@ size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
                         description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
 @swagger_auto_schema(
     method='get',
-    operation_id='공지사항 전체 조회',
+    operation_id='공지사항 전체 조회(아무나)',
     operation_description='공지사항 전체를 조회합니다',
     tags=['공지사항'],
     manual_parameters=[page, size],
@@ -81,7 +81,7 @@ def notice_list(request):
 
 @swagger_auto_schema(
     method='get',
-    operation_id='공지사항 상세 조회',
+    operation_id='공지사항 상세 조회(아무나)',
     operation_description='공지사항을 조회 합니다',
     tags=['공지사항'],
     responses={status.HTTP_200_OK: NoticeSerializer},
@@ -96,7 +96,7 @@ def notice_detail(request, pk):
 
 @swagger_auto_schema(
     method='put',
-    operation_id='공지사항 수정',
+    operation_id='공지사항 수정(어드민)',
     operation_description='공지사항을 수정합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -122,7 +122,7 @@ def notice_update(request, pk):
 
 @swagger_auto_schema(
     method='delete',
-    operation_id='공지사항 삭제',
+    operation_id='공지사항 삭제(어드민)',
     operation_description='공지사항을 제거합니다',
     tags=['공지사항'],
     responses={200: ""}
