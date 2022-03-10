@@ -32,6 +32,8 @@ from drf_yasg import openapi
 from .email import account_activation_token, message
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
+import string
+import random
 from django.core.mail import EmailMessage
 
 from .parser import get_serializer
@@ -397,3 +399,60 @@ def google_login(request):
 class GoogleLogin(SocialLoginView):
     adapter_class = google_view.GoogleOAuth2Adapter
     client_class = OAuth2Client
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='비밀번호 리셋',
+    operation_description='임시 비밀번호를 생성해서 등록된 이메일로 발송',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호를 초기화할 계정의 이메일 주소"),
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호를 초기화할 계정의 이름"),
+        }
+    ),
+    tags=['유저'],
+    responses={200: "", 404: "해당 이메일의 계정이 없음"}
+)    
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_reset(request):
+    email = request.data.get('email')
+    name = request.data.get('name')
+
+    user = get_object_or_404(User, email=email)
+    if not user.name == name:
+        return Response({"message": "이메일과 이름이 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+   
+    
+    new_pw_len = 12 # 새 비밀번호 길이
+    pw_candidate = string.ascii_letters + string.digits + string.punctuation 
+    
+    new_pw = ""
+    for i in range(new_pw_len):
+        new_pw += random.choice(pw_candidate)
+    
+    user.set_password(new_pw)
+    user.save()
+    
+    message_data = """\
+    <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
+        <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
+            <span style="font-size: 15px; margin: 0 0 10px 3px;">JRstock</span><br />
+            <span style="color: #212121;">비밀번호 초기화</span> 안내입니다. </h1>
+        <p style="font-size: 16px; line-height: 26px; margin-top: 50px; padding: 0 5px;">
+            안녕하세요.<br />
+            초기화된 비밀번호는 다음과 같습니다.<br />
+            <b style="color: #212121;">" %s "</b><br />
+            감사합니다</p>
+    </div>
+    """ % (new_pw)
+    
+    mail_title = "JRstock 비밀번호 초기화 안내"
+    mail_to = email
+    send_email = EmailMessage(mail_title, message_data, to=[mail_to])
+    send_email.content_subtype = "html"
+    send_email.send()
+    
+    return Response(status=status.HTTP_200_OK)
+    
