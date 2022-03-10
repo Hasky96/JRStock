@@ -12,6 +12,8 @@ import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
 import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Notice from "./routes/Notice";
 import NoticeDetail from "./routes/NoticeDetail";
 
@@ -28,12 +30,12 @@ function App() {
 
   return (
     <Router>
+      <ToastContainer hideProgressBar={true} />
       {showSideBar && (
         <div>
           <SideBar />
         </div>
       )}
-
       <div className={showSideBar ? "ml-20 bg-yellow-50 min-h-screen" : ""}>
         {showSideBar && (
           <div>
