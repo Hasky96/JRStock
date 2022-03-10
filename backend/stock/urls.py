@@ -6,4 +6,8 @@ urlpatterns = [
     path('kospi/<str:code_number>', views.info_kospi_detail, name='info_kospi_detail'),
     path('kospi/financial/<str:code_number>', views.financial_kospi_detail, name='financial_kospi_detail'),
     path('kospi/board/create/', views.board_create_kospi, name='board_create_kospi'),
+    
+    path('kosdaq/', views.info_kosdaq_list, name='info_kosdaq_list'),
+    path('kosdaq/<str:code_number>', views.info_kosdaq_detail, name='info_kosdaq_detail'),
+    path('kosdaq/financial/<str:code_number>', views.financial_kosdaq_detail, name='financial_kosdaq_detail'),
 ]
