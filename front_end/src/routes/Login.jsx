@@ -130,9 +130,9 @@ export default function Login() {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="text-blue-600 hover:text-blue-500">
+                <Link to="/login/help" className="text-blue-600 hover:text-blue-500">
                   비밀번호를 잊으셨나요?
-                </a>
+                </Link>
               </div>
             </div>
 

@@ -25,6 +25,11 @@ async function checkDuplication(userEmail) {
   return (await api.get(`/user/email-check/${userEmail}`)).data.email_check;
 }
 
+// 비밀번호 재발급
+async function passwordReset(user) {
+  return await api.post("user/password-reset/", user);
+}
+
 // 패스워드 확인
 async function userPasswordCheck(password) {
   return await loginApi.post(`/user/password-check/`, password);
@@ -54,4 +59,5 @@ export {
   userPasswordCheck,
   userDetail,
   userUpdate,
+  passwordReset,
 };
