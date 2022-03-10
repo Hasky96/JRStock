@@ -29,7 +29,7 @@ export default function MyPage() {
     <PageContainer>
       <div className="flex flex-col justify-center items-center">
         <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
-        <div className="mt-5">
+        <div className="mt-5 w-full">
           {currentTab === "관심종목" && <InterestingStock />}
           {currentTab === "포트폴리오" && <Portfolio />}
           {currentTab === "회원정보 수정" && <UserUpdate />}

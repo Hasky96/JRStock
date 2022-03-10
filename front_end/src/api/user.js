@@ -37,7 +37,13 @@ async function userDetail() {
 
 // 회원 정보 수정
 async function userUpdate(id, userInfo) {
-  return (await loginApi.put(`/user/update/${id}`, userInfo)).data;
+  return (
+    await loginApi.put(`/user/update/${id}`, userInfo, {
+      headers: {
+        "Content-Type": `multipart/form-data`,
+      },
+    })
+  ).data;
 }
 
 export {

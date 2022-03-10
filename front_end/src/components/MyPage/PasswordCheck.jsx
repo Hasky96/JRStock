@@ -49,7 +49,7 @@ export default function PasswordCheck({ setIsAuthorized }) {
   };
 
   return (
-    <div className="my-5">
+    <div className="my-5 w-full sm:w-1/2 lg:w-1/3">
       <input
         id="accessPassword"
         name="accessPassword"

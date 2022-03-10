@@ -13,6 +13,7 @@ export default function UserUpdate() {
     password: "",
     password2: "",
     profile_img: null,
+    profile_img_preview: null,
     profile_img_url: null,
   });
   const [userId, setUserId] = useState(null);
@@ -73,9 +74,23 @@ export default function UserUpdate() {
     handleValueChange("password2", e.target.value);
   };
 
+  // const readImage = () => {
+
+  // }
+
+  const handleImageChange = (e) => {
+    handleValueChange("profile_img", e.target.files[0]);
+
+    const reader = new FileReader();
+    const url = reader.readAsDataURL(e.target.files[0]);
+    reader.onloadend = (e) => {
+      handleValueChange("profile_img_preview", reader.result);
+    };
+  };
+
   const handleSubmit = async () => {
     if (!validPassword.test(values.password)) {
-      alert("비밀번호를 올바르게 입력하세요!");
+      alert("비밀번호가 유효하지 않습니다!");
       setPasswordValid(false);
       return;
     }
@@ -92,7 +107,13 @@ export default function UserUpdate() {
       new_password: values.password,
       profile_img: values.profile_img,
     };
-    await userUpdate(userId, data)
+
+    const formData = new FormData();
+    for (let key in data) {
+      formData.append(`${key}`, data[key]);
+    }
+
+    await userUpdate(userId, formData)
       .then((res) => {
         alert("회원 정보가 수정되었습니다.");
         window.location.reload();
@@ -104,7 +125,7 @@ export default function UserUpdate() {
   };
 
   return (
-    <div className="mt-8 w-96">
+    <div className="w-1/2">
       <form className="space-y-6">
         {/* 이름 input 부분 */}
         <div className="rounded-md shadow-sm">
@@ -173,6 +194,38 @@ export default function UserUpdate() {
             {values.password && passwordErr && (
               <p className="text-red-500">비밀번호가 일치하지 않습니다.</p>
             )}
+          </div>
+          <div className="my-5 flex flex-col">
+            프로필 이미지 수정
+            {values.profile_img_preview ? (
+              <img
+                className="rounded-full w-36"
+                src={values.profile_img_preview}
+                alt="profile_img_preview"
+              />
+            ) : (
+              <>
+                {values.profile_img ? (
+                  <img
+                    className="rounded-full w-36"
+                    src={`http://localhost:8000${values.profile_img}`}
+                    alt="profile_img"
+                  />
+                ) : (
+                  <img
+                    className="rounded-full w-36"
+                    src={values.profile_img_url}
+                    alt="profile_img_url"
+                  />
+                )}
+              </>
+            )}
+            <input
+              id="profile_img"
+              name="profile_img"
+              type="file"
+              onChange={(e) => handleImageChange(e)}
+            />
           </div>
         </div>
         {/* 회원가입 버튼 */}

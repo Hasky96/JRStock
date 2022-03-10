@@ -6,7 +6,7 @@ export default function UserUpdate() {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   return (
-    <div className="mt-8 w-96">
+    <div className="w-full flex flex-col items-center">
       {isAuthorized ? (
         <UserUpdateForm />
       ) : (
