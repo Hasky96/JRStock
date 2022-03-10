@@ -22,7 +22,7 @@ async function registerUser(user) {
 
 // 이메일 중복 조회
 async function checkDuplication(userEmail) {
-  return (await api.get(`/user/duplication?email=${userEmail}`)).data.data;
+  return (await api.get(`/user/email-check/${userEmail}`)).data.email_check;
 }
 
 // 패스워드 확인

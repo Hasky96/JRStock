@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser, checkDuplication } from "./../api/user";
 import { ReactComponent as PasswordLook } from "./../assets/passwordLook.svg";
 import { ReactComponent as PasswordNoLook } from "./../assets/passwordNoLook.svg";
+import Loading from "../components/commons/Loading";
 
 export default function Signup() {
   const [name, setName] = useState(null);
@@ -22,7 +23,10 @@ export default function Signup() {
   return (
     <div>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-img">
-        <div className="max-w-lg w-full space-y-8 border-2 p-12 rounded-md bg-white">
+        <div
+          id="signup-form"
+          className="max-w-lg w-full space-y-8 border-2 p-12 rounded-md bg-white"
+        >
           {/* title */}
           <div>
             <h2 className="text-3xl font-extrabold text-yellow-900 text-center">
@@ -34,21 +38,29 @@ export default function Signup() {
             className="mt-8 space-y-6"
             action="#"
             method="POST"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (emailErr) alert("유효한 이메일을 입력하세요!");
               else if (!duplicateCheck) alert("이메일 중복을 체크해주세요");
               else if (!passwordValid) alert("비밀번호가 유효하지 않습니다!");
               else if (passwordErr) alert("비밀번호가 서로 일치하지 않습니다!");
               else {
+                const loading = document.querySelector("#loading");
+
+                // 로딩화면 on
+                loading.style.display = "block";
+
                 // 회원가입 정보 보내기
-                const res = registerUser({
+                const res = await registerUser({
                   name: name,
                   email: email,
                   password: password,
                 }).catch((err) => {
                   console.log(err);
                 });
+
+                // 로딩화면 off
+                loading.style.display = "none";
 
                 // 화면 이동
                 navigate(`/`);
@@ -105,17 +117,26 @@ export default function Signup() {
                 )}
                 {/* 이메일 중복 확인 버튼 */}
                 <button
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.preventDefault();
                     // 이메일 중복 확인 요청 보내기
-                    /*
-                      const res = checkDuplication(email);
-                      if(res === 'true')
-                        setDuplicateCheck(true);
-                      else
-                        setDuplicateCheck(false);
-                    */
-                    setDuplicateCheck(true);
+
+                    if (email === null || emailErr) {
+                      alert("올바른 이메일 주소를 입력하세요.");
+                      return;
+                    }
+
+                    const res = await checkDuplication(email).catch((err) => {
+                      if (err.response.status === 409) {
+                        return "False";
+                      }
+                    });
+
+                    if (res === "True") setDuplicateCheck(true);
+                    else {
+                      setDuplicateCheck(false);
+                      alert("이미 가입된 이메일 입니다.");
+                    }
                   }}
                   className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                 >
@@ -214,6 +235,10 @@ export default function Signup() {
             </Link>
           </div>
         </div>
+        {/* 로딩 화면 */}
+        <Loading
+          message={"회원가입 진행 중 입니다.\n잠시만 기다려주시기 바랍니다."}
+        />
       </div>
     </div>
   );
