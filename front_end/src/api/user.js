@@ -24,4 +24,9 @@ async function checkDuplication(userEmail) {
   return (await api.get(`/user/email-check/${userEmail}`)).data.email_check;
 }
 
-export { registerUser, checkDuplication, login, oauth };
+// 비밀번호 재발급
+async function passwordReset(user) {
+  return await api.post("user/password-reset/", user);
+}
+
+export { registerUser, checkDuplication, login, oauth, passwordReset };
