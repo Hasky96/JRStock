@@ -10,7 +10,7 @@ import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
 import { useEffect, useState } from "react";
-import Announcement from "./routes/Announcement";
+import Notice from "./routes/Notice";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
@@ -46,7 +46,7 @@ function App() {
           <Route path="/stock/:id" element={<StockItemDetail />} />
           <Route path="/backtest" element={<BackTest />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/announcement" element={<Announcement />} />
+          <Route path="/notice" element={<Notice />} />
         </Routes>
       </div>
     </Router>
