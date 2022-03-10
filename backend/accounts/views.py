@@ -42,7 +42,7 @@ BASE_URL = getattr(settings, 'BASE_URL', None)
 
 @swagger_auto_schema(
     method='get',
-    operation_id='회원 정보 상세 조회',
+    operation_id='회원 정보 상세 조회(유저)',
     operation_description='회원 정보를 조회 합니다',
     tags=['유저'],
     responses={status.HTTP_200_OK: UserInfoSerializer},
@@ -63,7 +63,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
 @swagger_auto_schema(
     method='get',
-    operation_id='회원 정보 전체 조회',
+    operation_id='회원 정보 전체 조회(어드민)',
     operation_description='회원 정보를 전체를 조회 합니다',
     tags=['유저'],
     manual_parameters=[page, size, sort],
@@ -103,7 +103,7 @@ def user_list(request):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='비밀번호 확인',
+    operation_id='비밀번호 확인(유저)',
     operation_description='비밀번호를 확인합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -145,7 +145,7 @@ def password_check(request):
     
 @swagger_auto_schema(
     method='put',
-    operation_id='회원정보 수정',
+    operation_id='회원정보 수정(유저)',
     operation_description='회원정보를 수정합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -177,7 +177,7 @@ def user_update(request, pk):
 
 @swagger_auto_schema(
     method='delete',
-    operation_id='회원 삭제',
+    operation_id='회원 삭제(유저)',
     operation_description='회원정보를 제거합니다',
     tags=['유저'],
     responses={200: ""}
@@ -192,7 +192,7 @@ def user_delete(request, pk):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='일반 회원가입',
+    operation_id='일반 회원가입(아무나)',
     operation_description='회원가입을 진행합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -237,7 +237,7 @@ def signup(request):
     
 @swagger_auto_schema(
     method='get',
-    operation_id='이메일 중복 확인',
+    operation_id='이메일 중복 확인(아무나)',
     operation_description='이메일 중복 확인을 진행합니다',
     tags=['유저'],
     responses={200: openapi.Response(
@@ -274,7 +274,7 @@ def email_check(request, email):
 
 @swagger_auto_schema(
     method='get',
-    operation_id='이메일 인증',
+    operation_id='이메일 인증(아무나)',
     operation_description='이메일 인증 처리를 진행합니다',
     tags=['유저'],
     responses={status.HTTP_200_OK: ""}
@@ -295,7 +295,7 @@ def email_confirm(request, **kwargs):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='일반 로그인',
+    operation_id='일반 로그인(아무나)',
     operation_description='일반 회원 로그인을 진행합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -334,7 +334,7 @@ def login(request):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='구글 로그인',
+    operation_id='구글 로그인(아무나)',
     operation_description='구글 소셜 로그인을 진행합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
