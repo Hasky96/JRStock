@@ -55,7 +55,7 @@ class Kiwoom(QAxWidget):
         # input()
 
         # DB 연결
-        self.conn = sqlite3.connect("../db/day_stock.db", isolation_level=None)
+        self.conn = sqlite3.connect("../db/stocks.db", isolation_level=None)
         # self.conn = sqlite3.connect("db/15min_stock.db", isolation_level=None)
         self.cursor = self.conn.cursor()
 
@@ -64,15 +64,16 @@ class Kiwoom(QAxWidget):
         # self.get_account_evaluation_balance()  # 계좌평가잔고내역 얻어오기
         # self.not_signed_account()  # 미체결내역 얻어오기
         # self.get_stock_list_by_kospi(True)
-        self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
-        # self.get_stock_list_by_konex(False)  # False : DB 구축 x, True : DB 구축 o
+        # self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
+        self.get_stock_list_by_konex(True)  # False : DB 구축 x, True : DB 구축 o
         # self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
         
         # self.merge_day_stock_kospi()
-        self.merge_day_stock_kosdaq()
+        # self.merge_day_stock_kosdaq()
+        self.merge_day_stock_konex()
 
         # self.get_stock_kospi_financial_info()   # 코스피 주식기본정보요청     # 821개
-        # self.get_stock_kosdaq_financial_info()   # 코스닥 주식기본정보요청    # 1552개
+        # self.get_stock_kosdaq_financial_info()   # 코스닥 주식기본정보요청    # 1548개
         # self.get_stock_konex_financial_info()   # 코넥스 주식기본정보요청       # 130개
         
         # self.update_day_stock_kospi() # 코스피 주식일봉차트 업데이트
@@ -987,6 +988,8 @@ class Kiwoom(QAxWidget):
     def merge_day_stock_kosdaq(self):
         table_name="kosdaq_day_stock"
         for (idx, stock_name) in enumerate(self.kosdaq_dict):
+            # if idx<1072:
+            #     continue
             stock_code=self.kosdaq_dict[stock_name]
             query = "SELECT * from '{}'".format(stock_name)
             self.cursor.execute(query)
@@ -998,9 +1001,23 @@ class Kiwoom(QAxWidget):
                 query = "INSERT INTO {} (code_number, current_price, volume, trade_price, date, start_price, high_price, low_price) \
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
                 self.cursor.execute(query, calculator_tuple)
-                # break
             print(idx, self.kosdaq_dict[stock_name], stock_name)
-            # break
+
+    def merge_day_stock_konex(self):
+        table_name="konex_day_stock"
+        for (idx, stock_name) in enumerate(self.konex_dict):
+            stock_code=self.konex_dict[stock_name]
+            query = "SELECT * from '{}'".format(stock_code)
+            self.cursor.execute(query)
+            for row in self.cursor.fetchall():
+                calculator_list=[stock_code]
+                for item in row:
+                    calculator_list.append(item)
+                calculator_tuple = tuple(calculator_list)
+                query = "INSERT INTO {} (code_number, current_price, volume, trade_price, date, start_price, high_price, low_price) \
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
+                self.cursor.execute(query, calculator_tuple)
+            print(idx, self.konex_dict[stock_name], stock_name)
 
 
     def granvile_theory(self):
