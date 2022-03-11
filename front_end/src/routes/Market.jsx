@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PageContainer from "../components/PageContainer";
 import Card from "../components/market/Card";
+import TabBar from "../components/TabBar/TabBar";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -9,21 +10,20 @@ function classNames(...classes) {
 export default function Market() {
   const [selectedChart, setSelectedChart] = useState("kospi");
   const info = {
-    stockFullName: "SW Limited.",
-    stockShortName: "ASX:SFW",
-    price: {
-      current: 2.321,
-      low: 2.215,
-      high: 2.325,
-      open: 2.23,
-      cap: 93.8,
-      ratio: 20.1,
-      dividend: 1.67,
-    },
+    date: "2021-02-02 16:00:00",
+    open: 2134.9307,
+    low: 2134.9105,
+    high: 2135.4215,
+    close: 2135.0087,
+    volume: 73591581,
   };
+  const [kospiTab, setKospiTab] = useState("정보");
+  const kospiTabInfo = ["정보", "시황 뉴스"];
+  const [kosdaqTab, setKosdaqTab] = useState("정보");
+  const kosdaqTabInfo = ["정보", "시황 뉴스"];
   return (
     <PageContainer>
-      <div>
+      <div className="m-5">
         <span
           id="kospi"
           className={classNames(
@@ -50,18 +50,22 @@ export default function Market() {
           코스닥
         </span>
       </div>
-      <div
-        className={classNames(
-          selectedChart === "kospi" ? "" : "hidden",
-          "grid grid-cols-2",
-          "h-96"
-        )}
-      >
-        <div className="grid grid-cols-1">
-          <Card info={info} />
+      <div className={classNames(selectedChart === "kospi" ? "" : "hidden")}>
+        <div className="mx-5">
+          <TabBar setCurrentTab={setKospiTab} tabInfo={kospiTabInfo} />
         </div>
-        <div className="grid grid-cols-1">
-          <Card info={info} />
+        <div
+          className={classNames(
+            "grid grid-cols-2 h-96",
+            kospiTab === "정보" ? "" : "hidden"
+          )}
+        >
+          <div className="grid grid-cols-1">
+            <Card info={info} />
+          </div>
+          <div className="grid grid-cols-1">
+            <Card info={info} />
+          </div>
         </div>
       </div>
       <div className={classNames(selectedChart === "kosdaq" ? "" : "hidden")}>
