@@ -10,7 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializers import BoardDetailKonexSerializer, BoardDetailKosdaqSerializer, BoardDetailKospiSerializer, BoardKonexSerializer, BoardKosdaqSerializer, BoardKospiSerializer, CommentKonexSerializer, CommentKosdaqSerializer, CommentKospiSerializer
 
-from .models import Konex, Kosdaq, Kospi
+from .models import CommentKonex, CommentKosdaq, CommentKospi, Konex, Kosdaq, Kospi
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -171,6 +171,39 @@ def comment_kospi_create(request):
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(status=status.HTTP_201_CREATED)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='게시글의 댓글 전체 조회(아무나)',
+    operation_description='해당 게시글의 댓글을 전체 조회합니다',
+    tags=['댓글_코스피'],
+    manual_parameters=[page, size],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 댓글 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("comment", "댓글 정보"),
+            }
+        )
+    )}
+)    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def comment_kospi_list(request, board_id):
+    comment_kospi_list = CommentKospi.objects.filter(board_kospi=board_id)
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    result = paginator.paginate_queryset(comment_kospi_list, request)
+    serializer = CommentKospiSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
     
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
@@ -335,6 +368,39 @@ def comment_kosdaq_create(request):
         serializer.save(user=request.user)
         return Response(status=status.HTTP_201_CREATED)
 
+@swagger_auto_schema(
+    method='get',
+    operation_id='게시글의 댓글 전체 조회(아무나)',
+    operation_description='해당 게시글의 댓글을 전체 조회합니다',
+    tags=['댓글_코스닥'],
+    manual_parameters=[page, size],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 댓글 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("comment", "댓글 정보"),
+            }
+        )
+    )}
+)    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def comment_kosdaq_list(request, board_id):
+    comment_kosdaq_list = CommentKosdaq.objects.filter(board_kospi=board_id)
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    result = paginator.paginate_queryset(comment_kosdaq_list, request)
+    serializer = CommentKosdaqSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
 # ====================================================================== 코넥스 ======================================================================
 @swagger_auto_schema(
     method='post',
@@ -497,3 +563,36 @@ def comment_konex_create(request):
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(status=status.HTTP_201_CREATED)
+    
+@swagger_auto_schema(
+    method='get',
+    operation_id='게시글의 댓글 전체 조회(아무나)',
+    operation_description='해당 게시글의 댓글을 전체 조회합니다',
+    tags=['댓글_코넥스'],
+    manual_parameters=[page, size],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 댓글 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("comment", "댓글 정보"),
+            }
+        )
+    )}
+)    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def comment_konex_list(request, board_id):
+    comment_konex_list = CommentKonex.objects.filter(board_kospi=board_id)
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    result = paginator.paginate_queryset(comment_konex_list, request)
+    serializer = CommentKonexSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
