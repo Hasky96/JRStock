@@ -7,7 +7,7 @@ export default function NavItem({ currentPath, linkPath, linkText, children }) {
   return (
     <li className="nav-item hover:bg-yellow-50">
       <Link to={linkPath}>
-        <div className={currentPath === linkPath ? active : inActive}>
+        <div className={currentPath.includes(linkPath) ? active : inActive}>
           {children}
           <span className="link-text">{linkText}</span>
         </div>
