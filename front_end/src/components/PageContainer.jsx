@@ -4,9 +4,9 @@ export default function PageContainer({ children, pt, pl, pr, minH }) {
   return (
     <div
       className={
-        (pt ? `pt-${pt}` : "pt-36") +
-        (pl ? ` pl-${pl}` : " pl-10") +
-        (pr ? ` pr-${pr}` : " pr-10")
+        (pt ? `my-pt-${pt}` : "my-pt-36") +
+        (pl ? ` my-pl-${pl}` : " my-pl-10") +
+        (pr ? ` my-pr-${pr}` : " my-pr-10")
       }
     >
       <div
