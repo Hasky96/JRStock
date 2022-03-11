@@ -58,7 +58,7 @@ def board_kospi_create(request):
     operation_description='코스피 종목별 게시판 종목별로 조회합니다',
     tags=['게시판_코스피'],
     manual_parameters=[page, size],
-    responses={200: openapi.Response(
+    responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -112,7 +112,7 @@ def board_kospi_detail(request, pk):
         }
     ),
     tags=['게시판_코스피'],
-    responses={200: ""}
+    responses={status.HTTP_200_OK: ""}
 )
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -129,6 +129,21 @@ def board_kospi_update(request, pk):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
+    
+@swagger_auto_schema(
+    method='delete',
+    operation_id='게시글 삭제(유저)',
+    operation_description='게시글을 제거합니다',
+    tags=['게시판_코스피'],
+    responses={status.HTTP_200_OK: ""}
+)        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_kospi_delete(request, pk):
+    board_kospi = get_object_or_404(Kospi, pk=pk)
+    board_kospi.delete()
+    return Response(status=status.HTTP_200_OK)
     
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
@@ -165,7 +180,7 @@ def board_kosdaq_create(request):
     operation_description='코스닥 종목별 게시판 종목별로 조회합니다',
     tags=['게시판_코스닥'],
     manual_parameters=[page, size],
-    responses={200: openapi.Response(
+    responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -234,7 +249,7 @@ def board_kosdaq_detail(request, pk):
         }
     ),
     tags=['게시판_코스닥'],
-    responses={200: ""}
+    responses={status.HTTP_200_OK: ""}
 )
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -251,6 +266,21 @@ def board_kosdaq_update(request, pk):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='delete',
+    operation_id='게시글 삭제(유저)',
+    operation_description='게시글을 제거합니다',
+    tags=['게시판_코스닥'],
+    responses={status.HTTP_200_OK: ""}
+)        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_kosdaq_delete(request, pk):
+    board_kosdaq = get_object_or_404(Kosdaq, pk=pk)
+    board_kosdaq.delete()
+    return Response(status=status.HTTP_200_OK)
 
 # ====================================================================== 코넥스 ======================================================================
 @swagger_auto_schema(
@@ -287,7 +317,7 @@ def board_konex_create(request):
     operation_description='코넥스 종목별 게시판 종목별로 조회합니다',
     tags=['게시판_코넥스'],
     manual_parameters=[page, size],
-    responses={200: openapi.Response(
+    responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -356,7 +386,7 @@ def board_konex_detail(request, pk):
         }
     ),
     tags=['게시판_코넥스'],
-    responses={200: ""}
+    responses={status.HTTP_200_OK: ""}
 )
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -373,3 +403,18 @@ def board_konex_update(request, pk):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
+    
+@swagger_auto_schema(
+    method='delete',
+    operation_id='게시글 삭제(유저)',
+    operation_description='게시글을 제거합니다',
+    tags=['게시판_코넥스'],
+    responses={status.HTTP_200_OK: ""}
+)        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_konex_delete(request, pk):
+    board_konex = get_object_or_404(Konex, pk=pk)
+    board_konex.delete()
+    return Response(status=status.HTTP_200_OK)
