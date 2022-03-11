@@ -42,7 +42,8 @@ export default function Signup() {
               e.preventDefault();
               if (emailErr) alert("유효한 이메일을 입력하세요!");
               else if (!duplicateCheck) alert("이메일 중복을 체크해주세요");
-              else if (passwordErr) alert("비밀번호를 올바르게 입력하세요!");
+              else if (!passwordValid) alert("비밀번호가 유효하지 않습니다!");
+              else if (passwordErr) alert("비밀번호가 서로 일치하지 않습니다!");
               else {
                 const loading = document.querySelector("#loading");
 
