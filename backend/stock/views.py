@@ -7,9 +7,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import BoardKospiSerializer, FinancialKonexSerializer, FinancialKosdaqSerializer, FinancialKospiSerializer, InfoKonexSerializer, InfoKosdaqSerializer, InfoKospiSerializer
+from .serializers import FinancialKonexSerializer, FinancialKosdaqSerializer, FinancialKospiSerializer, InfoKonexSerializer, InfoKosdaqSerializer, InfoKospiSerializer
 
-from .models import BoardKospi, FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi
+from .models import FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -37,7 +37,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                 'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
                 'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
                 'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("infokospi", "종목 정보"),
+                'results' : get_serializer("info", "종목 정보"),
             }
         )
     )}
@@ -92,34 +92,7 @@ def financial_kospi_detail(request, code_number):
     
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-@swagger_auto_schema(
-    method='post',
-    operation_id='종목게시판 글 등록(유저)',
-    operation_description='종목게시판에 글을 등록합니다',
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'title': openapi.Schema(type=openapi.TYPE_STRING, description="공지사항 제목"),
-            'content': openapi.Schema(type=openapi.TYPE_STRING, description="공지사항 내용"),
-            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="종목 코드"),
-        }
-    ),
-    tags=['주식_코스피'],
-    responses={status.HTTP_201_CREATED: ""}
-)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
-def board_create_kospi(request):
-    serializer = BoardKospiSerializer(data=request.data)
-    code_number = request.data.get('code_number')
-    info_kospi = get_object_or_404(InfoKospi, pk=code_number)
-    
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user, info_kospi=info_kospi)
-        return Response(status=status.HTTP_201_CREATED)
-    
-    
+
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
     method='get',
@@ -135,7 +108,7 @@ def board_create_kospi(request):
                 'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
                 'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
                 'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("infokosdaq", "종목 정보"),
+                'results' : get_serializer("info", "종목 정보"),
             }
         )
     )}
@@ -205,7 +178,7 @@ def financial_kosdaq_detail(request, code_number):
                 'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
                 'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
                 'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("infokonex", "종목 정보"),
+                'results' : get_serializer("info", "종목 정보"),
             }
         )
     )}
@@ -259,3 +232,4 @@ def financial_konex_detail(request, code_number):
     serializer = FinancialKonexSerializer(financial_konex)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
+
