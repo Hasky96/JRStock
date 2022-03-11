@@ -27,7 +27,7 @@ export default function MyPage() {
 
   return (
     <PageContainer>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col items-center">
         <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
         <div className="mt-5 w-full">
           {currentTab === "관심종목" && <InterestingStock />}
