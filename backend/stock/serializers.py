@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from accounts.serializers import UserSerializer
-from .models import BoardKonex, BoardKosdaq, CommentKonex, CommentKosdaq, CommentKospi, FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi, BoardKospi
+from .models import FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi
 
 # ====================================================================== 코스피 ======================================================================
 class InfoKospiSerializer(serializers.ModelSerializer):
@@ -14,21 +13,7 @@ class FinancialKospiSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FinancialKospi
-        fields = '__all__'
-        
-class BoardKospiSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = BoardKospi
-        fields = '__all__'
-
-class CommentKospiSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = CommentKospi
-        fields = '__all__'
+        fields = '__all__'      
         
 # ====================================================================== 코스닥 ======================================================================
 class InfoKosdaqSerializer(serializers.ModelSerializer):
@@ -43,20 +28,6 @@ class FinancialKosdaqSerializer(serializers.ModelSerializer):
         model = FinancialKosdaq
         fields = '__all__'
         
-class BoardKosdaqSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = BoardKosdaq
-        fields = '__all__'
-
-class CommentKosdaqSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = CommentKosdaq
-        fields = '__all__'
-        
 # ====================================================================== 코넥스 ======================================================================
 class InfoKonexSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,18 +39,4 @@ class FinancialKonexSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FinancialKonex
-        fields = '__all__'
-        
-class BoardKonexSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = BoardKonex
-        fields = '__all__'
-
-class CommentKonexSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = CommentKonex
         fields = '__all__'

@@ -41,26 +41,6 @@ class FinancialKospi(models.Model):
     
     class Meta:
         ordering = ['info_kospi']
-    
-    
-class BoardKospi(models.Model):
-    info_kospi = models.ForeignKey(InfoKospi, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-id']
-        
-class CommentKospi(models.Model):
-    board_kospi = models.ForeignKey(BoardKospi, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    content = models.TextField()
-    
-    class Meta:
-        ordering = ['-id']
         
 # ====================================================================== 코스닥 ======================================================================
 class InfoKosdaq(models.Model):
@@ -103,25 +83,6 @@ class FinancialKosdaq(models.Model):
     class Meta:
         ordering = ['info_kosdaq']
         
-class BoardKosdaq(models.Model):
-    info_kosdaq = models.ForeignKey(InfoKosdaq, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-id']
-        
-class CommentKosdaq(models.Model):
-    board_kosdaq = models.ForeignKey(BoardKosdaq, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    content = models.TextField()
-    
-    class Meta:
-        ordering = ['-id']
-        
 # ====================================================================== 코넥스 ======================================================================
 class InfoKonex(models.Model):
     code_number = models.CharField(max_length=20, primary_key=True)
@@ -163,21 +124,3 @@ class FinancialKonex(models.Model):
     class Meta:
         ordering = ['info_konex']
         
-class BoardKonex(models.Model):
-    info_konex = models.ForeignKey(InfoKonex, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-id']
-        
-class CommentKonex(models.Model):
-    board_konex = models.ForeignKey(BoardKonex, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    content = models.TextField()
-    
-    class Meta:
-        ordering = ['-id']

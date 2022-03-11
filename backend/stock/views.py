@@ -7,9 +7,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import BoardKonexSerializer, BoardKosdaqSerializer, BoardKospiSerializer, FinancialKonexSerializer, FinancialKosdaqSerializer, FinancialKospiSerializer, InfoKonexSerializer, InfoKosdaqSerializer, InfoKospiSerializer
+from .serializers import FinancialKonexSerializer, FinancialKosdaqSerializer, FinancialKospiSerializer, InfoKonexSerializer, InfoKosdaqSerializer, InfoKospiSerializer
 
-from .models import BoardKonex, BoardKosdaq, BoardKospi, FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi
+from .models import FinancialKonex, FinancialKosdaq, FinancialKospi, InfoKonex, InfoKosdaq, InfoKospi
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -92,65 +92,7 @@ def financial_kospi_detail(request, code_number):
     
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-@swagger_auto_schema(
-    method='post',
-    operation_id='코스피 종목별 게시판 글 등록(유저)',
-    operation_description='코스피 종목별 게시판에 글을 등록합니다',
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'title': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 제목"),
-            'content': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 내용"),
-            'info_kospi': openapi.Schema(type=openapi.TYPE_STRING, description="코스피 종목 코드"),
-        }
-    ),
-    tags=['주식_코스피'],
-    responses={status.HTTP_201_CREATED: ""}
-)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
-def board_kospi_create(request):
-    serializer = BoardKospiSerializer(data=request.data)
-    
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user)
-        return Response(status=status.HTTP_201_CREATED)
 
-@swagger_auto_schema(
-    method='get',
-    operation_id='코스피 종목별 게시판 종목별 조회(아무나)',
-    operation_description='코스피 종목별 게시판 종목별로 조회합니다',
-    tags=['주식_코스피'],
-    manual_parameters=[page, size],
-    responses={200: openapi.Response(
-        description="200 OK",
-        schema=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 게시글 수"),
-                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
-                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("board", "게시글 정보"),
-            }
-        )
-    )}
-)
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def board_kospi_list(request, code_number):
-    board_kospi_list = BoardKospi.objects.filter(info_kospi=code_number)
-    paginator = PageNumberPagination()
-    
-    page_size = request.GET.get('size')
-    if not page_size == None:
-        paginator.page_size = page_size
-    
-    result = paginator.paginate_queryset(board_kospi_list, request)
-    serializer = BoardKospiSerializer(result, many=True)
-    return paginator.get_paginated_response(serializer.data)
-    
-    
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
     method='get',
@@ -220,64 +162,6 @@ def financial_kosdaq_detail(request, code_number):
     serializer = FinancialKosdaqSerializer(financial_kosdaq)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-@swagger_auto_schema(
-    method='post',
-    operation_id='코스닥 종목별 게시판 글 등록(유저)',
-    operation_description='코스닥 종목별 게시판에 글을 등록합니다',
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'title': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 제목"),
-            'content': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 내용"),
-            'info_kosdaq': openapi.Schema(type=openapi.TYPE_STRING, description="코스닥 종목 코드"),
-        }
-    ),
-    tags=['주식_코스닥'],
-    responses={status.HTTP_201_CREATED: ""}
-)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
-def board_kosdaq_create(request):
-    serializer = BoardKosdaqSerializer(data=request.data)
-    
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user)
-        return Response(status=status.HTTP_201_CREATED)
-
-@swagger_auto_schema(
-    method='get',
-    operation_id='코스닥 종목별 게시판 종목별 조회(아무나)',
-    operation_description='코스닥 종목별 게시판 종목별로 조회합니다',
-    tags=['주식_코스닥'],
-    manual_parameters=[page, size],
-    responses={200: openapi.Response(
-        description="200 OK",
-        schema=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 게시글 수"),
-                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
-                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("board", "게시글 정보"),
-            }
-        )
-    )}
-)
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def board_kosdaq_list(request, code_number):
-    board_kosdaq_list = BoardKosdaq.objects.filter(info_kosdaq=code_number)
-    paginator = PageNumberPagination()
-    
-    page_size = request.GET.get('size')
-    if not page_size == None:
-        paginator.page_size = page_size
-    
-    result = paginator.paginate_queryset(board_kosdaq_list, request)
-    serializer = BoardKosdaqSerializer(result, many=True)
-    return paginator.get_paginated_response(serializer.data)
 
 # ====================================================================== 코넥스 ======================================================================
 @swagger_auto_schema(
@@ -349,60 +233,3 @@ def financial_konex_detail(request, code_number):
     
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-@swagger_auto_schema(
-    method='post',
-    operation_id='코넥스 종목별 게시판 글 등록(유저)',
-    operation_description='코넥스 종목별 게시판에 글을 등록합니다',
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'title': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 제목"),
-            'content': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 내용"),
-            'info_konex': openapi.Schema(type=openapi.TYPE_STRING, description="코넥스 종목 코드"),
-        }
-    ),
-    tags=['주식_코넥스'],
-    responses={status.HTTP_201_CREATED: ""}
-)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
-def board_konex_create(request):
-    serializer = BoardKonexSerializer(data=request.data)
-    
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user)
-        return Response(status=status.HTTP_201_CREATED)
-
-@swagger_auto_schema(
-    method='get',
-    operation_id='코넥스 종목별 게시판 종목별 조회(아무나)',
-    operation_description='코넥스 종목별 게시판 종목별로 조회합니다',
-    tags=['주식_코넥스'],
-    manual_parameters=[page, size],
-    responses={200: openapi.Response(
-        description="200 OK",
-        schema=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 게시글 수"),
-                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
-                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-                'results' : get_serializer("board", "게시글 정보"),
-            }
-        )
-    )}
-)
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def board_konex_list(request, code_number):
-    board_konex_list = BoardKonex.objects.filter(info_konex=code_number)
-    paginator = PageNumberPagination()
-    
-    page_size = request.GET.get('size')
-    if not page_size == None:
-        paginator.page_size = page_size
-    
-    result = paginator.paginate_queryset(board_konex_list, request)
-    serializer = BoardKonexSerializer(result, many=True)
-    return paginator.get_paginated_response(serializer.data)

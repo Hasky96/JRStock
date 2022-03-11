@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'notice',
     'stock',
+    'board',
 ]
 
 BASE_URL = 'http://localhost:8000/'
