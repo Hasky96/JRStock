@@ -1,3 +1,4 @@
+from re import L
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status
@@ -7,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import BoardDetailKonexSerializer, BoardDetailKosdaqSerializer, BoardDetailKospiSerializer, BoardKonexSerializer, BoardKosdaqSerializer, BoardKospiSerializer
+from .serializers import BoardDetailKonexSerializer, BoardDetailKosdaqSerializer, BoardDetailKospiSerializer, BoardKonexSerializer, BoardKosdaqSerializer, BoardKospiSerializer, CommentKonexSerializer, CommentKosdaqSerializer, CommentKospiSerializer
 
 from .models import Konex, Kosdaq, Kospi
 
@@ -144,6 +145,32 @@ def board_kospi_delete(request, pk):
     board_kospi = get_object_or_404(Kospi, pk=pk)
     board_kospi.delete()
     return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='댓글 등록(유저)',
+    operation_description='게시글에 댓글을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'board_id': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 ID"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="댓글 내용"),
+        }
+    ),
+    tags=['댓글_코스피'],
+    responses={status.HTTP_201_CREATED: ""}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def comment_kospi_create(request):
+    data = request.data.copy()
+    data['board_kospi'] = request.data.get('board_id')
+    serializer = CommentKospiSerializer(data=data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(status=status.HTTP_201_CREATED)
     
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
@@ -282,6 +309,32 @@ def board_kosdaq_delete(request, pk):
     board_kosdaq.delete()
     return Response(status=status.HTTP_200_OK)
 
+@swagger_auto_schema(
+    method='post',
+    operation_id='댓글 등록(유저)',
+    operation_description='게시글에 댓글을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'board_id': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 ID"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="댓글 내용"),
+        }
+    ),
+    tags=['댓글_코스닥'],
+    responses={status.HTTP_201_CREATED: ""}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def comment_kosdaq_create(request):
+    data = request.data.copy()
+    data['board_kosdaq'] = request.data.get('board_id')
+    serializer = CommentKosdaqSerializer(data=data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(status=status.HTTP_201_CREATED)
+
 # ====================================================================== 코넥스 ======================================================================
 @swagger_auto_schema(
     method='post',
@@ -418,3 +471,29 @@ def board_konex_delete(request, pk):
     board_konex = get_object_or_404(Konex, pk=pk)
     board_konex.delete()
     return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='댓글 등록(유저)',
+    operation_description='게시글에 댓글을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'board_id': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 ID"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="댓글 내용"),
+        }
+    ),
+    tags=['댓글_코넥스'],
+    responses={status.HTTP_201_CREATED: ""}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def comment_konex_create(request):
+    data = request.data.copy()
+    data['board_konex'] = request.data.get('board_id')
+    serializer = CommentKonexSerializer(data=data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(status=status.HTTP_201_CREATED)

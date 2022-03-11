@@ -7,6 +7,7 @@ urlpatterns = [
     path('kospi/board/detail/<int:pk>', views.board_kospi_detail, name='board_kospi_detail'),
     path('kospi/board/update/<int:pk>', views.board_kospi_update, name='board_kospi_update'),
     path('kospi/board/delete/<int:pk>', views.board_kospi_delete, name='board_kospi_delete'),
+    path('kospi/comment/create/', views.comment_kospi_create, name='comment_kospi_create'),
     
     path('kosdaq/board/create/', views.board_kosdaq_create, name='board_kosdaq_create'),
     path('kosdaq/board/<str:code_number>', views.board_kosdaq_list, name='board_kosdaq_list'),
