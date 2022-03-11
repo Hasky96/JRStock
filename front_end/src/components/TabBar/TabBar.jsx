@@ -1,9 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TabItem from "./TabItem";
 import "./TabBar.css";
 
 export default function TabBar({ setCurrentTab, tabInfo }) {
   const marker = useRef();
+
+  useEffect(() => {
+    const firstTab = document.querySelector(".tab-item");
+    marker.current.style.left = firstTab.offsetLeft + "px";
+    marker.current.style.width = firstTab.offsetWidth + "px";
+  }, []);
 
   const indicator = (e) => {
     marker.current.style.left = e.offsetLeft + "px";
