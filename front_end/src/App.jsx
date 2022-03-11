@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 import PasswordReset from "./routes/PasswordReset";
@@ -23,14 +28,18 @@ function App() {
   const [showSideBar, setShowSideBar] = useState(true);
   const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
 
+  const location = useLocation();
+
   useEffect(() => {
-    if (noSideBarURL.includes(window.location.pathname)) {
+    if (noSideBarURL.includes(location.pathname)) {
       setShowSideBar(false);
+    } else {
+      setShowSideBar(true);
     }
-  }, [window.location.pathname]);
+  }, [location.pathname]);
 
   return (
-    <Router>
+    <>
       <ToastContainer hideProgressBar={true} />
       {showSideBar && (
         <div>
@@ -59,7 +68,7 @@ function App() {
           <Route path="/notice/:id" element={<NoticeDetail />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 }
 
