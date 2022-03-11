@@ -2,6 +2,15 @@ import { useState } from "react";
 import PageContainer from "../components/PageContainer";
 import Card from "../components/market/Card";
 import TabBar from "../components/TabBar/TabBar";
+import LineChart from "../components/LineChart";
+import "../components/market/style.css";
+
+import {
+  dayData,
+  weekData,
+  monthData,
+  yearData,
+} from "../assets/marketChartTestData";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -21,6 +30,41 @@ export default function Market() {
   const kospiTabInfo = ["정보", "시황 뉴스"];
   const [kosdaqTab, setKosdaqTab] = useState("정보");
   const kosdaqTabInfo = ["정보", "시황 뉴스"];
+
+  const [data, setData] = useState(dayData);
+  const [period, setPeriod] = useState("1D");
+
+  var seriesesData = new Map([
+    ["1D", dayData],
+    ["1W", weekData],
+    ["1M", monthData],
+    ["1Y", yearData],
+  ]);
+
+  const btnList = () => {
+    const list = [];
+    const intervals = ["1D", "1W", "1M", "1Y"];
+    intervals.forEach((el, idx) => {
+      list.push(
+        <button
+          key={idx}
+          onClick={(e) => {
+            e.preventDefault();
+            setData(seriesesData.get(e.target.innerText));
+            setPeriod(e.target.innerText);
+          }}
+          className={classNames(
+            "switcher-item",
+            period === el ? "switcher-active-item" : ""
+          )}
+        >
+          {el}
+        </button>
+      );
+    });
+    return list;
+  };
+
   return (
     <PageContainer>
       <div className="m-5">
@@ -61,7 +105,13 @@ export default function Market() {
           )}
         >
           <div className="grid grid-cols-1">
-            <Card info={info} />
+            <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
+              <div className="grid row-span-5">
+                <LineChart data={data}></LineChart>
+              </div>
+
+              <div className="switcher row-span-1 pt-8">{btnList()}</div>
+            </div>
           </div>
           <div className="grid grid-cols-1">
             <Card info={info} />
