@@ -41,18 +41,6 @@ class FinancialKospi(models.Model):
     
     class Meta:
         ordering = ['info_kospi']
-    
-    
-class BoardKospi(models.Model):
-    info_kospi = models.ForeignKey(InfoKospi, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-id']
         
 # ====================================================================== 코스닥 ======================================================================
 class InfoKosdaq(models.Model):
@@ -135,3 +123,4 @@ class FinancialKonex(models.Model):
     
     class Meta:
         ordering = ['info_konex']
+        

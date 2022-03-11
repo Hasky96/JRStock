@@ -26,7 +26,7 @@ from .parser import get_serializer
         }
     ),
     tags=['공지사항'],
-    responses={201: ""}
+    responses={status.HTTP_201_CREATED: ""}
 )
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])  # 어드민 유저만 공지사항 작성 가능
@@ -50,7 +50,7 @@ size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
     operation_description='공지사항 전체를 조회합니다',
     tags=['공지사항'],
     manual_parameters=[page, size],
-    responses={200: openapi.Response(
+    responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -106,7 +106,7 @@ def notice_detail(request, pk):
         }
     ),
     tags=['공지사항'],
-    responses={200: ""}
+    responses={status.HTTP_200_OK: ""}
 )
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])  # 어드민 유저만 공지사항 수정 가능
@@ -125,7 +125,7 @@ def notice_update(request, pk):
     operation_id='공지사항 삭제(어드민)',
     operation_description='공지사항을 제거합니다',
     tags=['공지사항'],
-    responses={200: ""}
+    responses={status.HTTP_200_OK: ""}
 )    
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])  # 어드민 유저만 공지사항 삭제 가능
