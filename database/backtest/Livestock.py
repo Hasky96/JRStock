@@ -45,7 +45,7 @@ def get_kosdaq_chart(start_date=None, end_date=None):
         return data.get_data_yahoo("^KQ11", start_date, end_date)
 
 
-def get_live_stock(code, index, start_date, end_date):
+def get_live_stock(code, index, start_date=None, end_date=None):
     """get stock data of stock by code from web
     
     Args:
@@ -57,13 +57,16 @@ def get_live_stock(code, index, start_date, end_date):
     Returns:
         DataFrame : Pandas DF (stock data)
     """
-    stock = data.get_data_yahoo(f"{code}.{index}", start_date, end_date)
+    if start_date==None or end_date==None:
+        stock = data.get_data_yahoo(f"{code}.{index}") 
+    else:
+        stock = data.get_data_yahoo(f"{code}.{index}", start_date, end_date)
     return stock
 
 '''
     examples
 '''
-# print(get_live_stock("005930","ks","2021-03-01","2021-04-01"))
+print(get_live_stock("005930","ks"))
 # print(get_kosdaq_chart("2020-01-01", "2021-01-01"))
 # print(get_kospi_chart())
 
