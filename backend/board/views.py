@@ -32,7 +32,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
         properties={
             'title': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 제목"),
             'content': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 내용"),
-            'info_kospi': openapi.Schema(type=openapi.TYPE_STRING, description="코스피 종목 코드"),
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="코스피 종목 코드"),
         }
     ),
     tags=['게시판_코스피'],
@@ -42,7 +42,11 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def board_kospi_create(request):
-    serializer = BoardKospiSerializer(data=request.data)
+    # request.data에 없는 데이터 추가해주기
+    data = request.data.copy()
+    data['info_kospi'] = request.data.get('code_number')
+        
+    serializer = BoardKospiSerializer(data=data)
     
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
@@ -95,6 +99,36 @@ def board_kospi_detail(request, pk):
     serilizer = BoardDetailKospiSerializer(board_kospi)
     
     return Response(serilizer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='put',
+    operation_id='코스피 게시글 수정(유저)',
+    operation_description='코스피 게시글을 수정합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 게시글 제목"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 게시글 내용"),
+        }
+    ),
+    tags=['게시판_코스피'],
+    responses={200: ""}
+)
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_kospi_update(request, pk):
+    board_kospi = get_object_or_404(Kospi, pk=pk)
+    
+    # request.data에 없는 데이터 추가해주기
+    data = request.data.copy()
+    data['info_kospi'] = board_kospi.info_kospi_id
+    
+    serializer = BoardKospiSerializer(instance=board_kospi, data=data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
     
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
@@ -106,7 +140,7 @@ def board_kospi_detail(request, pk):
         properties={
             'title': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 제목"),
             'content': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 내용"),
-            'info_kosdaq': openapi.Schema(type=openapi.TYPE_STRING, description="코스닥 종목 코드"),
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="코스닥 종목 코드"),
         }
     ),
     tags=['게시판_코스닥'],
@@ -116,7 +150,10 @@ def board_kospi_detail(request, pk):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def board_kosdaq_create(request):
-    serializer = BoardKosdaqSerializer(data=request.data)
+    data = request.data.copy()
+    data['info_kospi'] = request.data.get('code_number')
+    
+    serializer = BoardKosdaqSerializer(data=data)
     
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
@@ -185,6 +222,36 @@ def board_kosdaq_detail(request, pk):
     
     return Response(serilizer.data, status=status.HTTP_200_OK)
 
+@swagger_auto_schema(
+    method='put',
+    operation_id='코스닥 게시글 수정(유저)',
+    operation_description='코스닥 게시글을 수정합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 게시글 제목"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 게시글 내용"),
+        }
+    ),
+    tags=['게시판_코스닥'],
+    responses={200: ""}
+)
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_kosdaq_update(request, pk):
+    board_kosdaq = get_object_or_404(Kosdaq, pk=pk)
+    
+    # request.data에 없는 데이터 추가해주기
+    data = request.data.copy()
+    data['info_kosdaq'] = board_kosdaq.info_kosdaq_id
+    
+    serializer = BoardKosdaqSerializer(instance=board_kosdaq, data=data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
 # ====================================================================== 코넥스 ======================================================================
 @swagger_auto_schema(
     method='post',
@@ -195,7 +262,7 @@ def board_kosdaq_detail(request, pk):
         properties={
             'title': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 제목"),
             'content': openapi.Schema(type=openapi.TYPE_STRING, description="게시글 내용"),
-            'info_konex': openapi.Schema(type=openapi.TYPE_STRING, description="코넥스 종목 코드"),
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="코넥스 종목 코드"),
         }
     ),
     tags=['게시판_코넥스'],
@@ -205,7 +272,10 @@ def board_kosdaq_detail(request, pk):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def board_konex_create(request):
-    serializer = BoardKonexSerializer(data=request.data)
+    data = request.data.copy()
+    data['info_kospi'] = request.data.get('code_number')
+    
+    serializer = BoardKonexSerializer(data=data)
     
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
@@ -273,3 +343,33 @@ def board_konex_detail(request, pk):
     serilizer = BoardDetailKonexSerializer(board_konex)
     
     return Response(serilizer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='put',
+    operation_id='코넥스 게시글 수정(유저)',
+    operation_description='코넥스 게시글을 수정합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 게시글 제목"),
+            'content': openapi.Schema(type=openapi.TYPE_STRING, description="수정할 게시글 내용"),
+        }
+    ),
+    tags=['게시판_코넥스'],
+    responses={200: ""}
+)
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def board_konex_update(request, pk):
+    board_konex = get_object_or_404(Konex, pk=pk)
+    
+    # request.data에 없는 데이터 추가해주기
+    data = request.data.copy()
+    data['info_konex'] = board_konex.info_konex_id
+    
+    serializer = BoardKonexSerializer(instance=board_konex, data=data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
