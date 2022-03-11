@@ -1,6 +1,6 @@
 from drf_yasg import openapi
 
-from .serializers import InfoKonexSerializer, InfoKosdaqSerializer, InfoKospiSerializer
+from .serializers import BoardKospiSerializer, CommentKospiSerializer, FinancialKospiSerializer, InfoKospiSerializer
 
 rest_framework_openapi_field_mapping = {
     "EmailField": openapi.TYPE_STRING,
@@ -27,12 +27,14 @@ def parse_rest_framework_field(field):
 def parse_serializer(name):
     properties = {}
     
-    if name == "infokospi":
+    if name == "info":
         serializer = InfoKospiSerializer()
-    elif name == "infokosdaq":
-        serializer = InfoKosdaqSerializer()
-    elif name == "infokonex":
-        serializer = InfoKonexSerializer()
+    elif name == "financial":
+        serializer = FinancialKospiSerializer()
+    elif name == "board":
+        serializer = BoardKospiSerializer()
+    elif name == "comment":
+        serializer = CommentKospiSerializer()
         
     for k,v in serializer.get_fields().items():
         if v.__module__ == "rest_framework.fields":
