@@ -32,6 +32,8 @@ from drf_yasg import openapi
 from .email import account_activation_token, message
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
+import string
+import random
 from django.core.mail import EmailMessage
 
 from .parser import get_serializer
@@ -40,7 +42,7 @@ BASE_URL = getattr(settings, 'BASE_URL', None)
 
 @swagger_auto_schema(
     method='get',
-    operation_id='회원 정보 상세 조회',
+    operation_id='회원 정보 상세 조회(유저)',
     operation_description='회원 정보를 조회 합니다',
     tags=['유저'],
     responses={status.HTTP_200_OK: UserInfoSerializer},
@@ -61,7 +63,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
 @swagger_auto_schema(
     method='get',
-    operation_id='회원 정보 전체 조회',
+    operation_id='회원 정보 전체 조회(어드민)',
     operation_description='회원 정보를 전체를 조회 합니다',
     tags=['유저'],
     manual_parameters=[page, size, sort],
@@ -101,7 +103,7 @@ def user_list(request):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='비밀번호 확인',
+    operation_id='비밀번호 확인(유저)',
     operation_description='비밀번호를 확인합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -143,7 +145,7 @@ def password_check(request):
     
 @swagger_auto_schema(
     method='put',
-    operation_id='회원정보 수정',
+    operation_id='회원정보 수정(유저)',
     operation_description='회원정보를 수정합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -175,7 +177,7 @@ def user_update(request, pk):
 
 @swagger_auto_schema(
     method='delete',
-    operation_id='회원 삭제',
+    operation_id='회원 삭제(유저)',
     operation_description='회원정보를 제거합니다',
     tags=['유저'],
     responses={200: ""}
@@ -190,7 +192,7 @@ def user_delete(request, pk):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='일반 회원가입',
+    operation_id='일반 회원가입(아무나)',
     operation_description='회원가입을 진행합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -235,7 +237,7 @@ def signup(request):
     
 @swagger_auto_schema(
     method='get',
-    operation_id='이메일 중복 확인',
+    operation_id='이메일 중복 확인(아무나)',
     operation_description='이메일 중복 확인을 진행합니다',
     tags=['유저'],
     responses={200: openapi.Response(
@@ -272,7 +274,7 @@ def email_check(request, email):
 
 @swagger_auto_schema(
     method='get',
-    operation_id='이메일 인증',
+    operation_id='이메일 인증(아무나)',
     operation_description='이메일 인증 처리를 진행합니다',
     tags=['유저'],
     responses={status.HTTP_200_OK: ""}
@@ -293,7 +295,7 @@ def email_confirm(request, **kwargs):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='일반 로그인',
+    operation_id='일반 로그인(아무나)',
     operation_description='일반 회원 로그인을 진행합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -332,7 +334,7 @@ def login(request):
 
 @swagger_auto_schema(
     method='post',
-    operation_id='구글 로그인',
+    operation_id='구글 로그인(아무나)',
     operation_description='구글 소셜 로그인을 진행합니다',
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -397,3 +399,60 @@ def google_login(request):
 class GoogleLogin(SocialLoginView):
     adapter_class = google_view.GoogleOAuth2Adapter
     client_class = OAuth2Client
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='비밀번호 리셋',
+    operation_description='임시 비밀번호를 생성해서 등록된 이메일로 발송',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호를 초기화할 계정의 이메일 주소"),
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호를 초기화할 계정의 이름"),
+        }
+    ),
+    tags=['유저'],
+    responses={200: "", 404: "해당 이메일의 계정이 없음"}
+)    
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_reset(request):
+    email = request.data.get('email')
+    name = request.data.get('name')
+
+    user = get_object_or_404(User, email=email)
+    if not user.name == name:
+        return Response({"message": "이메일과 이름이 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+   
+    
+    new_pw_len = 12 # 새 비밀번호 길이
+    pw_candidate = string.ascii_letters + string.digits + string.punctuation 
+    
+    new_pw = ""
+    for i in range(new_pw_len):
+        new_pw += random.choice(pw_candidate)
+    
+    user.set_password(new_pw)
+    user.save()
+    
+    message_data = """\
+    <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
+        <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
+            <span style="font-size: 15px; margin: 0 0 10px 3px;">JRstock</span><br />
+            <span style="color: #212121;">비밀번호 초기화</span> 안내입니다. </h1>
+        <p style="font-size: 16px; line-height: 26px; margin-top: 50px; padding: 0 5px;">
+            안녕하세요.<br />
+            초기화된 비밀번호는 다음과 같습니다.<br />
+            <b style="color: #212121;">" %s "</b><br />
+            감사합니다</p>
+    </div>
+    """ % (new_pw)
+    
+    mail_title = "JRstock 비밀번호 초기화 안내"
+    mail_to = email
+    send_email = EmailMessage(mail_title, message_data, to=[mail_to])
+    send_email.content_subtype = "html"
+    send_email.send()
+    
+    return Response(status=status.HTTP_200_OK)
+    
