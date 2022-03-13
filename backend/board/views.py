@@ -231,7 +231,22 @@ def comment_kospi_update(request, pk):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
-    
+
+@swagger_auto_schema(
+    method='delete',
+    operation_id='댓글 삭제(유저)',
+    operation_description='댓글을 제거합니다',
+    tags=['댓글_코스피'],
+    responses={status.HTTP_200_OK: ""}
+)        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def comment_kospi_delete(request, pk):
+    comment_kospi = get_object_or_404(CommentKospi, pk=pk)
+    comment_kospi.delete()
+    return Response(status=status.HTTP_200_OK)
+
 # ====================================================================== 코스닥 ======================================================================
 @swagger_auto_schema(
     method='post',
@@ -455,6 +470,21 @@ def comment_kosdaq_update(request, pk):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
 
+@swagger_auto_schema(
+    method='delete',
+    operation_id='댓글 삭제(유저)',
+    operation_description='댓글을 제거합니다',
+    tags=['댓글_코스닥'],
+    responses={status.HTTP_200_OK: ""}
+)        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def comment_kosdaq_delete(request, pk):
+    comment_kosdaq = get_object_or_404(CommentKosdaq, pk=pk)
+    comment_kosdaq.delete()
+    return Response(status=status.HTTP_200_OK)
+
 # ====================================================================== 코넥스 ======================================================================
 @swagger_auto_schema(
     method='post',
@@ -677,3 +707,18 @@ def comment_konex_update(request, pk):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(status=status.HTTP_200_OK)
+    
+@swagger_auto_schema(
+    method='delete',
+    operation_id='댓글 삭제(유저)',
+    operation_description='댓글을 제거합니다',
+    tags=['댓글_코넥스'],
+    responses={status.HTTP_200_OK: ""}
+)        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def comment_konex_delete(request, pk):
+    comment_konex = get_object_or_404(CommentKonex, pk=pk)
+    comment_konex.delete()
+    return Response(status=status.HTTP_200_OK)
