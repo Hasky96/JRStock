@@ -27,6 +27,7 @@ function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
   const [showSideBar, setShowSideBar] = useState(true);
   const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
+  const [category, setCategory] = useState("");
 
   const location = useLocation();
 
@@ -36,6 +37,9 @@ function App() {
     } else {
       setShowSideBar(true);
     }
+
+    // 카테고리 셋팅
+    setCategory(location.pathname.split("/")[1]);
   }, [location.pathname]);
 
   return (
@@ -49,7 +53,7 @@ function App() {
       <div className={showSideBar ? "ml-20 bg-yellow-50 min-h-screen" : ""}>
         {showSideBar && (
           <div>
-            <Header></Header>
+            <Header category={category}></Header>
           </div>
         )}
         <Routes>
