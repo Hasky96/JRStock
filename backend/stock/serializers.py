@@ -13,7 +13,14 @@ class FinancialKospiSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FinancialKospi
-        fields = '__all__'      
+        fields = '__all__'   
+
+class KospiCustomSerializer(serializers.ModelSerializer):
+    info_kospi = InfoKospiSerializer(read_only=True)
+    
+    class Meta:
+        model = FinancialKospi
+        fields = ('info_kospi', )
         
 # ====================================================================== 코스닥 ======================================================================
 class InfoKosdaqSerializer(serializers.ModelSerializer):
@@ -27,6 +34,13 @@ class FinancialKosdaqSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialKosdaq
         fields = '__all__'
+
+class KosdaqCustomSerializer(serializers.ModelSerializer):
+    info_kosdaq = InfoKosdaqSerializer(read_only=True)
+    
+    class Meta:
+        model = FinancialKosdaq
+        fields = ('info_kosdaq', )
         
 # ====================================================================== 코넥스 ======================================================================
 class InfoKonexSerializer(serializers.ModelSerializer):
@@ -40,3 +54,10 @@ class FinancialKonexSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialKonex
         fields = '__all__'
+        
+class KonexCustomSerializer(serializers.ModelSerializer):
+    info_konex = InfoKonexSerializer(read_only=True)
+    
+    class Meta:
+        model = FinancialKonex
+        fields = ('info_konex', )

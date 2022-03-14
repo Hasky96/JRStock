@@ -13,4 +13,6 @@ urlpatterns = [
     path('konex/', views.info_konex_list, name='info_konex_list'),
     path('konex/<str:code_number>', views.info_konex_detail, name='info_konex_detail'),
     path('konex/financial/<str:code_number>', views.financial_konex_detail, name='financial_konex_detail'),
+    
+    path('custom/', views.get_custom_stock, name='get_custom_stock'),
 ]
