@@ -29,7 +29,6 @@ def get_stocks_by_custom(**kwargs):
     """
     data = get_stocks_data()
     for key, value in kwargs.items():
-        print(key, value)
         value = value.split()
         if value[0] == "gte":
             data = data[(data[key] >= value[1])|(data[key] >= "+"+value[1])]
@@ -45,4 +44,5 @@ def get_stocks_by_custom(**kwargs):
     return data
 
 
-print(get_stocks_by_custom(당기순이익="eq 4", 신용비율 = "eq 1.19"))
+print(get_stocks_by_custom(ROE="gte 4", 신용비율 = "eq 1.19", 당기순이익= "eq 1.10"))
+
