@@ -1,6 +1,9 @@
 # base image
 FROM node:16.13.2
 
+# permission
+RUN chmod -R 777 /app
+
 # set working directory
 WORKDIR /app
 
