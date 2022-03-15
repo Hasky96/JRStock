@@ -1,9 +1,9 @@
 import { useState } from "react";
-import ResultSummary from "../components/BackTestDetail/ResultSummary";
-import Profit from "../components/BackTestDetail/Profit";
-import TradingRecord from "../components/BackTestDetail/TradingRecord";
-import Strategy from "../components/BackTestDetail/Strategy";
-import Portfolio from "../components/BackTestDetail/Portfolio";
+import ResultSummary from "../components/BackTestDetail/ResultSummary/ResultSummary";
+import Profit from "../components/BackTestDetail/Profit/Profit";
+import TradingRecord from "../components/BackTestDetail/TradingRecord/TradingRecord";
+import Strategy from "../components/BackTestDetail/Strategy/Strategy";
+import Portfolio from "../components/BackTestDetail/Portfolio/Portfolio";
 
 import PageContainer from "../components/PageContainer";
 import TabBar from "../components/TabBar/TabBar";

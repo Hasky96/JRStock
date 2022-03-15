@@ -1,10 +1,9 @@
-import { data } from "autoprefixer";
 import {
   dayData,
   weekData,
   monthData,
   yearData,
-} from "../../assets/marketChartTestData";
+} from "../../../assets/marketChartTestData";
 
 const marketData = [
   { time: "2018-10-19", value: 219.31 },

@@ -37,13 +37,9 @@
 
 .portfolio-chart-container {
   width: 400px;
-  height: 400px;
+  height: 450px;
 }
 
 .profit-chart-container {
   max-width: 800px;
-}
-
-.summary-container {
-  max-width: 1250px;
 }

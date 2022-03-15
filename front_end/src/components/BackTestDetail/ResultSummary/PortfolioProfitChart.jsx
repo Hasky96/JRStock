@@ -21,13 +21,11 @@ ChartJS.register(
 export function PortfolioProfitChart({ labels }) {
   const options = {
     responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
+    plugins: {},
+    scales: {
+      "y-right": {
         display: true,
-        text: "종목별 수익률",
+        position: "right",
       },
     },
   };
@@ -36,17 +34,19 @@ export function PortfolioProfitChart({ labels }) {
     labels: labels,
     datasets: [
       {
+        label: "초기 자본",
+        barPercentage: 0.7,
+        yAxisID: "y-right",
+        data: [57.6, 46.8, 200.5],
+        backgroundColor: ["rgba(255, 205, 86, 0.3)"],
+        borderWidth: 1,
+      },
+      {
+        label: "최종 자본",
+        barPercentage: 0.7,
+        yAxisID: "y-right",
         data: [257.6, 96.8, 600.5],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.5)",
-          "rgba(54, 162, 235, 0.5)",
-          "rgba(255, 205, 86, 0.5)",
-        ],
-        borderColor: [
-          "rgb(255, 99, 132)",
-          "rgb(54, 162, 235)",
-          "rgb(255, 205, 86)",
-        ],
+        backgroundColor: ["rgba(255, 205, 86, 0.9)"],
         borderWidth: 1,
       },
     ],
