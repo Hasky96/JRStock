@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export default function ListTitle({ onCheckedAll, checked, titles }) {
   const paintTitles = titles.map((title, index) => (
     <th key={index}>{title}</th>
