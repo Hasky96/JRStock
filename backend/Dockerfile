@@ -14,4 +14,4 @@ EXPOSE 8090
 
 # gunicorn 배포 명령어
 # CMD ["gunicorn", "--bind", "허용하는 IP:열어줄 포트", "project.wsgi:application"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8090", "stock.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8090", "jrstock.wsgi:application"]
