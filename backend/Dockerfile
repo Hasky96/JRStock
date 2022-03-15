@@ -2,7 +2,7 @@
 FROM python:3
 WORKDIR /backend
 
-VOLUME ["/backend" , "/backend"]
+COPY /backend/secrets.json ./
 
 ## Install packages
 COPY requirements.txt ./
