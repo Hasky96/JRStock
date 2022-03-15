@@ -3,7 +3,7 @@ FROM python:3
 
 WORKDIR /backend
 
-COPY /backend/secrets.json ./
+COPY /backend ./
 
 ## Install packages
 COPY requirements.txt ./
