@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ProfitChart } from "./ProfitChart";
 import { PortfolioChart } from "./PortfolioChart";
 import { PortfolioProfitChart } from "./PortfolioProfitChart";
+
 import { dayData2, weekData2, monthData2, yearData2 } from "./data.js";
 import "./ResultSummary.css";
 
@@ -62,72 +63,77 @@ export default function ResultSummary() {
     return list;
   };
 
-  const assetResult = [
+  const summaryData = [
     {
-      key: "투자원금",
+      key: "투자 원금(원)",
       value: "300",
     },
     {
-      key: "총 손익",
+      key: "총 손익(원)",
       value: "+1996",
     },
     {
-      key: "자산 결과",
+      key: "최종 자산(원)",
       value: "2296",
     },
-  ];
-
-  const profitResult = [
     {
-      key: "누적",
+      key: "누적 수익률(%)",
       value: "+789",
     },
     {
-      key: "일평균",
+      key: "일평균 수익률(%)",
       value: "+1.7",
     },
     {
-      key: "연평균",
+      key: "연평균 수익률(%)",
       value: "+24.8",
     },
     {
-      key: "시장초과",
+      key: "시장초과 수익률(%)",
       value: "+543",
     },
   ];
 
-  const paintAssets = assetResult.map((result) => (
-    <div className="mx-auto my-auto">
-      <h2 className="text-lg ">{result.key}</h2>
-      <p>{result.value}</p>
-    </div>
-  ));
+  // const paintAssets = assetResult.map((result) => (
+  //   <div className="mx-auto my-auto">
+  //     <h2 className="text-lg ">{result.key}</h2>
+  //     <p>{result.value}</p>
+  //   </div>
+  // ));
 
-  const paintProfits = profitResult.map((result) => (
-    <div className="mx-auto my-auto">
-      <h2 className="text-lg">{result.key}</h2>
+  // const paintProfits = profitResult.map((result) => (
+  //   <div className="mx-auto my-auto">
+  //     <h2 className="text-lg">{result.key}</h2>
+  //     <p>{result.value}</p>
+  //   </div>
+  // ));
+
+  const paintSummaryData = summaryData.map((result, index) => (
+    <div key={index} className="col-span-1 mx-auto my-auto">
+      <h2 className="text-xs">{result.key}</h2>
       <p>{result.value}</p>
     </div>
   ));
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center summary-container">
       <div className="w-full flex flex-col md:flex-row gap-3">
-        <div className="w-full border border-gray-200 shadow-lg rounded grid grid-cols-3 gap-2 text-center">
-          <h1 className="text-2xl col-span-3 text-left ml-3">자본</h1>
-          {paintAssets}
+        <div className="w-full grid grid-cols-10 border border-gray-200 shadow-lg rounded gap-2 text-center">
+          {/* <h1 className="text-2xl col-span-3 text-left ml-3">자본</h1> */}
+          {paintSummaryData}
         </div>
-        <div className="w-full border border-gray-200 shadow-lg rounded grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
+        {/* <div className="w-full border border-gray-200 shadow-lg rounded grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
           <h1 className="text-2xl font-bold col-span-2 md:col-span-4 text-left ml-3">
             수익률
           </h1>
           {paintProfits}
-        </div>
+        </div> */}
       </div>
 
       <div className="w-full xl:flex items-center gap-3">
         <div className="profit-chart-container border rounded shadow-lg mt-5">
           <ProfitChart marketData={data1} testData={data2} />
+
           <div className="switcher">{btnList()}</div>
         </div>
         <div className="portfolio-chart-container border rounded shadow-lg mt-5">
@@ -137,3 +143,5 @@ export default function ResultSummary() {
     </div>
   );
 }
+
+// 기간
