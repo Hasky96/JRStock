@@ -65,12 +65,15 @@ class Kiwoom(QAxWidget):
         # self.not_signed_account()  # 미체결내역 얻어오기
         # self.get_stock_list_by_kospi(True)
         # self.get_stock_list_by_kosdaq(True)  # False : DB 구축 x, True : DB 구축 o
-        self.get_stock_list_by_konex(True)  # False : DB 구축 x, True : DB 구축 o
+        # self.get_stock_list_by_konex(True)  # False : DB 구축 x, True : DB 구축 o
         # self.get_hour_stock_list_by_kosdaq(False)  # False : DB 구축 x, True : DB 구축 o
         
         # self.merge_day_stock_kospi()
         # self.merge_day_stock_kosdaq()
-        self.merge_day_stock_konex()
+        # self.merge_day_stock_konex()
+
+        # self.get_kospi_index()
+        self.get_kosdaq_index()
 
         # self.get_stock_kospi_financial_info()   # 코스피 주식기본정보요청     # 821개
         # self.get_stock_kosdaq_financial_info()   # 코스닥 주식기본정보요청    # 1548개
@@ -1018,6 +1021,45 @@ class Kiwoom(QAxWidget):
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
                 self.cursor.execute(query, calculator_tuple)
             print(idx, self.konex_dict[stock_name], stock_name)
+
+
+    def get_kospi_index(self):
+        table_name="kospi_day_stock"
+        query = "SELECT * from kospi"
+        self.cursor.execute(query)
+        idx=0
+        for row in self.cursor.fetchall():
+            if row[0]==None:
+                continue
+            calculator_list=['kospi']
+            for item in row:
+                calculator_list.append(item)
+            calculator_tuple = tuple(calculator_list)
+            query = "INSERT INTO {} (code_number, current_price, volume, trade_price, date, start_price, high_price, low_price) \
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
+            self.cursor.execute(query, calculator_tuple)
+            print(idx, calculator_tuple[4])
+            idx+=1
+
+    def get_kosdaq_index(self):
+        table_name="kosdaq_day_stock"
+        query = "SELECT * from kosdaq"
+        self.cursor.execute(query)
+        idx=0
+        for row in self.cursor.fetchall():
+            if row[0]==None:
+                continue
+            calculator_list=['kosdaq']
+            for item in row:
+                calculator_list.append(item)
+            calculator_tuple = tuple(calculator_list)
+            query = "INSERT INTO {} (code_number, current_price, volume, trade_price, date, start_price, high_price, low_price) \
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(table_name)
+            self.cursor.execute(query, calculator_tuple)
+            print(idx, calculator_tuple[4])
+            idx+=1
+            # break
+
 
 
     def granvile_theory(self):
