@@ -167,17 +167,17 @@ export default function Market() {
           className={classNames(
             "h-96",
             "mx-5",
+            "my-2",
             kospiTab === "시황 뉴스" ? "" : "hidden"
           )}
         >
           <table className="table-auto w-full">
             <colgroup>
-              <col span="1" style={{ width: 5 + "%" }} />
               <col span="1" style={{ width: 70 + "%" }} />
               <col span="1" style={{ width: 15 + "%" }} />
-              <col span="1" style={{ width: 10 + "%" }} />
+              <col span="1" style={{ width: 15 + "%" }} />
             </colgroup>
-            <NewsTitle titles={["No", "제목", "언론사", "작성일"]} />
+            <NewsTitle titles={["제목", "정보제공", "작성일"]} />
             <tbody className="text-center">
               {newsDatas.length && newsList()}
             </tbody>
