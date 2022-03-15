@@ -3,7 +3,7 @@ FROM python:3
 
 WORKDIR /backend
 
-COPY . .
+COPY ../../../../../../backend .
 
 ## Install packages
 COPY requirements.txt ./
