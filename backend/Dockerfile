@@ -1,18 +1,14 @@
 # ./Dockerfile 
 FROM python:3
 
-COPY /backend/secrets.json ./backend
-
 WORKDIR /backend
 
-
+COPY /backend/secrets.json ./
 
 ## Install packages
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
-## Copy all src files
-COPY . .
 
 ## Run the application on the port 8090
 EXPOSE 8090
