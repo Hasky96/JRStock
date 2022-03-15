@@ -1,8 +1,8 @@
 # ./Dockerfile 
 FROM python:3
-WORKDIR /usr/src/app
+WORKDIR /backend
 
-VOLUME ["/backend" , "/usr/src/app"]
+VOLUME ["/backend" , "/backend"]
 
 ## Install packages
 COPY requirements.txt ./
