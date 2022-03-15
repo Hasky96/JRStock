@@ -1,8 +1,11 @@
 # ./Dockerfile 
 FROM python:3
+
+COPY /backend/secrets.json ./backend
+
 WORKDIR /backend
 
-COPY /backend/secrets.json ./
+
 
 ## Install packages
 COPY requirements.txt ./
