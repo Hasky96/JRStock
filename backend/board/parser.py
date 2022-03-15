@@ -1,6 +1,6 @@
 from drf_yasg import openapi
 
-from .serializers import BoardKospiSerializer, CommentKospiSerializer
+from .serializers import PostSerializer, CommentSerializer
 
 rest_framework_openapi_field_mapping = {
     "EmailField": openapi.TYPE_STRING,
@@ -28,9 +28,9 @@ def parse_serializer(name):
     properties = {}
     
     if name == "board":
-        serializer = BoardKospiSerializer()
+        serializer = PostSerializer()
     elif name == "comment":
-        serializer = CommentKospiSerializer()
+        serializer = CommentSerializer()
         
     for k,v in serializer.get_fields().items():
         if v.__module__ == "rest_framework.fields":
