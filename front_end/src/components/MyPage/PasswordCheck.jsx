@@ -14,7 +14,7 @@ export default function PasswordCheck({ setIsAuthorized }) {
   const handleAccessPasswordChange = (e) => setAccessPassword(e.target.value);
 
   const handleAccessPasswordSubmit = async (e) => {
-    if (accessPassword.length == 0) {
+    if (accessPassword.length === 0) {
       toast.error("비밀번호를 입력해주세요.");
       return;
     }

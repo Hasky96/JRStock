@@ -1,9 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 import PasswordReset from "./routes/PasswordReset";
@@ -26,11 +21,12 @@ import NoticeDetail from "./routes/NoticeDetail";
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
   const [showSideBar, setShowSideBar] = useState(true);
-  const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
 
   const location = useLocation();
 
   useEffect(() => {
+    const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
+
     if (noSideBarURL.includes(location.pathname)) {
       setShowSideBar(false);
     } else {

@@ -3,10 +3,8 @@ import { validPassword } from "../../regex";
 import { userDetail, userUpdate } from "../../api/user";
 import PasswordHide from "./PasswordHide";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 export default function UserUpdate() {
-  const navigate = useNavigate();
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -73,10 +71,6 @@ export default function UserUpdate() {
     else setPasswordErr(true);
     handleValueChange("password2", e.target.value);
   };
-
-  // const readImage = () => {
-
-  // }
 
   const handleImageChange = (e) => {
     handleValueChange("profile_img", e.target.files[0]);

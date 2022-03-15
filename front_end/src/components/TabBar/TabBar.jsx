@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import TabItem from "./TabItem";
 import "./TabBar.css";
 
