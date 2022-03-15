@@ -9,12 +9,14 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 
 export default function StockItemList() {
+  const [currentMarket, setCurrentMarket] = useState("kospi");
   const navigate = useNavigate();
   const [checkedList, setcheckedList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
-  const stocks = [
+  const [stocks, setStocks] = useState([]);
+  const kospi = [
     {
       id: 1351,
       name: "삼성전자",
@@ -64,19 +66,66 @@ export default function StockItemList() {
       marketCapitalization: "430421300000000",
     },
   ];
+  const kosdaq = [
+    {
+      id: 22,
+      name: "티플랙스",
+      currentPrice: "72400",
+      volatility: 200,
+      volatilityRate: "+0.28%",
+      volume: "17640567",
+      marketPrice: "72400",
+      highPrice: "72400",
+      lowPrice: "72400",
+      marketCapitalization: "430421300000000",
+    },
+    {
+      id: 124151,
+      name: "티플랙스",
+      currentPrice: "72400",
+      volatility: -500,
+      volatilityRate: "-1.90%",
+      volume: "17640567",
+      marketPrice: "72400",
+      highPrice: "72400",
+      lowPrice: "72400",
+      marketCapitalization: "430421300000000",
+    },
+  ];
+  const konex = [
+    {
+      id: 13616,
+      name: "지오씨",
+      currentPrice: "72400",
+      volatility: 200,
+      volatilityRate: "+0.28%",
+      volume: "17640567",
+      marketPrice: "72400",
+      highPrice: "72400",
+      lowPrice: "72400",
+      marketCapitalization: "430421300000000",
+    },
+  ];
 
   // const [stockss, setStockss] = useState([]);   // 주식 종목 리스트
 
   // 주식 종목 초기화
-  const init = async () => {
+  const init = () => {
     // const res = await getStockItemList(1, 10)
     // console.log(res.data.results)
     setTotalCount(stocks.length);
   };
 
   useEffect(() => {
+    if (currentMarket === "kospi") {
+      setStocks(kospi);
+    } else if (currentMarket === "kosdaq") {
+      setStocks(kosdaq);
+    } else {
+      setStocks(konex);
+    }
     init();
-  });
+  }, [currentMarket]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
@@ -253,6 +302,46 @@ export default function StockItemList() {
 
   return (
     <PageContainer>
+      <div className="my-5">
+        <span
+          id="kospi"
+          className={
+            "text-2xl font-bold hover:cursor-pointer " +
+            (currentMarket === "kospi" ? "text-yellow-300" : "text-gray-300")
+          }
+          onClick={() => {
+            setCurrentMarket("kospi");
+          }}
+        >
+          코스피
+        </span>
+        <span className="text-2xl font-bold mx-3">|</span>
+        <span
+          id="kosdaq"
+          className={
+            "text-2xl font-bold hover:cursor-pointer " +
+            (currentMarket === "kosdaq" ? "text-yellow-300" : "text-gray-300")
+          }
+          onClick={() => {
+            setCurrentMarket("kosdaq");
+          }}
+        >
+          코스닥
+        </span>
+        <span className="text-2xl font-bold mx-3">|</span>
+        <span
+          id="konex"
+          className={
+            "text-2xl font-bold hover:cursor-pointer " +
+            (currentMarket === "konex" ? "text-yellow-300" : "text-gray-300")
+          }
+          onClick={() => {
+            setCurrentMarket("konex");
+          }}
+        >
+          코넥스
+        </span>
+      </div>
       <div className="flex flex-row justify-start">
         {sessionStorage.access_token && (
           <div className="mr-4">
