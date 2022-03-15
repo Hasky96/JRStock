@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import NavItem from "./NavItem";
 import { ReactComponent as DashboardIconActive } from "../../assets/dashboardIconActive.svg";
 import { ReactComponent as StockList } from "../../assets/stockList.svg";
