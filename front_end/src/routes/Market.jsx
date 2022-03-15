@@ -7,6 +7,9 @@ import "../components/market/style.css";
 import NewsList from "../components/market/NewsList";
 import NewsTitle from "../components/market/NewsTitle";
 
+import { CandleChart } from "../components/market/CandleChart";
+import { candleData, volumeData } from "../components/BackTestDetail/data";
+
 import {
   dayData,
   weekData,
@@ -58,6 +61,9 @@ export default function Market() {
   const [period, setPeriod] = useState("1D");
 
   var seriesesData = new Map([
+    ["일봉", { candleData: candleData, volumeData: volumeData }],
+    ["주봉", { candleData: candleData, volumeData: volumeData }],
+    ["월봉", { candleData: candleData, volumeData: volumeData }],
     ["1D", dayData],
     ["1W", weekData],
     ["1M", monthData],
@@ -66,7 +72,7 @@ export default function Market() {
 
   const btnList = () => {
     const list = [];
-    const intervals = ["1D", "1W", "1M", "1Y"];
+    const intervals = ["일봉", "주봉", "월봉", "1D", "1W", "1M", "1Y"];
     intervals.forEach((el, idx) => {
       list.push(
         <button
@@ -138,7 +144,16 @@ export default function Market() {
           <div className="grid grid-cols-1">
             <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
               <div className="grid row-span-5">
-                <LineChart data={data}></LineChart>
+                {period.substring(0, 1) === "1" && (
+                  <LineChart data={data}></LineChart>
+                )}
+                {period.substring(0, 1) !== "1" && (
+                  <CandleChart
+                    candleData={data.candleData}
+                    volumeData={data.volumeData}
+                    title={"코스피"}
+                  ></CandleChart>
+                )}
               </div>
 
               <div className="switcher row-span-1 pt-8">{btnList()}</div>
