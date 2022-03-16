@@ -1,7 +1,7 @@
 from dataclasses import field
 from rest_framework import serializers
 
-from .models import BasicInfo, DayStock, FinancialInfo
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo
 
 # ====================================================================== 통합 ======================================================================  
 class BasicInfoSerializer(serializers.ModelSerializer):
@@ -17,9 +17,14 @@ class FinancialInfoSerializer(serializers.ModelSerializer):
         model = FinancialInfo
         fields = '__all__'
 
-class DayStockSerializer(serializers.ModelSerializer):
+class DayStockInfoSerializer(serializers.ModelSerializer):
     financial_info = FinancialInfoSerializer(read_only=True)
     
+    class Meta:
+        model = DayStockInfo
+        fields = '__all__'
+        
+class DayStockSerializer(serializers.ModelSerializer):
     class Meta:
         model = DayStock
         fields = '__all__'

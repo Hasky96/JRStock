@@ -8,9 +8,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import DayStockSerializer, FinancialInfoSerializer
+from .serializers import DayStockInfoSerializer, FinancialInfoSerializer
 
-from .models import BasicInfo, DayStock, FinancialInfo
+from .models import BasicInfo, DayStockInfo, FinancialInfo
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -50,7 +50,7 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def basic_info_list(request):
-    stock_list = DayStock.objects.select_related('financial_info').filter(date='2022-03-10')
+    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date='2022-03-10')
     
     # 검색 기능
     if request.GET.get('company_name'):
@@ -182,7 +182,7 @@ def basic_info_list(request):
         paginator.page_size = page_size
 
     result = paginator.paginate_queryset(stock_list, request)
-    serializers = DayStockSerializer(result, many=True)
+    serializers = DayStockInfoSerializer(result, many=True)
     return paginator.get_paginated_response(serializers.data)    
 
 @swagger_auto_schema(
