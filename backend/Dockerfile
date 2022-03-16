@@ -3,12 +3,14 @@ FROM python:3
 
 WORKDIR /backend
 
-COPY . .
-
 ## Install packages
 COPY requirements.txt ./
+
 RUN pip install -r requirements.txt
 
+RUN python manage.py collectstatic
+
+COPY . .
 
 ## Run the application on the port 8090
 EXPOSE 8090
