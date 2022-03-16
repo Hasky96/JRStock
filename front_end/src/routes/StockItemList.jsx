@@ -18,7 +18,7 @@ export default function StockItemList() {
   const [stocks, setStocks] = useState([]);
   const kospi = [
     {
-      id: 1351,
+      id: '005930',
       name: "삼성전자",
       currentPrice: "72400",
       volatility: 200,
@@ -190,20 +190,20 @@ export default function StockItemList() {
             </p>
             <p
               className="col-span-1"
-              onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+              onClick={goDetailPage.bind(this, stocks[i].id)}
             >
               {i + 1}
             </p>
           </div>
           <p
             className="col-span-2 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].name}
           </p>
           <p
             className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].currentPrice}
           </p>
@@ -213,7 +213,7 @@ export default function StockItemList() {
                 ? "col-span-2 my-auto text-red-500"
                 : "col-span-2 my-auto text-blue-600"
             }
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].volatility > 0
               ? "▲ " + stocks[i].volatility
@@ -222,31 +222,31 @@ export default function StockItemList() {
           </p>
           <p
             className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].volume}
           </p>
           <p
             className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].marketPrice}
           </p>
           <p
             className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].highPrice}
           </p>
           <p
             className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].lowPrice}
           </p>
           <p
             className="col-span-2 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id, stocks[i].market)}
+            onClick={goDetailPage.bind(this, stocks[i].id)}
           >
             {stocks[i].marketCapitalization}
           </p>
@@ -279,8 +279,8 @@ export default function StockItemList() {
   };
 
   // 종목 클릭 시 해당 종목 디테일 페이지로
-  const goDetailPage = (id, market) => {
-    navigate({ pathname: `${market}/${id}` });
+  const goDetailPage = (id) => {
+    navigate({ pathname: `${id}` });
   };
 
   const onClickFilter = (filter) => {

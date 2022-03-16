@@ -1,46 +1,54 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import ListHeader from "../ListHeader";
 import Pagenation from "../Pagenation";
+import { getBoardList } from "../../api/stock";
 
-export default function Board() {
+export default function BoardList() {
   const [pageNo, setPageNo] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [boards, setBoards] = useState([]);
+  const { id } = useParams();
+  const navigate = useNavigate();
   const pageSize = 10;
 
-  const boards = [
-    {
-      title: "떡상 각",
-      author: "[부울****",
-      views: "70",
-      date: "2022.03.14 13:48",
-      like: "30",
-      disLike: "2",
-    },
-    {
-      title: "떡락 각",
-      author: "[대전****",
-      views: "50",
-      date: "2022.03.14 15:48",
-      like: "1",
-      disLike: "20",
-    },
-    {
-      title: "오늘 종가",
-      author: "[서울****",
-      views: "30",
-      date: "2022.03.14 18:10",
-      like: "3",
-      disLike: "2",
-    },
-  ];
+  // const boards = [
+  //   {
+  //     title: "떡상 각",
+  //     author: "[부울****",
+  //     views: "70",
+  //     date: "2022.03.14 13:48",
+  //     like: "30",
+  //     disLike: "2",
+  //   },
+  //   {
+  //     title: "떡락 각",
+  //     author: "[대전****",
+  //     views: "50",
+  //     date: "2022.03.14 15:48",
+  //     like: "1",
+  //     disLike: "20",
+  //   },
+  //   {
+  //     title: "오늘 종가",
+  //     author: "[서울****",
+  //     views: "30",
+  //     date: "2022.03.14 18:10",
+  //     like: "3",
+  //     disLike: "2",
+  //   },
+  // ];
 
   const init = async () => {
+    const data = await getBoardList(id);
+    console.log(data.data.results[0]);
+    setBoards(data.data.results);
     setTotalCount(boards.length);
   };
 
   useEffect(() => {
     init();
-  });
+  }, []);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
@@ -85,12 +93,10 @@ export default function Board() {
           key={"board" + i}
           className="grid grid-cols-12 h-8 hover:bg-yellow-50 hover:cursor-pointer"
         >
-          <p className="col-span-2 my-auto">{boards[i].date}</p>
+          <p className="col-span-2 my-auto">{boards[i].user.name}</p>
           <p className="col-span-6 my-auto">{boards[i].title}</p>
-          <p className="col-span-1 my-auto">{boards[i].author}</p>
-          <p className="col-span-1 my-auto">{boards[i].views}</p>
-          <p className="col-span-1 my-auto">{boards[i].like}</p>
-          <p className="col-span-1 my-auto">{boards[i].disLike}</p>
+          <p className="col-span-2 my-auto">{boards[i].created_at}</p>
+          <p className="col-span-2 my-auto">{boards[i].updated_at}</p>
         </li>
       );
     }
@@ -115,9 +121,18 @@ export default function Board() {
     <div>
       <div className="mt-5 flex">
         <div>
-          <button className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-yellow-50 hover:border-yellow-300 hover:text-yellow-600 rounded-lg grid grid-cols-3 hover:fill-yellow-600">
+          <button
+            className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-yellow-50 hover:border-yellow-300 hover:text-yellow-600 rounded-lg grid grid-cols-3 hover:fill-yellow-600"
+            onClick={function () {
+              if (sessionStorage.getItem("access_token")) {
+                navigate("board/new");
+              } else {
+                navigate("/login");
+              }
+            }}
+          >
             <svg
-              enable-background="new 0 0 64 64"
+              enableBackground="new 0 0 64 64"
               id="Layer_1"
               version="1.1"
               viewBox="0 0 64 64"
@@ -143,12 +158,10 @@ export default function Board() {
       <div className="border-collapse w-full text-center my-5">
         <ul>
           <li className="grid grid-cols-12 h-12 bg-slate-100">
-            <p className="col-span-2 my-auto">날짜</p>
+            <p className="col-span-2 my-auto">글쓴이</p>
             <p className="col-span-6 my-auto">제목</p>
-            <p className="col-span-1 my-auto">글쓴이</p>
-            <p className="col-span-1 my-auto">조회</p>
-            <p className="col-span-1 my-auto">공감</p>
-            <p className="col-span-1 my-auto">비공감</p>
+            <p className="col-span-2 my-auto">작성시간</p>
+            <p className="col-span-2 my-auto">수정시간</p>
           </li>
           {boardList()}
         </ul>
