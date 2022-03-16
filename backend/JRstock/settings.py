@@ -9,7 +9,7 @@ import sys
 BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = os.path.dirname(BASE_DIR)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
+STATIC_URL = '/statics/'
 SECRET_BASE_FILE = os.path.join(BASE_DIR, 'secrets.json')
 secrets = json.loads(open(SECRET_BASE_FILE).read())
 for key, value in secrets.items():
