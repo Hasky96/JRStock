@@ -8,7 +8,7 @@ COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-RUN python manage.py collectstatic
+# RUN python manage.py collectstatic
 
 COPY . .
 
