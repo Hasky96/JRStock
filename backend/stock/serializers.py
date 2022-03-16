@@ -3,12 +3,7 @@ from rest_framework import serializers
 
 from .models import BasicInfo, DayStock, FinancialInfo
 
-# ====================================================================== 통합 ======================================================================
-
-
-
-
-        
+# ====================================================================== 통합 ======================================================================  
 class BasicInfoSerializer(serializers.ModelSerializer):
     
     class Meta:

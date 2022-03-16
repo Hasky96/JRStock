@@ -31,7 +31,7 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @swagger_auto_schema(
     method='get',
     operation_id='주식 종목 전체 조회(아무나)',
-    operation_description='주식 종목 전체를 조회 합니다',
+    operation_description='주식 종목 전체를 조회 합니다(기본정보 + 재무제표 + 최근 주가)',
     tags=['주식'],
     manual_parameters=[page, size, sort, company_name, face_value],
     responses={status.HTTP_200_OK: openapi.Response(
@@ -185,6 +185,20 @@ def basic_info_list(request):
     serializers = DayStockSerializer(result, many=True)
     return paginator.get_paginated_response(serializers.data)    
 
+@swagger_auto_schema(
+    method='get',
+    operation_id='주식 상세 조회(아무나)',
+    operation_description='주식 상세 조회 합니다(재무제표 + 기본정보)',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: FinancialInfoSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def financial_info_detail(request, code_number):
+    financial_info = get_object_or_404(FinancialInfo, pk=code_number)
+    serializer = FinancialInfoSerializer(financial_info)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
 # ====================================================================== 코스피 ======================================================================
 
 
