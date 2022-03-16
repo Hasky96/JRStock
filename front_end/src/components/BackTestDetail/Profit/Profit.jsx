@@ -1,5 +1,7 @@
 import { AnnualProfit } from "./AnnualProfit";
 import { PortfolioProfitChart } from "../ResultSummary/PortfolioProfitChart";
+import { ProfitLineChart } from "../ResultSummary/ProfitLineChart";
+import { monthData, monthData2 } from "../data";
 import "./Profit.css";
 
 export default function Profit() {
@@ -34,7 +36,7 @@ export default function Profit() {
 
   const paintProfits = profitData.map((result, index) => (
     <div key={index} className="col-span-1 mx-auto my-auto">
-      <h2 className="text-xs">{result.key}</h2>
+      <h2 className="text-xs text-gray-500">{result.key}</h2>
       <p>{result.value}</p>
     </div>
   ));
@@ -45,7 +47,7 @@ export default function Profit() {
         <div className="col-span-5 text-left text-lg">수익률</div>
         {paintProfits}
       </div>
-      <div className="w-full flex">
+      <div className="w-full flex justify-center">
         <div className="chart-container rounded shadow-lg p-3 mt-5">
           <div className="text-lg">
             <div>종목별 수익률</div>
@@ -58,6 +60,18 @@ export default function Profit() {
             <AnnualProfit labels={yearLabels} />
           </div>
         </div>
+      </div>
+      <div className="profit-chart-container rounded shadow-lg p-3 mt-5">
+        <div className="text-lg">연도별 자산 운용 {"2013"}</div>
+        <ProfitLineChart marketData={monthData} testData={monthData2} />
+      </div>
+      <div className="profit-chart-container rounded shadow-lg p-3 mt-5">
+        <div className="text-lg">연도별 자산 운용 {"2014"}</div>
+        <ProfitLineChart marketData={monthData} testData={monthData2} />
+      </div>
+      <div className="profit-chart-container rounded shadow-lg p-3 mt-5">
+        <div className="text-lg">연도별 자산 운용 {"2015"}</div>
+        <ProfitLineChart marketData={monthData} testData={monthData2} />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import {
   weekData,
   monthData,
   yearData,
-} from "../../../assets/marketChartTestData";
+} from "../../assets/marketChartTestData";
 
 const marketData = [
   { time: "2018-10-19", value: 219.31 },
@@ -1129,4 +1129,82 @@ const volumeData = [
   { time: "2019-05-24", value: 8755506.0, color: "rgba(0, 150, 136, 0.8)" },
 ];
 
-export { dayData2, weekData2, monthData2, yearData2, candleData, volumeData };
+const assetData = [
+  {
+    key: "시작일",
+    value: "2012-01-01",
+  },
+  {
+    key: "종료일",
+    value: "2022-03-15",
+  },
+  {
+    key: "투자 원금(만원)",
+    value: "300",
+  },
+  {
+    key: "총 손익(만원)",
+    value: "+1996",
+  },
+  {
+    key: "최종 자산(만원)",
+    value: "2296",
+  },
+];
+
+const profitData = [
+  {
+    key: "누적 수익률",
+    value: "+789%",
+  },
+  {
+    key: "일평균 수익률",
+    value: "+1.7%",
+  },
+  {
+    key: "연이율(CAGR)",
+    value: "+24.8%",
+  },
+  {
+    key: "시장초과 수익률",
+    value: "+543%",
+  },
+  {
+    key: "최대 손실폭(MDD)",
+    value: "-19%",
+  },
+];
+
+const records = [];
+for (let i = 1; i < 55; i++) {
+  records.push({
+    id: i,
+    time: "2022-02-12 17:32",
+    buy: "매수",
+    type: "이동평균선",
+    stock: "삼성전자",
+    stockCode: "000536",
+    price: "71,000",
+    quantity: "15",
+    asset: "5,360,000",
+    profit: "480.9",
+  });
+}
+
+export {
+  dayData,
+  weekData,
+  monthData,
+  yearData,
+  dayData2,
+  weekData2,
+  monthData2,
+  yearData2,
+  candleData,
+  volumeData,
+  assetData,
+  profitData,
+  marketData,
+  testData,
+  records,
+};

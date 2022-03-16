@@ -34,12 +34,16 @@ export function AnnualProfit({ labels }) {
     datasets: [
       {
         label: "시장 수익률",
-        data: labels.map(() => Math.random() * 10),
+        data: labels.map(
+          () => Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1)
+        ),
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
       {
         label: "수익률",
-        data: labels.map(() => Math.random() * 10),
+        data: labels.map(
+          () => Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1)
+        ),
         backgroundColor: "rgba(53, 162, 235, 0.5)",
       },
     ],

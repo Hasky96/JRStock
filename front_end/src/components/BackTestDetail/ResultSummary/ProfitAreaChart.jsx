@@ -1,12 +1,11 @@
 import { createChart } from "lightweight-charts";
 import React, { useEffect, useRef } from "react";
 
-export const ProfitChart = ({ marketData, testData }) => {
+export const ProfitAreaChart = ({ marketData, testData }) => {
   const chartContainerRef = useRef();
 
   useEffect(() => {
     const handleResize = () => {
-      console.log("resize here: chartContainerRef.current.clientWidth");
       chart.applyOptions({ width: chartContainerRef.current.clientWidth });
     };
 
@@ -46,7 +45,7 @@ export const ProfitChart = ({ marketData, testData }) => {
       lineWidth: 2,
     });
     const testSeries = chart.addAreaSeries({
-      topColor: "rgba(254, 138, 125, 0.56)",
+      topColor: "rgba(254, 138, 125, 0.3)",
       bottomColor: "rgba(254, 138, 125, 0.04)",
       lineColor: "rgba(254, 138, 125, 1)",
       lineWidth: 2,

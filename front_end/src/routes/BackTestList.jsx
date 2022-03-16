@@ -20,8 +20,8 @@ export default function BackTestList() {
     },
   ];
 
-  const [checkedList, setcheckedList] = useState([]);
   const [backTestItems, setbackTestItems] = useState(data);
+  const [checkedList, setcheckedList] = useState([]);
 
   const onCheckedAll = (e) => {
     if (e.target.checked) {
