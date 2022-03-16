@@ -8,13 +8,16 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import DayStockSerializer, FinancialInfoSerializer
+from .serializers import DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer
 
-from .models import BasicInfo, DayStock, FinancialInfo
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .parser import get_serializer
+
+import requests
+from bs4 import BeautifulSoup
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -31,7 +34,7 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @swagger_auto_schema(
     method='get',
     operation_id='주식 종목 전체 조회(아무나)',
-    operation_description='주식 종목 전체를 조회 합니다',
+    operation_description='주식 종목 전체를 조회 합니다(기본정보 + 재무제표 + 최근 주가)',
     tags=['주식'],
     manual_parameters=[page, size, sort, company_name, face_value],
     responses={status.HTTP_200_OK: openapi.Response(
@@ -50,7 +53,7 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def basic_info_list(request):
-    stock_list = DayStock.objects.select_related('financial_info').filter(date='2022-03-10')
+    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date='2022-03-10')
     
     # 검색 기능
     if request.GET.get('company_name'):
@@ -182,9 +185,110 @@ def basic_info_list(request):
         paginator.page_size = page_size
 
     result = paginator.paginate_queryset(stock_list, request)
-    serializers = DayStockSerializer(result, many=True)
+    serializers = DayStockInfoSerializer(result, many=True)
     return paginator.get_paginated_response(serializers.data)    
 
+@swagger_auto_schema(
+    method='get',
+    operation_id='주식 상세 조회(아무나)',
+    operation_description='주식 상세 조회 합니다(재무제표 + 기본정보)',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: FinancialInfoSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def financial_info_detail(request, code_number):
+    financial_info = get_object_or_404(FinancialInfo, pk=code_number)
+    serializer = FinancialInfoSerializer(financial_info)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 일봉 데이터 전체 조회(아무나)',
+    operation_description='일봉 데이터 전체 정보를 가져옵니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: DayStockSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def day_stock_list(request, code_number):
+    day_stock_list = DayStock.objects.filter(code_number=code_number)
+    serializer = DayStockSerializer(day_stock_list, many=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 실시간 데이터 조회(아무나)',
+    operation_description='요청한 종목의 실시간 데이터를 조회합니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'time': openapi.Schema(type=openapi.TYPE_STRING, description="조회 기준 시간"),
+                'current_price': openapi.Schema(type=openapi.TYPE_STRING, description="현재가"),
+                'changes': openapi.Schema(type=openapi.TYPE_STRING, description="변동 가격"),
+                'changes_ratio': openapi.Schema(type=openapi.TYPE_STRING, description="변동 퍼센트"),
+                'prev': openapi.Schema(type=openapi.TYPE_STRING, description="전일가"),
+                'open': openapi.Schema(type=openapi.TYPE_STRING, description="시가"),
+                'high': openapi.Schema(type=openapi.TYPE_STRING, description="고가"),
+                'low': openapi.Schema(type=openapi.TYPE_STRING, description="저가"),
+                'upper_limit': openapi.Schema(type=openapi.TYPE_STRING, description="상한가"),
+                'lower_limit': openapi.Schema(type=openapi.TYPE_STRING, description="하한가"),
+                'volume': openapi.Schema(type=openapi.TYPE_STRING, description="거래량"),
+                'volume_price': openapi.Schema(type=openapi.TYPE_STRING, description="거래 대금"),
+            }
+        )
+    )}
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def live_data(request, code_number):
+    url = f"https://finance.naver.com/item/main.nhn?code={code_number}"   #삼성전자 종목코드를 포함하는 url
+
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
+        temp = soup.dl.text.split()
+        current_time = temp[3] + " " + temp[4] + " " + temp[5] + " " + temp[6] + " " + temp[7]
+        current_price = temp[16]
+        if temp[18] == '상승':
+            changes = "+" + temp[19]
+        if temp[18] == '하락':
+            changes = "-" + temp[19]
+        if temp[20] == '플러스':
+            changes_ratio = "+" + temp[21] + "%"
+        if temp[20] == '마이너스':
+            changes_ratio = "-" + temp[21] + "%"
+        prev = temp[24]
+        open = temp[26]
+        high = temp[28]
+        low = temp[32]
+        upper_limit = temp[30]
+        lower_limit = temp[34]
+        volume = temp[36]
+        volume_price = temp[38]
+        
+        return Response({'time' : current_time,
+                        'current_price' : current_price,
+                        'changes' : changes,
+                        'changes_ratio' : changes_ratio,
+                        'prev' : prev,
+                        'open' : open,
+                        'high' : high,
+                        'low' : low,
+                        'upper_limit' : upper_limit,
+                        'lower_limit' : lower_limit,
+                        'volume' : volume,
+                        'volume_price' : volume_price,
+                        }, status=status.HTTP_200_OK)
+        
+    return Response({"message" : "Connection Error"}, status=status.HTTP_404_NOT_FOUND)
 # ====================================================================== 코스피 ======================================================================
 
 

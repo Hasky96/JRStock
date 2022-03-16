@@ -42,8 +42,9 @@ class FinancialInfo(models.Model):
     
     class Meta:
         ordering = ['basic_info']
-        
-class DayStock(models.Model):
+
+# 조인이 가능한 일일 데이터        
+class DayStockInfo(models.Model):
     stock_seq = models.AutoField(primary_key=True)
     financial_info = models.ForeignKey(FinancialInfo, on_delete=models.CASCADE, null=True, db_column='code_number')
     current_price = models.CharField(max_length=20, blank=True, null=True)
@@ -60,6 +61,27 @@ class DayStock(models.Model):
 
     class Meta:
         ordering = ['stock_seq']
+
+# 조인이 불가능한 일일 데이터        
+class DayStock(models.Model):
+    stock_seq = models.AutoField(primary_key=True)
+    code_number = models.CharField(max_length=10)
+    current_price = models.CharField(max_length=20, blank=True, null=True)
+    changes = models.CharField(max_length=20, blank=True, null=True)
+    chages_ratio = models.CharField(max_length=20, blank=True, null=True)
+    start_price = models.CharField(max_length=20, blank=True, null=True)
+    high_price = models.CharField(max_length=20, blank=True, null=True)
+    low_price = models.CharField(max_length=20, blank=True, null=True)
+    volume = models.CharField(max_length=20, blank=True, null=True)
+    trade_price = models.CharField(max_length=50, blank=True, null=True)
+    market_cap = models.CharField(max_length=50, blank=True, null=True)
+    stock_amount = models.CharField(max_length=20, blank=True, null=True)
+    date = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        ordering = ['date']
+        db_table = 'day_stock'
 
 # ====================================================================== 코스피 ======================================================================
 # class InfoKospi(models.Model):
