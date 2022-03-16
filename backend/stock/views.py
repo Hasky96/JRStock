@@ -8,9 +8,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import DayStockInfoSerializer, FinancialInfoSerializer
+from .serializers import DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer
 
-from .models import BasicInfo, DayStockInfo, FinancialInfo
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -199,6 +199,14 @@ def financial_info_detail(request, code_number):
     serializer = FinancialInfoSerializer(financial_info)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def day_stock_list(request, code_number):
+    day_stock_list = DayStock.objects.filter(code_number=code_number)
+    serializer = DayStockSerializer(day_stock_list, many=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK) 
 # ====================================================================== 코스피 ======================================================================
 
 
