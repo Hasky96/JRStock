@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'board',
 ]
 
-BASE_URL = 'http://localhost:8000/'
+# BASE_URL = 'http://localhost:8000/'
+BASE_URL = 'http://j6s001.p.ssafy.io/'
 
 SITE_ID = 1
 

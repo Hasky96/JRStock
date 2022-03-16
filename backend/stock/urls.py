@@ -16,5 +16,6 @@ urlpatterns = [
     
     path('', views.basic_info_list, name='basic_info_list'),
     path('detail/<str:code_number>', views.financial_info_detail, name='financial_info_detail'),
-    path('day-stock/<str:code_number>', views.day_stock_list, name='day_stock_list'),
+    path('day/<str:code_number>', views.day_stock_list, name='day_stock_list'),
+    path('live/<str:code_number>', views.live_data, name='live_data'),
 ]
