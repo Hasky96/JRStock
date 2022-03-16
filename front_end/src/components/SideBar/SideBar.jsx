@@ -6,6 +6,7 @@ import { ReactComponent as BackTest } from "../../assets/backTest.svg";
 import { ReactComponent as MyPage } from "../../assets/myPage.svg";
 import { ReactComponent as Rocket } from "../../assets/sidebarRocket.svg";
 import "./SideBar.css";
+import { ReactComponent as Notice } from "../../assets/notice.svg";
 
 export default function SideBar() {
   const location = useLocation();
@@ -30,6 +31,11 @@ export default function SideBar() {
       icon: <MyPage />,
       linkPath: "/mypage",
       linkText: "마이페이지",
+    },
+    {
+      icon: <Notice />,
+      linkPath: "/notice",
+      linkText: "공지사항",
     },
   ];
 
