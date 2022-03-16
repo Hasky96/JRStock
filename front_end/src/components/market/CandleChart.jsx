@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 import "./CandleChart.css";
 
-export const CandleChart = ({ title, candleData, volumeData }) => {
+export const CandleChart = ({ title, candleData, volumeData, period }) => {
   const chartContainerRef = useRef();
   const zeroFill = (s) => {
     return ("00" + s).slice(-2);
   };
+
+  var barSpacingPerPeriod = new Map([
+    ["일봉", 6],
+    ["주봉", 12],
+    ["월봉", 18],
+  ]);
 
   const stringToDate = (date) => {
     const [year, month, day] = date.split("-");
@@ -57,6 +63,7 @@ export const CandleChart = ({ title, candleData, volumeData }) => {
       },
       timeScale: {
         borderVisible: false,
+        barSpacing: barSpacingPerPeriod.get(period),
       },
       grid: {
         horzLines: {
@@ -146,7 +153,7 @@ export const CandleChart = ({ title, candleData, volumeData }) => {
 
       chart.remove();
     };
-  }, [candleData, volumeData]);
+  }, [candleData, volumeData, period]);
 
   return (
     <div
