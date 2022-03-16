@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import ListHeader from "../ListHeader";
 import Pagenation from "../Pagenation";
 import { getBoardList } from "../../api/stock";
+import { timeMark } from "../../config/datetime";
 
 export default function BoardList() {
   const [pageNo, setPageNo] = useState(1);
@@ -95,8 +96,8 @@ export default function BoardList() {
         >
           <p className="col-span-2 my-auto">{boards[i].user.name}</p>
           <p className="col-span-6 my-auto">{boards[i].title}</p>
-          <p className="col-span-2 my-auto">{boards[i].created_at}</p>
-          <p className="col-span-2 my-auto">{boards[i].updated_at}</p>
+          <p className="col-span-2 my-auto">{timeMark(boards[i].created_at)}</p>
+          <p className="col-span-2 my-auto">{timeMark(boards[i].updated_at)}</p>
         </li>
       );
     }
