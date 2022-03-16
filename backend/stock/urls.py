@@ -15,4 +15,7 @@ urlpatterns = [
     # path('konex/financial/<str:code_number>', views.financial_konex_detail, name='financial_konex_detail'),
     
     path('', views.basic_info_list, name='basic_info_list'),
+    path('detail/<str:code_number>', views.financial_info_detail, name='financial_info_detail'),
+    path('day/<str:code_number>', views.day_stock_list, name='day_stock_list'),
+    path('live/<str:code_number>', views.live_data, name='live_data'),
 ]

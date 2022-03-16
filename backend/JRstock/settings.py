@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'board',
 ]
 
-BASE_URL = 'http://localhost:8000/'
+# BASE_URL = 'http://localhost:8000/'
+BASE_URL = 'http://j6s001.p.ssafy.io/'
 
 SITE_ID = 1
 
@@ -66,7 +67,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000', 'http://j6s001.p.ssafy.io']
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
