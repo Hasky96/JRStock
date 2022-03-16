@@ -59,7 +59,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
-          <Route path="/stock/:id" element={<StockItemDetail />} />
+          <Route path="/stock/:market/:id" element={<StockItemDetail />} />
           <Route path="/backtest" element={<BackTestList />} />
           <Route path="/backtest/create" element={<BackTestCreate />} />
           <Route path="/backtest/:id" element={<BackTestDetail />} />
