@@ -1,13 +1,17 @@
 # ./Dockerfile 
 FROM python:3
-WORKDIR /usr/src/app
 
+WORKDIR /backend
+
+COPY . .
 ## Install packages
 COPY requirements.txt ./
+
 RUN pip install -r requirements.txt
 
-## Copy all src files
-COPY . .
+RUN python manage.py migrate
+
+RUN python manage.py collectstatic
 
 ## Run the application on the port 8090
 EXPOSE 8090
