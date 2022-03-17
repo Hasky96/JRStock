@@ -39,36 +39,36 @@ export default function BoardForm() {
               create();
             }}
           >
-            <div className="col-span-12 mt-5 text-3xl text-yellow-900">
+            <div className="col-span-12 mt-5 text-3xl text-indigo-900">
               글쓰기
             </div>
             <div className="w-full col-start-4 col-end-10 mt-10">
-              <label htmlFor="title" className="text-yellow-900 text-xl">
+              <label htmlFor="title" className="text-indigo-900 text-xl">
                 제목
               </label>
               <input
                 id="title"
                 name="title"
                 type="text"
-                className="w-full rounded-lg mt-1 border-yellow-500 ring-yellow-500 focus:border-yellow-300 focus:ring-yellow-300"
+                className="w-full rounded-lg mt-1 border-indigo-800 ring-indigo-800 focus:border-indigo-300 focus:ring-indigo-300"
                 required
                 onChange={getTitle}
               />
             </div>
             <div className="w-full col-start-4 col-end-10 mt-10">
-              <label htmlFor="content" className="text-yellow-900 text-xl">
+              <label htmlFor="content" className="text-indigo-900 text-xl">
                 내용
               </label>
               <textarea
                 name="content"
                 id="content"
                 rows="10"
-                className="w-full rounded-lg mt-1 border-yellow-500 ring-yellow-500 focus:border-yellow-300 focus:ring-yellow-300"
+                className="w-full rounded-lg mt-1 border-indigo-800 ring-indigo-800 focus:border-indigo-300 focus:ring-indigo-300"
                 required
                 onChange={getContent}
               ></textarea>
             </div>
-            <button className="mt-5 w-full border rounded-md bg-yellow-300 text-white hover:bg-yellow-500 py-2 col-start-5 col-span-1">
+            <button className="mt-5 w-full border rounded-md bg-indigo-500 text-white hover:bg-indigo-800 py-2 col-start-5 col-span-1">
               작성
             </button>
             <div

@@ -12,8 +12,8 @@ async function getStockItemList(page, size) {
 async function getBoardList(code, page, size) {
   return await api.get(
     `stock/post/${code}?` +
-      (page && `page=${page}&`) +
-      (size && `size=${size}&`)
+      (page ? `page=${page}&` : '') +
+      (size ? `size=${size}&` : '')
   );
 }
 
@@ -28,7 +28,18 @@ async function createBoard(title, content, code_number) {
 
 // 토론 게시글 상세페이지 받아오기
 async function getBoardDetail(boardId) {
-  return await api.get(`stock/post/detail/${boardId}`)
+  return await api.get(`stock/post/detail/${boardId}`);
 }
 
-export { getStockItemList, getBoardList, createBoard, getBoardDetail };
+// 토론 게시글 삭제
+async function deleteBoard(boardId) {
+  await authApi.delete(`stock/post/delete/${boardId}`);
+}
+
+export {
+  getStockItemList,
+  getBoardList,
+  createBoard,
+  getBoardDetail,
+  deleteBoard,
+};

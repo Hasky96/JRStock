@@ -14,7 +14,7 @@ export default function BoardList() {
   const pageSize = 10;
 
   const init = async () => {
-    const data = await getBoardList(id);
+    const data = await getBoardList(id, pageNo, 10);
     setBoards(data.data.results);
     setTotalCount(boards.length);
   };
@@ -69,7 +69,7 @@ export default function BoardList() {
       result.push(
         <li
           key={"board" + i}
-          className="grid grid-cols-12 h-8 hover:bg-yellow-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-8 hover:bg-indigo-50 hover:cursor-pointer"
           onClick={goDetail.bind(this, boards[i])}
         >
           <p className="col-span-2 my-auto">{boards[i].user.name}</p>
@@ -101,7 +101,7 @@ export default function BoardList() {
       <div className="mt-5 flex">
         <div>
           <button
-            className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-yellow-50 hover:border-yellow-300 hover:text-yellow-600 rounded-lg grid grid-cols-3 hover:fill-yellow-600"
+            className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-900 hover:text-indigo-900 rounded-lg grid grid-cols-3 hover:fill-indigo-900"
             onClick={function () {
               if (sessionStorage.getItem("access_token")) {
                 navigate("board/new");
