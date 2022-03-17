@@ -25,7 +25,7 @@ export default function News() {
       result.push(
         <li
           key={"news" + i}
-          className="grid grid-cols-8 h-12 hover:bg-yellow-50 hover:cursor-pointer"
+          className="grid grid-cols-8 h-12 hover:bg-indigo-50 hover:cursor-pointer"
         >
           <p className="col-span-6 my-auto text-left pl-5 font-bold">
             {news[i].title}

@@ -168,7 +168,7 @@ export default function StockItemList() {
       result.push(
         <li
           key={"stock" + i}
-          className="grid grid-cols-12 h-12 hover:bg-yellow-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer"
         >
           <div className="col-span-1 my-auto grid grid-cols-2">
             <p className="col-span-1">
@@ -176,7 +176,7 @@ export default function StockItemList() {
                 id="total-stock"
                 name="total-stock"
                 type="checkbox"
-                className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+                className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
                 onChange={onChecked.bind(this, stocks[i].id)}
                 checked={checkedList.includes(stocks[i].id) ? true : false}
               />
@@ -307,7 +307,7 @@ export default function StockItemList() {
           id="kospi"
           className={
             "text-2xl font-bold hover:cursor-pointer " +
-            (currentMarket === "kospi" ? "text-yellow-300" : "text-gray-300")
+            (currentMarket === "kospi" ? "text-indigo-900" : "text-gray-300")
           }
           onClick={() => {
             setCurrentMarket("kospi");
@@ -320,7 +320,7 @@ export default function StockItemList() {
           id="kosdaq"
           className={
             "text-2xl font-bold hover:cursor-pointer " +
-            (currentMarket === "kosdaq" ? "text-yellow-300" : "text-gray-300")
+            (currentMarket === "kosdaq" ? "text-indigo-900" : "text-gray-300")
           }
           onClick={() => {
             setCurrentMarket("kosdaq");
@@ -333,7 +333,7 @@ export default function StockItemList() {
           id="konex"
           className={
             "text-2xl font-bold hover:cursor-pointer " +
-            (currentMarket === "konex" ? "text-yellow-300" : "text-gray-300")
+            (currentMarket === "konex" ? "text-indigo-900" : "text-gray-300")
           }
           onClick={() => {
             setCurrentMarket("konex");
@@ -347,7 +347,7 @@ export default function StockItemList() {
           <div className="mr-4">
             <Menu as="div" className="relative inline-block text-left">
               <div>
-                <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-yellow-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-yellow-500">
+                <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-indigo-900 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-900">
                   Actions
                   <ChevronDownIcon
                     className="-mr-1 ml-2 h-5 w-5"
@@ -374,7 +374,7 @@ export default function StockItemList() {
                           className={
                             "flex flex-row hover:cursor-pointer " +
                             (active
-                              ? "bg-yellow-50 text-gray-900"
+                              ? "bg-indigo-50 text-gray-900"
                               : "text-gray-700")
                           }
                         >
@@ -426,7 +426,7 @@ export default function StockItemList() {
                   id="total-stock"
                   name="total-stock"
                   type="checkbox"
-                  className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
                   onChange={onCheckedAll}
                   checked={
                     checkedList.length === 0

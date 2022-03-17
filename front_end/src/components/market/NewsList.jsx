@@ -7,7 +7,7 @@ export default function NewsItem({ onChecked, checked, index, item }) {
   };
   return (
     <tr
-      className="h-12 border-b hover:bg-yellow-50 hover:cursor-pointer"
+      className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer"
       onClick={() => handleOnClick()}
     >
       <td className="font-bold">{item.title}</td>

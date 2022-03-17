@@ -83,7 +83,7 @@ export default function Board() {
       result.push(
         <li
           key={"board" + i}
-          className="grid grid-cols-12 h-8 hover:bg-yellow-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-8 hover:bg-indigo-50 hover:cursor-pointer"
         >
           <p className="col-span-2 my-auto">{boards[i].date}</p>
           <p className="col-span-6 my-auto">{boards[i].title}</p>
