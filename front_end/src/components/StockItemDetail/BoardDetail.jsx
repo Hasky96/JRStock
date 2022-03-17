@@ -30,14 +30,22 @@ export default function BoardDetail() {
     navigate(`/stock/${board.data.basic_info.code_number}`);
   };
 
+  // 게시글 수정
+  const goBoardUpdate = () => {
+    navigate(`update`)
+  }
+
   return (
     <PageContainer>
       <div className="p-10">
         <div className="flex justify-between items-end">
           <h1 className="text-4xl font-bold">{board?.data?.title}</h1>
-          {user && (user?.id === board?.data?.user.id) && (
+          {user && user?.id === board?.data?.user.id && (
             <div>
-              <button className="mr-10 pl-2 pr-1 pt-1 pb-1.5 rounded-md bg-indigo-700 fill-white">
+              <button
+                className="mr-10 pl-2 pr-1 pt-1 pb-1.5 rounded-md bg-indigo-700 fill-white"
+                onClick={goBoardUpdate}
+              >
                 <svg
                   enableBackground="new 0 0 64 64"
                   id="Layer_1"

@@ -17,8 +17,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Notice from "./routes/Notice";
 import NoticeDetail from "./routes/NoticeDetail";
-import BoardForm from "./components/StockItemDetail/BoardCreate";
+import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
+import BoardUpdate from "./components/StockItemDetail/Boardupdate";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
@@ -62,8 +63,9 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id" element={<StockItemDetail />} />
-          <Route path="/stock/:id/board/new" element={<BoardForm />} />
+          <Route path="/stock/:id/board/new" element={<BoardCreate />} />
           <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
+          <Route path="/stock/:id/board/:boardId/update" element={<BoardUpdate />} />
           <Route path="/backtest" element={<BackTestList />} />
           <Route path="/backtest/create" element={<BackTestCreate />} />
           <Route path="/backtest/:id" element={<BackTestDetail />} />

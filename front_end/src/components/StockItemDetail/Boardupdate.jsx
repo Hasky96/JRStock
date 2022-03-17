@@ -1,13 +1,23 @@
 import PageContainer from "../PageContainer";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { createBoard } from "../../api/stock";
+import { useEffect, useState } from "react";
+import { getBoardDetail, updateBoard } from "../../api/stock";
 
-export default function BoardCreate() {
+export default function BoardUpdate() {
   const navigate = useNavigate();
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
-  const { id } = useParams();
+  const { id, boardId } = useParams();
+
+  const init = async () => {
+    const data = await getBoardDetail(boardId);
+    setTitle(data.data.title);
+    setContent(data.data.content);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const getTitle = (e) => {
     setTitle(e.target.value);
@@ -17,16 +27,17 @@ export default function BoardCreate() {
     setContent(e.target.value);
   };
 
-  const create = () => {
+  const update = () => {
     if (!title.trim()) {
       alert("제목을 입력해주세요.");
     } else if (!content.trim()) {
       alert("내용을 입력해주세요.");
     } else {
-      createBoard(title, content, id);
-      navigate(`/stock/${id}`)
+      updateBoard(title, content, boardId);
+      navigate(`/stock/${id}/board/${boardId}`);
     }
   };
+
   return (
     <div>
       <PageContainer>
@@ -36,11 +47,11 @@ export default function BoardCreate() {
             className="grid grid-cols-12 place-items-center"
             onSubmit={function (e) {
               e.preventDefault();
-              create();
+              update();
             }}
           >
             <div className="col-span-12 mt-5 text-3xl text-indigo-900">
-              글쓰기
+              글 수정
             </div>
             <div className="w-full col-start-4 col-end-10 mt-10">
               <label htmlFor="title" className="text-indigo-900 text-xl">
@@ -52,6 +63,7 @@ export default function BoardCreate() {
                 type="text"
                 className="w-full rounded-lg mt-1 border-indigo-800 ring-indigo-800 focus:border-indigo-300 focus:ring-indigo-300"
                 required
+                value={title || ''}
                 onChange={getTitle}
               />
             </div>
@@ -65,11 +77,12 @@ export default function BoardCreate() {
                 rows="10"
                 className="w-full rounded-lg mt-1 border-indigo-800 ring-indigo-800 focus:border-indigo-300 focus:ring-indigo-300"
                 required
+                value={content}
                 onChange={getContent}
               ></textarea>
             </div>
             <button className="mt-5 w-full border rounded-md bg-indigo-500 text-white hover:bg-indigo-800 py-2 col-start-5 col-span-1">
-              작성
+              수정
             </button>
             <div
               className="mt-5 w-full text-center border rounded-md bg-slate-300 text-white hover:bg-slate-400 py-2 col-start-8 col-span-1 cursor-pointer"

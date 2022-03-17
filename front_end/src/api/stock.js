@@ -12,8 +12,8 @@ async function getStockItemList(page, size) {
 async function getBoardList(code, page, size) {
   return await api.get(
     `stock/post/${code}?` +
-      (page ? `page=${page}&` : '') +
-      (size ? `size=${size}&` : '')
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "")
   );
 }
 
@@ -36,10 +36,16 @@ async function deleteBoard(boardId) {
   await authApi.delete(`stock/post/delete/${boardId}`);
 }
 
+// 토론 게시글 수정
+async function updateBoard(title, content, boardId) {
+  await authApi.put(`stock/post/update/${boardId}`, { title, content });
+}
+
 export {
   getStockItemList,
   getBoardList,
   createBoard,
   getBoardDetail,
   deleteBoard,
+  updateBoard,
 };
