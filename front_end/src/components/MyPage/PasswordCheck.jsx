@@ -6,10 +6,10 @@ export default function PasswordCheck({ setIsAuthorized }) {
   const [accessPassword, setAccessPassword] = useState("");
 
   const inputBoxStyle =
-    "appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm";
+    "appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 sm:text-sm";
 
   const buttonStyle =
-    "relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500";
+    "relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-900";
 
   const handleAccessPasswordChange = (e) => setAccessPassword(e.target.value);
 

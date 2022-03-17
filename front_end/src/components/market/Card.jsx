@@ -8,7 +8,7 @@ export default function card({ info }) {
       <div
         className={classNames(
           "m-5 text-2xl mb-10",
-          info.open > info.close ? "text-red-500" : "text-green-500"
+          info.open > info.close ? "text-red-900" : "text-green-900"
         )}
       >
         <span className="mr-3">{info.close.toFixed(2)}</span>

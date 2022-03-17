@@ -7,7 +7,7 @@ export default function ListTitle({ onCheckedAll, checked }) {
             id="checkAll"
             name="checkAll"
             type="checkbox"
-            className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+            className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
             onChange={(e) => onCheckedAll(e)}
             checked={checked}
           />

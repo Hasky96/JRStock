@@ -19,11 +19,11 @@ export default function UserUpdate() {
   const [passwordValid, setPasswordValid] = useState(false);
   const [lookPassword, setLookPassword] = useState(false);
   const inputBoxStyle =
-    "appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm";
+    "appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 sm:text-sm";
   const disabledInputBoxStyle =
-    "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-500 rounded-md sm:text-sm";
+    "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-900 text-gray-900 rounded-md sm:text-sm";
   const buttonStyle =
-    "relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500";
+    "relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-900";
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -169,7 +169,7 @@ export default function UserUpdate() {
               setLookPassword={setLookPassword}
             />
             {values.password && !passwordValid && (
-              <p className="text-red-500">비밀번호가 유효하지 않습니다.</p>
+              <p className="text-red-900">비밀번호가 유효하지 않습니다.</p>
             )}
           </div>
           {/* 비밀번호 확인 input 부분 */}
@@ -186,7 +186,7 @@ export default function UserUpdate() {
               placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
             />
             {values.password && passwordErr && (
-              <p className="text-red-500">비밀번호가 일치하지 않습니다.</p>
+              <p className="text-red-900">비밀번호가 일치하지 않습니다.</p>
             )}
           </div>
           <div className="my-5 flex flex-col">

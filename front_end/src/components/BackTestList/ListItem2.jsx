@@ -2,7 +2,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
   return (
     <li
       key={index}
-      className="grid grid-cols-12 h-12 hover:bg-yellow-50 hover:cursor-pointer"
+      className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer"
     >
       <div className="col-span-1 my-auto grid grid-cols-2">
         <div className="col-span-1">
@@ -10,7 +10,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
             id="checkbox"
             name="checkbox"
             type="checkbox"
-            className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+            className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
             onChange={(e) => onChecked(e, index)}
             checked={checked}
           />

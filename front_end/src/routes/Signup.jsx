@@ -29,7 +29,7 @@ export default function Signup() {
         >
           {/* title */}
           <div>
-            <h2 className="text-3xl font-extrabold text-yellow-900 text-center">
+            <h2 className="text-3xl font-extrabold text-indigo-900 text-center">
               JRstock
             </h2>
           </div>
@@ -83,7 +83,7 @@ export default function Signup() {
                     setName(e.target.value);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 focus:z-10 sm:text-sm"
                   placeholder="Name"
                 />
               </div>
@@ -107,11 +107,11 @@ export default function Signup() {
                     setDuplicateCheck(false);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 focus:z-10 sm:text-sm"
                   placeholder="Email address"
                 />
                 {emailErr && (
-                  <p className="text-red-500">
+                  <p className="text-red-900">
                     이메일 정보가 유효하지 않습니다.
                   </p>
                 )}
@@ -138,12 +138,12 @@ export default function Signup() {
                       alert("이미 가입된 이메일 입니다.");
                     }
                   }}
-                  className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                  className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-900"
                 >
                   이메일 중복 확인
                 </button>
                 {duplicateCheck && (
-                  <p className="text-yellow-500">이용 가능한 이메일 입니다.</p>
+                  <p className="text-indigo-900">이용 가능한 이메일 입니다.</p>
                 )}
               </div>
               {/* 비밀번호 input 부분 */}
@@ -167,7 +167,7 @@ export default function Signup() {
                     setPassword(e.target.value);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 focus:z-10 sm:text-sm"
                   placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
                 />
                 {lookPassword ? (
@@ -208,7 +208,7 @@ export default function Signup() {
                     setPassword2(e.target.value);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 focus:z-10 sm:text-sm"
                   placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
                 />
                 {passwordErr && (
@@ -220,7 +220,7 @@ export default function Signup() {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-900"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
                 회원가입
