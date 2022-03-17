@@ -18,7 +18,7 @@ export default function StockItemList() {
   const [stocks, setStocks] = useState([]);
   const kospi = [
     {
-      id: 1351,
+      id: '005930',
       name: "삼성전자",
       currentPrice: "72400",
       volatility: 200,
@@ -28,6 +28,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "kospi",
     },
     {
       id: 1346134,
@@ -40,6 +41,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "kospi",
     },
     {
       id: 13,
@@ -52,6 +54,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "kospi",
     },
     {
       id: 4136136,
@@ -64,6 +67,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "kospi",
     },
   ];
   const kosdaq = [
@@ -78,6 +82,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "kosdaq",
     },
     {
       id: 124151,
@@ -90,6 +95,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "kosdaq",
     },
   ];
   const konex = [
@@ -104,6 +110,7 @@ export default function StockItemList() {
       highPrice: "72400",
       lowPrice: "72400",
       marketCapitalization: "430421300000000",
+      market: "konex",
     },
   ];
 
@@ -273,7 +280,7 @@ export default function StockItemList() {
 
   // 종목 클릭 시 해당 종목 디테일 페이지로
   const goDetailPage = (id) => {
-    navigate({ pathname: `/stock/${id}` });
+    navigate({ pathname: `${id}` });
   };
 
   const onClickFilter = (filter) => {
