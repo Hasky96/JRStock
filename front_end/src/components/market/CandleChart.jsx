@@ -79,30 +79,28 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
           visible: true,
           style: 0,
           width: 2,
-          color: "rgba(255, 196, 42, 0.1)",
+          color: "rgba(49, 46, 129, 0.1)",
           labelVisible: true,
-          labelBackgroundColor: "rgba(255, 196, 42, 0.1)",
+          labelBackgroundColor: "rgba(49, 46, 129, 0.1)",
         },
         vertLine: {
           visible: true,
           style: 0,
           width: 2,
-          color: "rgba(255, 196, 42, 0.1)",
+          color: "rgba(49, 46, 129, 0.1)",
           // labelVisible: false,
           labelVisible: true,
-          labelBackgroundColor: "rgba(255, 196, 42, 0.1)",
+          labelBackgroundColor: "rgba(49, 46, 129, 0.1)",
         },
       },
     }));
-    // rgba(255,82,82, 0.8)" },
-    // { time: "2019-05-24", value: 8755506.0, color: "rgba(0, 150, 136, 0.8)
+    // rgba(255,0,0, 0.8)" },
+    // { time: "2019-05-24", value: 8755506.0, color: "rgba(0,0,255, 0.8)
     var series = chart.addCandlestickSeries({
-      upColor: "rgba(0, 150, 136, 0.8)",
-      downColor: "rgba(255,82,82, 0.8)",
-      borderDownColor: "rgba(255, 196, 42, 1)",
-      borderUpColor: "rgba(255, 196, 42, 1)",
-      wickDownColor: "rgba(255,82,82, 0.8)",
-      wickUpColor: "rgba(0, 150, 136, 0.8)",
+      upColor: "rgba(0,0,255, 0.8)",
+      downColor: "rgba(255,0,0, 0.8)",
+      wickDownColor: "rgba(255,0,0, 0.8)",
+      wickUpColor: "rgba(0,0,255, 0.8)",
     });
 
     series.setData(candleData);

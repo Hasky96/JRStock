@@ -116,7 +116,7 @@ export default function Market() {
           id="kospi"
           className={classNames(
             "text-2xl font-bold",
-            selectedChart === "kospi" ? "text-yellow-300" : "text-gray-300"
+            selectedChart === "kospi" ? "text-indigo-900" : "text-gray-300"
           )}
           onClick={() => {
             setSelectedChart("kospi");
@@ -132,7 +132,7 @@ export default function Market() {
           id="kosdaq"
           className={classNames(
             "text-2xl font-bold",
-            selectedChart === "kosdaq" ? "text-yellow-300" : "text-gray-300"
+            selectedChart === "kosdaq" ? "text-indigo-900" : "text-gray-300"
           )}
           onClick={() => {
             setSelectedChart("kosdaq");
