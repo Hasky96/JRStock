@@ -243,6 +243,36 @@ def week_stock_list(reqeust, code_number):
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 월봉 데이터 전체 조회(아무나)',
+    operation_description='월봉 데이터 전체 정보를 가져옵니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: DayStockSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def month_stock_list(reqeust, code_number):
+    day_stock_list = DayStock.objects.filter(code_number=code_number)
+    day_stock_list = list(day_stock_list)
+    
+    prev_month = None
+    
+    for day_stock in day_stock_list[:]:
+        datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
+        if prev_month == None:
+            prev_month = datetime_date.month
+            continue
+        
+        if prev_month != datetime_date.month:
+            prev_month = datetime_date.month
+            continue
+        
+        day_stock_list.remove(day_stock)
+    
+    serializer = DayStockSerializer(day_stock_list, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @swagger_auto_schema(
     method='get',
