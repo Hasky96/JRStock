@@ -11,7 +11,7 @@ export default function card({ info }) {
           info.open > info.close ? "text-red-500" : "text-green-500"
         )}
       >
-        <span className="mr-3">{info.open.toFixed(2)}</span>
+        <span className="mr-3">{info.close.toFixed(2)}</span>
         <span>{`${info.close - info.open < 0 ? "▼" : "▲"} ${(
           info.close - info.open
         ).toFixed(3)} (${((info.close / info.open) * 100 - 100).toFixed(
