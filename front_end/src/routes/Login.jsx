@@ -23,8 +23,8 @@ export default function Login() {
       sessionStorage.setItem("access_token", result.data.access_token);
       navigate(from);
     } catch (e) {
-      setIsError(true);
       console.log(e);
+      setIsError(true);
     }
   };
 
@@ -134,7 +134,7 @@ export default function Login() {
               <div className="text-sm">
                 <Link
                   to="/login/help"
-                  className="text-blue-600 hover:text-blue-900"
+                  className="text-blue-600 hover:text-blue-500"
                 >
                   비밀번호를 잊으셨나요?
                 </Link>

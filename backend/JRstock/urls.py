@@ -17,17 +17,18 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="ssafy.6th.project@gmail.com"),
         license=openapi.License(name="Apache 2.0", url="https://www.apache.org/licenses/LICENSE-2.0.html"),
     ),
+    url="http://j6s001.p.ssafy.io/",
     public=True,
     permission_classes=[AllowAny],
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    re_path(r'swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(
+    path('api/admin/', admin.site.urls),
+    re_path(r'api/swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(
         cache_timeout=0), name='schema-json'),
-    re_path(r'swagger', schema_view.with_ui(
+    re_path(r'api/swagger', schema_view.with_ui(
         'swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'redoc', schema_view.with_ui(
+    re_path(r'api/redoc', schema_view.with_ui(
         'redoc', cache_timeout=0), name='schema-redoc-v1'),
     path('user/', include('dj_rest_auth.urls')),
     path('user/', include('allauth.urls')),

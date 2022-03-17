@@ -41,6 +41,7 @@
 
 .navbar:hover .link-text {
   display: block;
+  white-space: nowrap;
 }
 
 .nav-item {

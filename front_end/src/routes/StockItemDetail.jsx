@@ -4,7 +4,7 @@ import TabBar from "../components/TabBar/TabBar";
 import { useState } from "react";
 import Chart from "../components/StockItemDetail/Chart";
 import News from "../components/StockItemDetail/News";
-import Board from "../components/StockItemDetail/Board";
+import BoardList from "../components/StockItemDetail/BoardList";
 
 export default function StockItemDetail() {
   // const { id } = useParams();
@@ -56,7 +56,7 @@ export default function StockItemDetail() {
           <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
           {currentTab === "종합정보" && <Chart />}
           {currentTab === "뉴스" && <News />}
-          {currentTab === "종목토론 게시판" && <Board />}
+          {currentTab === "종목토론 게시판" && <BoardList />}
         </PageContainer>
       </div>
       {currentTab === "종합정보" && (
