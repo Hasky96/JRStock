@@ -26,4 +26,9 @@ async function createBoard(title, content, code_number) {
   });
 }
 
-export { getStockItemList, getBoardList, createBoard };
+// 토론 게시글 상세페이지 받아오기
+async function getBoardDetail(boardId) {
+  return await api.get(`stock/post/detail/${boardId}`)
+}
+
+export { getStockItemList, getBoardList, createBoard, getBoardDetail };
