@@ -9,7 +9,7 @@ export default function Header({ category }) {
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
-      <div className="fixed ml-10 w-11/12 z-50">
+      <div className="fixed ml-10 w-11/12 z-30">
         <div className="grid grid-cols-6 m-6 mx-12 rounded-xl bg-yellow-300">
           {/* 카테고리 그리드 */}
           <div className="col-span-2 text-4xl my-auto ml-5 text-yellow-50">
