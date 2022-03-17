@@ -23,8 +23,8 @@ export default function Login() {
       sessionStorage.setItem("access_token", result.data.access_token);
       navigate(from);
     } catch (e) {
-      setIsError(true);
       console.log(e);
+      setIsError(true);
     }
   };
 
@@ -39,8 +39,8 @@ export default function Login() {
   };
 
   const rememberMe = (e) => {
-    console.log(e.target.checked)
-  }
+    console.log(e.target.checked);
+  };
 
   // 소셜 로그인 성공 시 실행
   const onSuccess = async (response) => {
@@ -68,7 +68,9 @@ export default function Login() {
             </h2>
           </div>
           <div>
-            <h2 className="text-xl font-extrabold text-yellow-900">Login in to your account</h2>
+            <h2 className="text-xl font-extrabold text-yellow-900">
+              Login in to your account
+            </h2>
           </div>
           {isError && (
             <div>
@@ -130,7 +132,10 @@ export default function Login() {
               </div>
 
               <div className="text-sm">
-                <Link to="/login/help" className="text-blue-600 hover:text-blue-500">
+                <Link
+                  to="/login/help"
+                  className="text-blue-600 hover:text-blue-500"
+                >
                   비밀번호를 잊으셨나요?
                 </Link>
               </div>
