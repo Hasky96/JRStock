@@ -17,7 +17,7 @@ ListHeader.propTypes = {
  * onSearch: 검색을 했을 때 작동시킬 함수
  */
 export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
-  const [selected, setSelected] = useState("Options");
+  const [selected, setSelected] = useState(optionKind[0]);
   const optionList = [];
   optionKind.forEach((element, idx) => {
     optionList.push(
