@@ -18,4 +18,8 @@ urlpatterns = [
     path('detail/<str:code_number>', views.financial_info_detail, name='financial_info_detail'),
     path('day/<str:code_number>', views.day_stock_list, name='day_stock_list'),
     path('live/<str:code_number>', views.live_data, name='live_data'),
+    
+    path('week/<str:code_number>', views.week_stock_list, name='week_stock_list'),
+    path('month/<str:code_number>', views.month_stock_list, name='month_stock_list'),
+    
 ]

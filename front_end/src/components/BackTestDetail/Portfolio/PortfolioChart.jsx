@@ -9,7 +9,7 @@ export function PortfolioChart({ labels }) {
     plugins: {
       title: {
         display: true,
-        text: "종목별 수익률",
+        text: "최종 자산 비율",
       },
     },
   };
@@ -21,10 +21,16 @@ export function PortfolioChart({ labels }) {
         label: "My First Dataset",
         data: [300, 50, 100],
         backgroundColor: [
-          "rgb(255, 99, 132)",
-          "rgb(54, 162, 235)",
-          "rgb(255, 205, 86)",
+          "rgb(254, 138, 125, 0.5)",
+          "rgb(147, 197, 253, 0.5)",
+          "rgb(255, 196, 42, 0.5)",
         ],
+        borderColor: [
+          "rgb(254, 138, 125)",
+          "rgb(147, 197, 253)",
+          "rgb(255, 196, 42)",
+        ],
+        offset: 10,
         hoverOffset: 4,
       },
     ],
