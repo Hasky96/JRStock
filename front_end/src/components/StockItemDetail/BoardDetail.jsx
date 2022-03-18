@@ -92,7 +92,7 @@ export default function BoardDetail() {
           className="block m-auto rounded-xl border-2 w-32 h-12 bg-indigo-100 text-xl font-bold text-indigo-500 border-indigo-800 bottom-5"
           onClick={(e) => {
             e.preventDefault();
-            navigate(`/stock/${board.data.basic_info.code_number}`);
+            navigate(`/stock/${board.data.basic_info.code_number}/board`);
           }}
         >
           목록

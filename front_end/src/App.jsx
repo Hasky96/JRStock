@@ -62,7 +62,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
-          <Route path="/stock/:id" element={<StockItemDetail />} />
+          <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
           <Route path="/stock/:id/board/new" element={<BoardCreate />} />
           <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
           <Route path="/stock/:id/board/:boardId/update" element={<BoardUpdate />} />

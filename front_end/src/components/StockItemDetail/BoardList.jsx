@@ -58,7 +58,7 @@ export default function BoardList() {
 
   // 게시글 상세 페이지로 이동
   const goDetail = (board) => {
-    navigate(`board/${board.id}`)
+    navigate(`${board.id}`)
   }
 
   // 게시판 데이터로 li태그 만들기
@@ -104,7 +104,7 @@ export default function BoardList() {
             className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-900 hover:text-indigo-900 rounded-lg grid grid-cols-3 hover:fill-indigo-900"
             onClick={function () {
               if (sessionStorage.getItem("access_token")) {
-                navigate("board/new");
+                navigate("new");
               } else {
                 navigate("/login");
               }
