@@ -2,51 +2,25 @@ import { useEffect, useState } from "react";
 import PageContainer from "../components/PageContainer";
 import Card from "../components/market/Card";
 import TabBar from "../components/TabBar/TabBar";
-import LineChart from "../components/LineChart";
+import LineChart from "../components/market/LineChart";
 import "../components/market/style.css";
 import NewsList from "../components/market/NewsList";
 import NewsTitle from "../components/market/NewsTitle";
 
+import { getDayStock, getWeekStock, getMonthStock } from "../api/market";
+
 import { CandleChart } from "../components/market/CandleChart";
-import { candleData, volumeData } from "../components/BackTestDetail/data";
+import NewsTable from "../components/market/NewsTable";
 
 import {
-  dayData,
-  weekData,
-  monthData,
-  yearData,
-  candleDayData,
-  volumeDayData,
-  candleWeekData,
-  volumeWeekData,
-  candleMonthData,
-  volumeMonthData,
-} from "../assets/marketChartTestData";
-import NewsTable from "../components/market/NewsTable";
+  transCandleData,
+  transVolumeData,
+  transLineData,
+} from "../util/stockDataUtil";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
-var kospiSeriesesData = new Map([
-  ["일봉", { candleData: candleDayData, volumeData: volumeDayData }],
-  ["주봉", { candleData: candleWeekData, volumeData: volumeWeekData }],
-  ["월봉", { candleData: candleMonthData, volumeData: volumeMonthData }],
-  ["1D", dayData],
-  ["1W", weekData],
-  ["1M", monthData],
-  ["1Y", yearData],
-]);
-
-var kosdaqSeriesesData = new Map([
-  ["일봉", { candleData: candleData, volumeData: volumeData }],
-  ["주봉", { candleData: candleData, volumeData: volumeData }],
-  ["월봉", { candleData: candleData, volumeData: volumeData }],
-  ["1D", dayData],
-  ["1W", weekData],
-  ["1M", monthData],
-  ["1Y", yearData],
-]);
 
 const kospiInfo = {
   date: "2021-02-02 16:00:00",
@@ -73,13 +47,116 @@ export default function Market() {
   const [kosdaqTab, setKosdaqTab] = useState("정보");
   const kosdaqTabInfo = ["정보", "시황 뉴스"];
 
-  const [data, setData] = useState(dayData); // kospi dayData 로 초기화
+  const [data, setData] = useState(); // kospi dayData 로 초기화
   const [period, setPeriod] = useState("1D");
 
-  useEffect(() => {
+  const [kospiSeriesesData, setKospiSeriesesData] = useState(new Map());
+  const [kosdaqSeriesesData, setKosdaqSeriesesData] = useState(new Map());
+  // const [kospiInfo, setKospiInfo] = useState();
+  // const [kosdaqInfo, setKosdaqInfo] = useState();
+
+  // 처음 화면 변수 초기화
+  const init = async () => {
+    // 일봉
     // kospiSeriesData 초기화
-    // kosdaqSeriesData 초기화
+    const kospiDayStock = await getDayStock("kospi");
+    console.log(kospiDayStock);
+
+    const kospiLineData = transLineData(kospiDayStock);
+
+    setKospiSeriesesData((cur) =>
+      new Map(cur)
+        .set("일봉", {
+          candleData: transCandleData(kospiDayStock),
+          volumeData: transVolumeData(kospiDayStock),
+        })
+        .set("1D", kospiLineData)
+        .set("1W", kospiLineData)
+        .set("1M", kospiLineData)
+        .set("1Y", kospiLineData)
+    );
+
+    console.log("코스피 일별 데이터 전처리 끝");
+
+    // 주봉
+    const kospiWeekStock = await getWeekStock("kospi");
+    console.log(kospiWeekStock);
+    setKospiSeriesesData((cur) =>
+      new Map(cur).set("주봉", {
+        candleData: transCandleData(kospiWeekStock),
+        volumeData: transVolumeData(kospiWeekStock),
+      })
+    );
+
+    console.log("코스피 주별 데이터 전처리 끝");
+
+    // 월봉
+    const kospiMonthStock = await getMonthStock("kospi");
+    console.log(kospiMonthStock);
+
+    setKospiSeriesesData((cur) =>
+      new Map(cur).set("월봉", {
+        candleData: transCandleData(kospiMonthStock),
+        volumeData: transVolumeData(kospiMonthStock),
+      })
+    );
+
+    console.log("코스피 월별 데이터 전처리 끝");
+
+    //////// 코스닥
+    // 일봉
+    // kospiSeriesData 초기화
+    const kosdaqDayStock = await getDayStock("kosdaq");
+    console.log(kosdaqDayStock);
+    const kosdaqLineData = transLineData(kosdaqDayStock);
+
+    setKosdaqSeriesesData((cur) =>
+      new Map(cur)
+        .set("일봉", {
+          candleData: transCandleData(kosdaqDayStock),
+          volumeData: transVolumeData(kosdaqDayStock),
+        })
+        .set("1D", kosdaqLineData)
+        .set("1W", kosdaqLineData)
+        .set("1M", kosdaqLineData)
+        .set("1Y", kosdaqLineData)
+    );
+
+    console.log("코스닥 일별 데이터 전처리 끝");
+
+    // 주봉
+    const kosdaqWeekStock = await getWeekStock("kosdaq");
+    console.log(kosdaqWeekStock);
+    setKosdaqSeriesesData((cur) =>
+      new Map(cur).set("주봉", {
+        candleData: transCandleData(kosdaqWeekStock),
+        volumeData: transVolumeData(kosdaqWeekStock),
+      })
+    );
+
+    console.log("코스닥 주별 데이터 전처리 끝");
+
+    // 월봉
+    const kosdaqMonthStock = await getMonthStock("kosdaq");
+    console.log(kosdaqMonthStock);
+    setKosdaqSeriesesData((cur) =>
+      new Map(cur).set("월봉", {
+        candleData: transCandleData(kosdaqMonthStock),
+        volumeData: transVolumeData(kosdaqMonthStock),
+      })
+    );
+
+    console.log("코스닥 월별 데이터 전처리 끝");
+  };
+
+  useEffect(() => {
+    init();
   }, []);
+
+  useEffect(() => {
+    if (selectedChart === "kospi") setData(kospiSeriesesData.get(period));
+    else setData(kosdaqSeriesesData.get(period));
+  }, [kospiSeriesesData, kosdaqSeriesesData]);
 
   const btnList = () => {
     const list = [];
@@ -121,7 +198,7 @@ export default function Market() {
           onClick={() => {
             setSelectedChart("kospi");
             setKospiTab("정보");
-            setData(dayData); // kospi dayData로 초기화
+            setData(kospiSeriesesData.get("1D")); // kospi dayData로 초기화
             setPeriod("1D");
           }}
         >
@@ -137,7 +214,7 @@ export default function Market() {
           onClick={() => {
             setSelectedChart("kosdaq");
             setKosdaqTab("정보");
-            setData(dayData); // kosdaq dayData로 초기화
+            setData(kosdaqSeriesesData.get("1D")); // kosdaq dayData로 초기화
             setPeriod("1D");
           }}
         >
@@ -149,35 +226,37 @@ export default function Market() {
           <div className="mx-5">
             <TabBar setCurrentTab={setKospiTab} tabInfo={kospiTabInfo} />
           </div>
-          <div
-            className={classNames(
-              "grid grid-cols-2 h-96",
-              kospiTab === "정보" ? "" : "hidden"
-            )}
-          >
-            <div className="grid grid-cols-1">
-              <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
-                <div className="grid row-span-5">
-                  {period.substring(0, 1) === "1" && (
-                    <LineChart data={data}></LineChart>
-                  )}
-                  {period.substring(0, 1) !== "1" && (
-                    <CandleChart
-                      candleData={data.candleData}
-                      volumeData={data.volumeData}
-                      title={"코스피"}
-                      period={period}
-                    ></CandleChart>
-                  )}
-                </div>
+          {data && (
+            <div
+              className={classNames(
+                "grid grid-cols-2 h-96",
+                kospiTab === "정보" ? "" : "hidden"
+              )}
+            >
+              <div className="grid grid-cols-1">
+                <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
+                  <div className="grid row-span-5">
+                    {period.substring(0, 1) === "1" && (
+                      <LineChart data={data} period={period}></LineChart>
+                    )}
+                    {period.substring(0, 1) !== "1" && (
+                      <CandleChart
+                        candleData={data.candleData}
+                        volumeData={data.volumeData}
+                        title={"코스피"}
+                        period={period}
+                      ></CandleChart>
+                    )}
+                  </div>
 
-                <div className="switcher row-span-1 pt-8">{btnList()}</div>
+                  <div className="switcher row-span-1 pt-8">{btnList()}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1">
+                <Card info={kospiInfo} />
               </div>
             </div>
-            <div className="grid grid-cols-1">
-              <Card info={kospiInfo} />
-            </div>
-          </div>
+          )}
           {kospiTab === "시황 뉴스" && <NewsTable kind="kospi" />}
         </div>
       )}
@@ -186,35 +265,37 @@ export default function Market() {
           <div className="mx-5">
             <TabBar setCurrentTab={setKosdaqTab} tabInfo={kosdaqTabInfo} />
           </div>
-          <div
-            className={classNames(
-              "grid grid-cols-2 h-96",
-              kosdaqTab === "정보" ? "" : "hidden"
-            )}
-          >
-            <div className="grid grid-cols-1">
-              <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
-                <div className="grid row-span-5">
-                  {period.substring(0, 1) === "1" && (
-                    <LineChart data={data}></LineChart>
-                  )}
-                  {period.substring(0, 1) !== "1" && (
-                    <CandleChart
-                      candleData={data.candleData}
-                      volumeData={data.volumeData}
-                      title={"코스닥"}
-                      period={period}
-                    ></CandleChart>
-                  )}
-                </div>
+          {data && (
+            <div
+              className={classNames(
+                "grid grid-cols-2 h-96",
+                kosdaqTab === "정보" ? "" : "hidden"
+              )}
+            >
+              <div className="grid grid-cols-1">
+                <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
+                  <div className="grid row-span-5">
+                    {period.substring(0, 1) === "1" && (
+                      <LineChart data={data} period={period}></LineChart>
+                    )}
+                    {period.substring(0, 1) !== "1" && (
+                      <CandleChart
+                        candleData={data.candleData}
+                        volumeData={data.volumeData}
+                        title={"코스닥"}
+                        period={period}
+                      ></CandleChart>
+                    )}
+                  </div>
 
-                <div className="switcher row-span-1 pt-8">{btnList()}</div>
+                  <div className="switcher row-span-1 pt-8">{btnList()}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1">
+                <Card info={kosdaqInfo} />
               </div>
             </div>
-            <div className="grid grid-cols-1">
-              <Card info={kosdaqInfo} />
-            </div>
-          </div>
+          )}
           {kosdaqTab === "시황 뉴스" && <NewsTable kind="kosdaq" />}
         </div>
       )}

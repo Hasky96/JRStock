@@ -56,8 +56,8 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
       },
       rightPriceScale: {
         scaleMargins: {
-          top: 0.35,
-          bottom: 0.2,
+          // top: 0.35,
+          bottom: 0.4,
         },
         borderVisible: false,
       },
@@ -97,22 +97,23 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
     // rgba(255,0,0, 0.8)" },
     // { time: "2019-05-24", value: 8755506.0, color: "rgba(0,0,255, 0.8)
     var series = chart.addCandlestickSeries({
-      upColor: "rgba(0,0,255, 0.8)",
-      downColor: "rgba(255,0,0, 0.8)",
-      wickDownColor: "rgba(255,0,0, 0.8)",
-      wickUpColor: "rgba(0,0,255, 0.8)",
+      upColor: "#2563eb",
+      downColor: "#ef4444",
+      wickDownColor: "#ef4444",
+      wickUpColor: "#2563eb",
     });
 
     series.setData(candleData);
 
     var volumeSeries = chart.addHistogramSeries({
-      color: "#26a69a",
+      // color: "#26a69a",
+      color: "#000",
       priceFormat: {
         type: "volume",
       },
       priceScaleId: "",
       scaleMargins: {
-        top: 0.8,
+        top: 0.9,
         bottom: 0,
       },
     });

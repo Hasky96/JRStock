@@ -67,6 +67,7 @@ export default function StockItemDetail() {
           {currentTab === "종목토론 게시판" && <BoardList />}
         </PageContainer>
       </div>
+
       {currentTab === "종합정보" && (
         <div className="col-span-3">
           <PageContainer pl={2.5} pr={10} minH={60}>
