@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     
+    'django_celery_beat',
+    'django_celery_results',
+    
     'accounts',
     'notice',
     'stock',
@@ -69,6 +72,15 @@ MEDIA_URL = '/media/'
 
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000', 'http://j6s001.p.ssafy.io']
 CORS_ALLOW_CREDENTIALS = True
+
+# CELERY 세팅
+CELERY_ALWAYS_EAGER = True
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Seoul'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
