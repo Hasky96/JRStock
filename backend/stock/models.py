@@ -82,6 +82,13 @@ class DayStock(models.Model):
         managed = False
         ordering = ['date']
         db_table = 'day_stock'
+        
+class Interest(models.Model):
+    basic_info = models.ForeignKey(BasicInfo, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ['-id']
 
 # ====================================================================== 코스피 ======================================================================
 # class InfoKospi(models.Model):

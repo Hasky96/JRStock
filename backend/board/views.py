@@ -88,6 +88,40 @@ def post_list(request, code_number):
 
 @swagger_auto_schema(
     method='get',
+    operation_id='게시판 종목별 내 글 조회(유저)',
+    operation_description='게시판 종목별로 내가 쓴 글만 조회합니다',
+    tags=['주식_게시판'],
+    manual_parameters=[page, size],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 게시글 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("board", "게시글 정보"),
+            }
+        )
+    )}
+)  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def my_post_list(request, code_number):
+    post_list = Post.objects.filter(basic_info=code_number, user=request.user)
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    result = paginator.paginate_queryset(post_list, request)
+    serializer = PostSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@swagger_auto_schema(
+    method='get',
     operation_id='게시글 상세 조회(아무나)',
     operation_description='게시글을 상세 조회 합니다',
     tags=['주식_게시판'],
@@ -165,7 +199,7 @@ def post_delete(request, pk):
 @authentication_classes([JWTAuthentication])
 def comment_create(request):
     data = request.data.copy()
-    data['basic_info'] = request.data.get('post_id')
+    data['post'] = request.data.get('board_id')
     serializer = CommentSerializer(data=data)
     
     if serializer.is_valid(raise_exception=True):
