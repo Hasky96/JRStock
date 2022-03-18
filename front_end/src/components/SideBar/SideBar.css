@@ -9,7 +9,7 @@
   height: 100vh;
   position: fixed;
   transition: width 200ms ease;
-  z-index: 10000;
+  z-index: 30;
 }
 
 .logo {

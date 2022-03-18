@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.http import QueryDict
 from django.shortcuts import get_object_or_404
 from numpy import where
 
@@ -9,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer
+from .serializers import BasicInfoSerializer, DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer, InterestSerializer
 
-from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -345,6 +346,233 @@ def live_data(request, code_number):
                         }, status=status.HTTP_200_OK)
         
     return Response({"message" : "Connection Error"}, status=status.HTTP_404_NOT_FOUND)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='관심종목 등록(유저)',
+    operation_description='종목코드를 이용해 관심종목을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="종목 코드"),
+        }
+    ),
+    tags=['주식_관심종목'],
+    responses={status.HTTP_201_CREATED: openapi.Response(
+        description="HTTP_201_CREATED",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'duplicate': openapi.Schema(type=openapi.TYPE_INTEGER, default=True, description="중복되어 등록되지 않은 종목 수"),
+            }
+        )
+    )}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def interest_stock_create(request):
+    # 체크박스를 리스트 형식으로 받아와서 저장
+    code_numbers = request.data.getlist('code_number')
+    
+    duplicate_list = []
+    
+    # 중복확인
+    for code_number in code_numbers:
+        interest = Interest.objects.filter(basic_info_id=code_number)
+        
+        if interest.count() == 0:
+            serializer = InterestSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user, basic_info_id=code_number)
+        else:
+            duplicate_list.append(code_number)            
+    
+    return Response({'duplicate': len(duplicate_list)},status=status.HTTP_201_CREATED)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='주식 관심 종목 조회(유저)',
+    operation_description='주식 관심 종목 전체를 조회 합니다(기본정보 + 재무제표 + 최근 주가)',
+    tags=['주식_관심종목'],
+    manual_parameters=[page, size, sort, company_name, face_value],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("info", "종목 정보"),
+            }
+        )
+    )}
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def interest_stock_list(request):    
+    # 해당하는 유저의 관심종목 전체를 불러옴
+    interest_list = Interest.objects.filter(user=request.user)
+    
+    # 비어있는 쿼리셋 만들기
+    stock_list = DayStockInfo.objects.none()
+    
+    # 관심종목의 상세 정보를 불러와서 합침
+    for interest in interest_list:
+        stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date='2022-03-10')
+        stock_list = stock_list | stock
+
+    # 검색 기능
+    if request.GET.get('company_name'):
+        value = request.GET.get('company_name')
+        stock_list = stock_list.filter(financial_info__basic_info__company_name__contains=value)
+        
+    if request.GET.get('code_number'):
+        value = request.GET.get('code_number')
+        stock_list = stock_list.filter(financial_info__basic_info__code_number__contains=value)
+    
+    # 필터링
+    if request.GET.get('face_value'):
+        value = request.GET.get('face_value')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__face_value__gte=value[0], financial_info__face_value__lte=value[1])
+        
+    if request.GET.get('capital_stock'):
+        value = request.GET.get('capital_stock')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__capital_stock__gte=value[0], financial_info__capital_stock__lte=value[1])
+        
+    if request.GET.get('number_of_listings'):
+        value = request.GET.get('number_of_listings')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__number_of_listings__gte=value[0], financial_info__number_of_listings__lte=value[1])
+        
+    if request.GET.get('credit_rate'):
+        value = request.GET.get('credit_rate')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__credit_rate__gte=value[0], financial_info__credit_rate__lte=value[1])
+        
+    if request.GET.get('year_high_price'):
+        value = request.GET.get('year_high_price')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__year_high_price__gte=value[0], financial_info__year_high_price__lte=value[1])
+        
+    if request.GET.get('year_low_price'):
+        value = request.GET.get('year_low_price')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__year_low_price__gte=value[0], financial_info__year_low_price__lte=value[1])    
+    
+    if request.GET.get('market_cap'):
+        value = request.GET.get('market_cap')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__market_cap__gte=value[0], financial_info__market_cap__lte=value[1])    
+        
+    if request.GET.get('foreigner_percent'):
+        value = request.GET.get('foreigner_percent')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__foreigner_percent__gte=value[0], financial_info__foreigner_percent__lte=value[1])    
+        
+    if request.GET.get('substitute_price'):
+        value = request.GET.get('substitute_price')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__substitute_price__gte=value[0], financial_info__substitute_price__lte=value[1])    
+        
+    if request.GET.get('per'):
+        value = request.GET.get('per')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__per__gte=value[0], financial_info__per__lte=value[1])    
+        
+    if request.GET.get('eps'):
+        value = request.GET.get('eps')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__eps__gte=value[0], financial_info__eps__lte=value[1])                    
+    
+    if request.GET.get('roe'):
+        value = request.GET.get('roe')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__roe__gte=value[0], financial_info__roe__lte=value[1])  
+        
+    if request.GET.get('pbr'):
+        value = request.GET.get('pbr')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__pbr__gte=value[0], financial_info__pbr__lte=value[1])  
+        
+    if request.GET.get('ev'):
+        value = request.GET.get('ev')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__ev__gte=value[0], financial_info__ev__lte=value[1])  
+        
+    if request.GET.get('bps'):
+        value = request.GET.get('bps')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__bps__gte=value[0], financial_info__bps__lte=value[1])  
+        
+    if request.GET.get('sales_revenue'):
+        value = request.GET.get('sales_revenue')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__sales_revenue__gte=value[0], financial_info__sales_revenue__lte=value[1])                  
+    
+    
+    if request.GET.get('operating_income'):
+        value = request.GET.get('operating_income')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__operating_income__gte=value[0], financial_info__operating_income__lte=value[1])                  
+        
+    if request.GET.get('net_income'):
+        value = request.GET.get('net_income')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__net_income__gte=value[0], financial_info__net_income__lte=value[1])                  
+        
+    if request.GET.get('shares_outstanding'):
+        value = request.GET.get('shares_outstanding')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__shares_outstanding__gte=value[0], financial_info__shares_outstanding__lte=value[1])                  
+        
+    if request.GET.get('shares_outstanding_rate'):
+        value = request.GET.get('shares_outstanding_rate')
+        value = value.split('-')
+        stock_list = stock_list.filter(financial_info__shares_outstanding_rate__gte=value[0], financial_info__shares_outstanding_rate__lte=value[1])                                  
+    
+    paginator = PageNumberPagination()
+
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+
+    result = paginator.paginate_queryset(stock_list, request)
+    serializers = DayStockInfoSerializer(result, many=True)
+    return paginator.get_paginated_response(serializers.data)        
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='관심종목 제거(유저)',
+    operation_description='종목코드를 이용해 관심종목을 제거합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="종목 코드"),
+        }
+    ),
+    tags=['주식_관심종목'],
+    responses={status.HTTP_200_OK: ""}
+)    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def interset_stock_delete(request):
+    # 체크박스를 리스트 형식으로 받아와서 저장
+    code_numbers = request.data.getlist('code_number')
+    
+    # DB에 있는 값이면 제거 아니면 오류
+    for code_number in code_numbers:
+        interest = Interest.objects.filter(basic_info_id=code_number, user=request.user)
+        if interest.count() == 1:
+            interest.delete()
+    
+    return Response(status=status.HTTP_200_OK)
+    
 # ====================================================================== 코스피 ======================================================================
 
 
