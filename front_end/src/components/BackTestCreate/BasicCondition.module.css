@@ -1,0 +1,48 @@
+.inputBox {
+  position: relative;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.inputTag {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 2rem;
+}
+
+.inputTag:focus + .inputLabel::after {
+  transform: translateX(0%);
+}
+
+.inputLabel {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  pointer-events: none;
+  border-bottom: 1px solid #4c58ad;
+}
+
+.inputLabel::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  bottom: -1px;
+  left: 0px;
+  border-bottom: 3px solid #0e185f;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.datetimeBox {
+  max-width: 50%;
+}
+
+.BacktestCreatFormContainer {
+  max-width: 500px;
+}

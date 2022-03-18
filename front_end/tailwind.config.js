@@ -3,7 +3,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        theme: "#ffc42a",
+        theme: "#0E185F",
+      },
+      grayscale: {
+        25: "25%",
+        50: "50%",
+        75: "75%",
       },
     },
   },

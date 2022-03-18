@@ -43,8 +43,8 @@ export default function StockItemDetail() {
     dividendRate: "0.05%",
     foreignLimit: "446112896",
     foreignOwn: "126976103",
-    foreignRunout: "28.46%"
-  }
+    foreignRunout: "28.46%",
+  };
 
   return (
     <div className="grid grid-cols-12">
@@ -59,6 +59,7 @@ export default function StockItemDetail() {
           {currentTab === "종목토론 게시판" && <BoardList />}
         </PageContainer>
       </div>
+
       {currentTab === "종합정보" && (
         <div className="col-span-3">
           <PageContainer pl={2.5} pr={10} minH={60}>
@@ -91,7 +92,7 @@ export default function StockItemDetail() {
               <div>배당수익률</div>
               <div>{statement.dividendRate}</div>
             </div>
-            <hr className="my-2"/>
+            <hr className="my-2" />
             <div className="flex justify-between">
               <div>외국인한도주식수</div>
               <div>{statement.foreignLimit}</div>

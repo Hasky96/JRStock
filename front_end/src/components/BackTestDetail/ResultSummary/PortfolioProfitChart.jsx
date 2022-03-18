@@ -38,7 +38,7 @@ export function PortfolioProfitChart({ labels }) {
         barPercentage: 0.7,
         yAxisID: "y-right",
         data: [57.6, 46.8, 200.5],
-        backgroundColor: ["rgba(255, 205, 86, 0.3)"],
+        backgroundColor: "rgba(14, 24, 95, 0.3)",
         borderWidth: 1,
       },
       {
@@ -46,7 +46,7 @@ export function PortfolioProfitChart({ labels }) {
         barPercentage: 0.7,
         yAxisID: "y-right",
         data: [257.6, 96.8, 600.5],
-        backgroundColor: ["rgba(255, 205, 86, 0.9)"],
+        backgroundColor: "rgba(14, 24, 95, 0.8)",
         borderWidth: 1,
       },
     ],

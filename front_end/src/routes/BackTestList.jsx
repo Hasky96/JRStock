@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
-import ListItem from "../components/BackTestList/ListItem";
-import ListTitle from "../components/BackTestList/ListTitle";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getItems } from "../api/notice";
 import PageContainer from "../components/PageContainer";
 import ListHeader from "../components/ListHeader";
+import ListTitle from "../components/BackTestList/ListTitle";
+import ListItem from "../components/BackTestList/ListItem";
 import Pagenation from "../components/Pagenation";
-import { getItems } from "../api/notice";
+import { ReactComponent as Create } from "../assets/create.svg";
 
 export default function BackTestList() {
+  const navigate = useNavigate();
   const data = [
     {
       id: 0,
@@ -108,13 +111,31 @@ export default function BackTestList() {
     // pageNo 1로 초기화
   };
 
+  const handleCreateButtonClick = () => {
+    if (sessionStorage.getItem("access_token")) {
+      navigate("create");
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <PageContainer>
-      <ListHeader
-        optionKind={["aaa", "bbb", "ccc"]}
-        onClickFilter={onClickFilter}
-        onSearch={onSearch}
-      />
+      <div className="flex">
+        <button
+          className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg"
+          onClick={() => handleCreateButtonClick()}
+        >
+          <Create />
+          <div className="col-span-2 my-auto">백테스트 생성</div>
+        </button>
+        <ListHeader
+          optionKind={["aaa", "bbb", "ccc"]}
+          onClickFilter={onClickFilter}
+          onSearch={onSearch}
+        />
+      </div>
+
       <div className="mt-5">
         <table className="table-auto w-full text-left">
           <colgroup>
@@ -135,16 +156,19 @@ export default function BackTestList() {
           <tbody>{backTestItems.length && paintBackTestItems}</tbody>
         </table>
       </div>
-      <Pagenation
-        selectedNum={pageNo}
-        totalCnt={totalCount}
-        pageSize={pageSize}
-        onClickFirst={onClickFirst}
-        onClickLeft={onClickLeft}
-        onClickRight={onClickRight}
-        onClickLast={onClickLast}
-        onClickNumber={onClickNumber}
-      ></Pagenation>
+      <div className="relative w-full flex justify-center">
+        <Pagenation
+          selectedNum={pageNo}
+          totalCnt={totalCount}
+          pageSize={pageSize}
+          onClickFirst={onClickFirst}
+          onClickLeft={onClickLeft}
+          onClickRight={onClickRight}
+          onClickLast={onClickLast}
+          onClickNumber={onClickNumber}
+        ></Pagenation>
+        <button className="absolute right-0 top-5">백테스트 생성</button>
+      </div>
     </PageContainer>
   );
 }

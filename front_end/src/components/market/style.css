@@ -21,7 +21,7 @@
 }
 
 .switcher-item:hover {
-  background-color: #818cf8;
+  background-color: #e0e7ff;
 }
 
 .switcher-active-item {
@@ -32,5 +32,5 @@
 
 .switcher-active-item,
 .switcher-active-item:hover {
-  background-color: #818cf8;
+  background-color: #e0e7ff;
 }
