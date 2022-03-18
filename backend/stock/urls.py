@@ -22,4 +22,7 @@ urlpatterns = [
     path('week/<str:code_number>', views.week_stock_list, name='week_stock_list'),
     path('month/<str:code_number>', views.month_stock_list, name='month_stock_list'),
     
+    path('interest/create/', views.interest_stock_create, name='interest_stock_create'),
+    path('interest/', views.interest_stock_list, name='interest_stock_list'),
+    path('interest/delete/', views.interset_stock_delete, name='interset_stock_delete'),
 ]
