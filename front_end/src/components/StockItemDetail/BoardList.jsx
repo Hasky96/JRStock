@@ -13,36 +13,8 @@ export default function BoardList() {
   const navigate = useNavigate();
   const pageSize = 10;
 
-  // const boards = [
-  //   {
-  //     title: "떡상 각",
-  //     author: "[부울****",
-  //     views: "70",
-  //     date: "2022.03.14 13:48",
-  //     like: "30",
-  //     disLike: "2",
-  //   },
-  //   {
-  //     title: "떡락 각",
-  //     author: "[대전****",
-  //     views: "50",
-  //     date: "2022.03.14 15:48",
-  //     like: "1",
-  //     disLike: "20",
-  //   },
-  //   {
-  //     title: "오늘 종가",
-  //     author: "[서울****",
-  //     views: "30",
-  //     date: "2022.03.14 18:10",
-  //     like: "3",
-  //     disLike: "2",
-  //   },
-  // ];
-
   const init = async () => {
-    const data = await getBoardList(id);
-    console.log(data.data.results[0]);
+    const data = await getBoardList(id, pageNo, 10);
     setBoards(data.data.results);
     setTotalCount(boards.length);
   };
@@ -84,6 +56,11 @@ export default function BoardList() {
     // setNoticeItems(data.results);
   };
 
+  // 게시글 상세 페이지로 이동
+  const goDetail = (board) => {
+    navigate(`${board.id}`)
+  }
+
   // 게시판 데이터로 li태그 만들기
   const boardList = () => {
     const result = [];
@@ -93,6 +70,7 @@ export default function BoardList() {
         <li
           key={"board" + i}
           className="grid grid-cols-12 h-8 hover:bg-indigo-50 hover:cursor-pointer"
+          onClick={goDetail.bind(this, boards[i])}
         >
           <p className="col-span-2 my-auto">{boards[i].user.name}</p>
           <p className="col-span-6 my-auto">{boards[i].title}</p>
@@ -126,7 +104,7 @@ export default function BoardList() {
             className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 rounded-lg grid grid-cols-3 hover:fill-indigo-600"
             onClick={function () {
               if (sessionStorage.getItem("access_token")) {
-                navigate("board/new");
+                navigate("new");
               } else {
                 navigate("/login");
               }
