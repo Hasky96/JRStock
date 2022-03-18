@@ -24,7 +24,7 @@ export default function BoardCreate() {
       alert("내용을 입력해주세요.");
     } else {
       createBoard(title, content, id);
-      navigate(`/stock/${id}`)
+      navigate(`/stock/${id}/board`)
     }
   };
   return (

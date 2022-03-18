@@ -27,7 +27,7 @@ export default function BoardDetail() {
   // 게시글 삭제
   const clickDeleteBoard = async () => {
     await deleteBoard(boardId);
-    navigate(`/stock/${board.data.basic_info.code_number}`);
+    navigate(`/stock/${board.data.basic_info.code_number}/board`);
   };
 
   // 게시글 수정
