@@ -54,7 +54,6 @@ export default function StockItemDetail() {
           minH={currentTab === "종합정보" ? 60 : undefined}
         >
           <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
-          {sessionStorage.getItem("access_token")}
           {currentTab === "종합정보" && <Chart />}
           {currentTab === "뉴스" && <News />}
           {currentTab === "종목토론 게시판" && <BoardList />}

@@ -188,7 +188,7 @@ export default function StockItemList() {
                 id="total-stock"
                 name="total-stock"
                 type="checkbox"
-                className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
+                className="h-4 w-4 text-indigo-300 focus:ring-indigo-900 border-gray-300 rounded"
                 onChange={onChecked.bind(this, stocks[i].id)}
                 checked={checkedList.includes(stocks[i].id) ? true : false}
               />
@@ -419,7 +419,7 @@ export default function StockItemList() {
                             className={
                               "flex flex-row hover:cursor-pointer " +
                               (active
-                                ? "bg-yellow-50 text-gray-900"
+                                ? "bg-indigo-50 text-gray-900"
                                 : "text-gray-700")
                             }
                           >
@@ -479,7 +479,7 @@ export default function StockItemList() {
                     id="total-stock"
                     name="total-stock"
                     type="checkbox"
-                    className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-indigo-300 focus:ring-indigo-500 border-gray-300 rounded"
                     onChange={onCheckedAll}
                     checked={
                       checkedList.length === 0
