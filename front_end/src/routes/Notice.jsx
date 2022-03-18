@@ -154,7 +154,7 @@ export default function Announcement() {
   return (
     <PageContainer>
       <ListHeader
-        optionKind={["aaa", "bbb", "ccc"]}
+        optionKind={["전체보기"]}
         onClickFilter={onClickFilter}
         onSearch={onSearch}
       />
