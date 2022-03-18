@@ -15,9 +15,9 @@ RUN python manage.py migrate
 
 RUN python manage.py collectstatic
 
-RUN celery -A JRstock worker -l info
+# RUN celery -A JRstock worker -l info
 
-RUN celery -A JRstock beat -l info
+# RUN celery -A JRstock beat -l info
 
 ## Run the application on the port 8090
 EXPOSE 8090
