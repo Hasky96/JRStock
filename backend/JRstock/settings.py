@@ -8,6 +8,8 @@ import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/statics/'
 SECRET_BASE_FILE = os.path.join(BASE_DIR, 'secrets.json')
 secrets = json.loads(open(SECRET_BASE_FILE).read())
 for key, value in secrets.items():
@@ -46,7 +48,8 @@ INSTALLED_APPS = [
     'board',
 ]
 
-BASE_URL = 'http://localhost:8000/'
+# BASE_URL = 'http://localhost:8000/'
+BASE_URL = 'http://j6s001.p.ssafy.io/'
 
 SITE_ID = 1
 
@@ -64,7 +67,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000', 'http://j6s001.p.ssafy.io']
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
@@ -154,4 +157,3 @@ USE_L10N = True
 
 USE_TZ = False
 
-STATIC_URL = '/static/'

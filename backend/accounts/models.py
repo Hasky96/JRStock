@@ -28,13 +28,12 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_social_user(self, user_pk):
-        from allauth.socialaccount.models import SocialAccount
-
-        user = User.objects.get(pk=user_pk)
-        socialaccount = SocialAccount.objects.get(user_id=user_pk)
-        user.name = socialaccount.extra_data['name']
-        user.profile_img_url = socialaccount.extra_data['picture']
+    def create_social_user(self, userinfo):
+        user = self.model(
+            email=self.normalize_email(userinfo['email']),
+            name=userinfo['name'],
+        )
+        user.profile_img_url = userinfo['picture']
         user.is_active = True
         user.save()
 

@@ -93,7 +93,7 @@ export default function Announcement() {
       list.push(
         <li
           key={element.id}
-          className="grid grid-cols-12 h-12 hover:bg-yellow-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer"
         >
           <div className="col-span-1 my-auto grid grid-cols-2">
             <p className="col-span-1">
@@ -101,7 +101,7 @@ export default function Announcement() {
                 id="total-notice"
                 name="total-notice"
                 type="checkbox"
-                className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+                className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
                 onChange={onChecked.bind(this, element.id)}
                 checked={checkedList.includes(element.id) ? true : false}
               />
@@ -167,7 +167,7 @@ export default function Announcement() {
                   id="total-notice"
                   name="total-notice"
                   type="checkbox"
-                  className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
                   onChange={onCheckedAll}
                   checked={
                     checkedList.length === 0

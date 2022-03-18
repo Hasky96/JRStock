@@ -22,7 +22,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
   };
   return (
     <tr
-      className="h-12 border-b hover:bg-yellow-50 hover:cursor-pointer"
+      className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer"
       onClick={() => handleOnClick()}
     >
       <td className="px-3">
@@ -31,6 +31,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
           name="checkbox"
           type="checkbox"
           className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => onChecked(e, index)}
           checked={checked}
         />

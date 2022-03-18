@@ -8,10 +8,10 @@ export default function card({ info }) {
       <div
         className={classNames(
           "m-5 text-2xl mb-10",
-          info.open > info.close ? "text-red-500" : "text-green-500"
+          info.open > info.close ? "text-red-900" : "text-green-900"
         )}
       >
-        <span className="mr-3">{info.open.toFixed(2)}</span>
+        <span className="mr-3">{info.close.toFixed(2)}</span>
         <span>{`${info.close - info.open < 0 ? "▼" : "▲"} ${(
           info.close - info.open
         ).toFixed(3)} (${((info.close / info.open) * 100 - 100).toFixed(

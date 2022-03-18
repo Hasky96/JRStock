@@ -371,30 +371,19 @@ def google_login(request):
     # 이미 가입된 유저인지 확인
     try:
         user = User.objects.get(email=email)
-        social_user = SocialAccount.objects.get(user=user)
-        # 기존에 일반회원으로 가입된 유저인지 확인
-        if social_user is None:
-            return JsonResponse({'message': '이미 일반회원으로 가입되어있는 유저입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        data = {'access_token': access_token}
-        accept = requests.post(
-            f"{BASE_URL}api/user/login/google/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({'message': '로그인에 실패하였습니다.'}, status=accept_status)
-        accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        refresh = RefreshToken.for_user(user)
+        update_last_login(None, user)
+
+        return Response({'access_token': str(refresh.access_token),
+                        'refresh_token': str(refresh),}, status=status.HTTP_200_OK)
+    # 가입되지 않은 유저면 가입 먼저
     except User.DoesNotExist:
-        # 기존에 가입된 유저가 없으면 새로 가입
-        data = {'access_token': access_token}
-        accept = requests.post(
-            f"{BASE_URL}api/user/login/google/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({'message': '로그인에 실패하였습니다.'}, status=accept_status)
-        accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        user = User.objects.create_social_user(userinfo=userinfo)
+        refresh = RefreshToken.for_user(user)
+        update_last_login(None, user)
+
+        return Response({'access_token': str(refresh.access_token),
+                        'refresh_token': str(refresh),}, status=status.HTTP_200_OK)
     
 class GoogleLogin(SocialLoginView):
     adapter_class = google_view.GoogleOAuth2Adapter

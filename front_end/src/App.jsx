@@ -17,14 +17,15 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Notice from "./routes/Notice";
 import NoticeDetail from "./routes/NoticeDetail";
+import BoardForm from "./components/StockItemDetail/BoardCreate";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
   const [showSideBar, setShowSideBar] = useState(true);
   const [category, setCategory] = useState("");
-  
+
   const location = useLocation();
-  
+
   useEffect(() => {
     const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
 
@@ -46,7 +47,7 @@ function App() {
           <SideBar />
         </div>
       )}
-      <div className={showSideBar ? "ml-20 bg-yellow-50 min-h-screen" : ""}>
+      <div className={showSideBar ? "ml-20 bg-gray-50 min-h-screen" : ""}>
         {showSideBar && (
           <div>
             <Header category={category}></Header>
@@ -60,6 +61,7 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id" element={<StockItemDetail />} />
+          <Route path="/stock/:id/board/new" element={<BoardForm />} />
           <Route path="/backtest" element={<BackTestList />} />
           <Route path="/backtest/create" element={<BackTestCreate />} />
           <Route path="/backtest/:id" element={<BackTestDetail />} />

@@ -48,9 +48,9 @@ export default function Chart({ data }) {
         areaSeries = null;
       }
       areaSeries = chart.addAreaSeries({
-        topColor: "rgba(255, 196, 42, 0.56)",
-        bottomColor: "rgba(255, 196, 42, 0.04)",
-        lineColor: "rgba(255, 196, 42, 1)",
+        topColor: "rgba(67, 56, 202, 0.56)",
+        bottomColor: "rgba(67, 56, 202, 0.04)",
+        lineColor: "rgba(67, 56, 202, 1)",
         lineWidth: 2,
       });
       areaSeries.setData(data);
