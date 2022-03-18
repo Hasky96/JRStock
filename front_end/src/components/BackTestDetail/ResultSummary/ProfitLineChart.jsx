@@ -39,11 +39,11 @@ export const ProfitLineChart = ({ marketData, testData }) => {
     chart.timeScale().fitContent();
 
     const marketSeries = chart.addLineSeries({
-      color: "rgba(255, 196, 42, 1)",
+      color: "rgba(251, 191, 36, 0.8)",
       lineWidth: 3,
     });
     const testSeries = chart.addLineSeries({
-      color: "rgba(254, 138, 125, 1)",
+      color: "rgba(14, 24, 95, 0.8)",
       lineWidth: 3,
     });
 

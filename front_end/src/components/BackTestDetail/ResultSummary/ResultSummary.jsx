@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProfitAreaChart } from "./ProfitAreaChart";
+import { ProfitLineChart } from "./ProfitLineChart";
 import { PortfolioChart } from "../Portfolio/PortfolioChart";
 // import { PortfolioProfitChart } from "./PortfolioProfitChart";
 
@@ -37,31 +37,23 @@ export default function ResultSummary() {
     ["1Y", yearData2],
   ]);
 
-  const btnList = () => {
-    const list = [];
-    const intervals = ["1D", "1W", "1M", "1Y"];
-    intervals.forEach((el, idx) => {
-      list.push(
-        <button
-          key={idx}
-          onClick={(e) => {
-            e.preventDefault();
-            setData1(seriesesData.get(e.target.innerText));
-            setData2(seriesesData2.get(e.target.innerText));
-            setPeriod(e.target.innerText);
-          }}
-          className={
-            period === el
-              ? "switcher-item switcher-active-item"
-              : "switcher-item"
-          }
-        >
-          {el}
-        </button>
-      );
-    });
-    return list;
-  };
+  const intervals = ["1D", "1W", "1M", "1Y"];
+  const paintSwitcher = intervals.map((el, idx) => (
+    <button
+      key={idx}
+      onClick={(e) => {
+        e.preventDefault();
+        setData1(seriesesData.get(e.target.innerText));
+        setData2(seriesesData2.get(e.target.innerText));
+        setPeriod(e.target.innerText);
+      }}
+      className={
+        period === el ? "switcher-item switcher-active-item" : "switcher-item"
+      }
+    >
+      {el}
+    </button>
+  ));
 
   const paintAssets = assetData.map((result, index) => (
     <div key={index} className="col-span-1 mx-auto my-auto">
@@ -77,22 +69,11 @@ export default function ResultSummary() {
     </div>
   ));
 
-  // const paintSummaryData = summaryData.map((result, index) => (
-  //   <div key={index} className="col-span-1 mx-auto my-auto">
-  //     <h2 className="text-xs">{result.key}</h2>
-  //     <p>{result.value}</p>
-  //   </div>
-  // ));
-
   return (
     <div className="w-full flex flex-col justify-center items-center">
       <div className="flex flex-col xl:flex-row gap-3">
         <div className="relative h-30 grid grid-cols-5 border-0 border-b-1 border-gray-200 shadow rounded gap-2 text-center p-3">
           <div className="col-span-5 text-left text-lg">운용자산</div>
-          {/* <div className="col-span-2 mx-auto my-auto">
-            <h2 className="text-xs">기간</h2>
-            <p>{"2012-01-01 ~ 2022-03-15"}</p>
-          </div> */}
           {paintAssets}
         </div>
         <div className="relative h-30 grid grid-cols-5 border-0 border-b-1 border-gray-200 shadow rounded gap-2 text-center p-3">
@@ -105,8 +86,8 @@ export default function ResultSummary() {
         <div className="rounded shadow-lg p-3 mt-5">
           <div className="profit-chart-container text-lg">
             <div>자산 운용 차트</div>
-            <ProfitAreaChart marketData={data1} testData={data2} />
-            <div className="switcher">{btnList()}</div>
+            <ProfitLineChart marketData={data1} testData={data2} />
+            <div className="switcher">{paintSwitcher}</div>
           </div>
         </div>
         <div className="rounded shadow-lg p-3 mt-5">
