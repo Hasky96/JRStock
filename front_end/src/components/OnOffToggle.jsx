@@ -18,7 +18,7 @@ export default function OnOffToggle({ toggle, setToggle }) {
           (toggle ? null : toggleClass)
         }
       ></div>
-      <span className={`text-md ${toggle ? null : tmpClass}`}>
+      <span className={`text-md w-6 ${toggle ? null : tmpClass}`}>
         {toggle && <>&nbsp;</>}
         {toggle ? "off" : "on"}
       </span>

@@ -389,7 +389,7 @@ export default function StockItemList() {
         </div>
         <div className="flex flex-row justify-start">
           {sessionStorage.access_token && (
-            <div className="mr-4">
+            <div className="">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-indigo-900 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-900">
