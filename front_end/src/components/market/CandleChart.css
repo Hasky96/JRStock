@@ -10,7 +10,7 @@
   /* color: #d1d4dc; */
   /* background-color: rgba(255, 255, 255, 0.23); */
   text-align: left;
-  z-index: 1000;
+  z-index: 20;
   pointer-events: none;
 }
 .legend-title {
