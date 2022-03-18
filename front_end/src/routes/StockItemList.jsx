@@ -8,6 +8,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import CheckBoxGrid from "../components/FilterModal/CheckBoxGrid";
 import CheckedList from "../components/FilterModal/CheckedList";
+import costMap from "../util/costMap";
 
 import { ReactComponent as ModalCancle } from "../assets/modalCancle.svg";
 import OnOffToggle from "../components/OnOffToggle";
@@ -62,34 +63,6 @@ export default function StockItemList() {
     setPageNo(num);
     const res = await getStockItemList(num, pageSize);
     setStocks(res.data.results);
-  };
-
-  // 시가총액 표시
-  const marketCap = (num) => {
-    if (num.length < 5) {
-      return num;
-    }
-    let result = "";
-    const unit = ["", "만", "억", "조", "경"];
-    let size = parseInt(num.length / 4);
-    let rem = num.length % 4;
-    if (rem === 0) {
-      size -= 1;
-      rem = 4;
-    }
-    result += num.substr(0, rem) + unit[size] + " ";
-    let flag = true;
-    for (let i = rem; i < rem + 4; i++) {
-      if (num[i] === "0" && flag) {
-        continue;
-      }
-      result += num[i];
-      flag = false;
-    }
-    if (!flag) {
-      result += unit[size - 1];
-    }
-    return result;
   };
 
   // 주식 데이터로 html 리스트를 만듬
@@ -214,7 +187,7 @@ export default function StockItemList() {
               stocks[i].financial_info.basic_info.code_number
             )}
           >
-            {marketCap(stocks[i].market_cap)}
+            {costMap(stocks[i].market_cap)}
           </p>
         </li>
       );
