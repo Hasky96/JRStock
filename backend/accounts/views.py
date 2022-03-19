@@ -35,7 +35,7 @@ from django.utils.encoding import force_bytes, force_text
 import string
 import random
 from django.core.mail import EmailMessage
-from .tasks import reset_email, add
+from .tasks import reset_email, email_authentication
 
 
 from .parser import get_serializer
@@ -228,11 +228,7 @@ def signup(request):
         token = account_activation_token.make_token(user)
         message_data = message(uidb64, token)
         
-        mail_title = "JRstock 이메일 인증 안내"
-        mail_to = email
-        send_email = EmailMessage(mail_title, message_data, to=[mail_to])
-        send_email.content_subtype = "html"
-        send_email.send()
+        email_authentication.delay(message_data, email)
         # 여기까지
 
         return Response(status=status.HTTP_201_CREATED)
@@ -427,28 +423,6 @@ def password_reset(request):
     user.save()
     
     reset_email.delay(new_pw, email)
-    # reset_email(new_pw, email)
-    # add.delay(1, 2)
-    
-    
-    # message_data = """\
-    # <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
-    #     <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
-    #         <span style="font-size: 15px; margin: 0 0 10px 3px;">JRstock</span><br />
-    #         <span style="color: #212121;">비밀번호 초기화</span> 안내입니다. </h1>
-    #     <p style="font-size: 16px; line-height: 26px; margin-top: 50px; padding: 0 5px;">
-    #         안녕하세요.<br />
-    #         초기화된 비밀번호는 다음과 같습니다.<br />
-    #         <b style="color: #212121;">" %s "</b><br />
-    #         감사합니다</p>
-    # </div>
-    # """ % (new_pw)
-    
-    # mail_title = "JRstock 비밀번호 초기화 안내"
-    # mail_to = email
-    # send_email = EmailMessage(mail_title, message_data, to=[mail_to])
-    # send_email.content_subtype = "html"
-    # send_email.send()
     
     return Response(status=status.HTTP_200_OK)
     
