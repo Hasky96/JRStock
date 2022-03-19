@@ -9,13 +9,13 @@ COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-RUN pip install gunicorn
+RUN pip install psycopg2
 
 RUN python manage.py migrate
 
 RUN python manage.py collectstatic
 
-# RUN celery -A JRstock worker -l info
+# RUN celery -A JRstock worker -l info -P solo
 
 # RUN celery -A JRstock beat -l info
 

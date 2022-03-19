@@ -35,6 +35,8 @@ from django.utils.encoding import force_bytes, force_text
 import string
 import random
 from django.core.mail import EmailMessage
+from .tasks import send_email, add
+
 
 from .parser import get_serializer
 
@@ -424,8 +426,9 @@ def password_reset(request):
     user.set_password(new_pw)
     user.save()
     
-    from .task import send_email
-    send_email(pw=new_pw, to=email).delay()
+    send_email.delay(new_pw, email)
+    
+    
     # message_data = """\
     # <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
     #     <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
