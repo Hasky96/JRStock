@@ -1,9 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 from django.core.mail.message import EmailMessage
+from django.core.mail import send_mail
 from celery import shared_task
 
 @shared_task
-def send_email(pw, to):
+def reset_email(pw, to):
+    
     message_data = """\
     <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
         <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
@@ -22,6 +24,15 @@ def send_email(pw, to):
     send_email = EmailMessage(mail_title, message_data, to=[mail_to])
     send_email.content_subtype = "html"
     send_email.send()
+    
+    # send_mail(
+    #     subject=mail_title,
+    #     message=None,
+    #     html_message=message_data,
+    #     from_email='ssafy.6th.project@gmail.com',
+    #     recipient_list=[mail_to],
+    #     fail_silently=False,
+    # )
     
 @shared_task
 def add(a, b):

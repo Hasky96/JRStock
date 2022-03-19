@@ -35,7 +35,7 @@ from django.utils.encoding import force_bytes, force_text
 import string
 import random
 from django.core.mail import EmailMessage
-from .tasks import send_email, add
+from .tasks import reset_email, add
 
 
 from .parser import get_serializer
@@ -426,7 +426,9 @@ def password_reset(request):
     user.set_password(new_pw)
     user.save()
     
-    send_email.delay(new_pw, email)
+    reset_email.delay(new_pw, email)
+    # reset_email(new_pw, email)
+    # add.delay(1, 2)
     
     
     # message_data = """\
