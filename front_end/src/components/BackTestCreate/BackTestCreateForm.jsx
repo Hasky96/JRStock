@@ -7,6 +7,7 @@ export default function BackTestCreateForm() {
     title: "",
     start_at: "",
     end_at: "",
+    company_name: "",
     commission: "",
     stock: "",
     goal: "",
@@ -25,7 +26,10 @@ export default function BackTestCreateForm() {
 
   return (
     <div className="BacktestCreatFormContainer mx-auto flex flex-col justify-center items-center">
-      <BasicCondition handleInputChange={handleInputChange} />
+      <BasicCondition
+        handleInputChange={handleInputChange}
+        setValues={setValues}
+      />
       <div className="w-full flex justify-center mt-3 gap-2">
         <div className="w-1/2 grid grid-cols-2 border-0 border-b-1 border-gray-200 shadow-lg rounded text-center p-3 gap-2">
           <div className="col-span-2 text-left text-lg">매수 조건</div>

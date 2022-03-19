@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./BasicCondition.module.css";
 import StockSelectModal from "./StockSelectModal";
 
-export default function BasicCondition({ handleInputChange }) {
+export default function BasicCondition({ handleInputChange, setValues }) {
   const [isShowModal, setShowModal] = useState(false);
 
   const toggleModal = () => {
@@ -13,7 +13,9 @@ export default function BasicCondition({ handleInputChange }) {
 
   return (
     <>
-      {isShowModal && <StockSelectModal toggleModal={toggleModal} />}
+      {isShowModal && (
+        <StockSelectModal toggleModal={toggleModal} setValues={setValues} />
+      )}
       <div className="w-full">
         <div>
           <div className={styles.inputBox}>

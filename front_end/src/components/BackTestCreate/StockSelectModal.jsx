@@ -1,7 +1,59 @@
 import { ReactComponent as Search } from "../../assets/search.svg";
+import { useState } from "react";
+import { getStockItemList2 } from "../../api/stock";
+import costMap from "../../util/costMap";
 import "./StockSelectModal.css";
 
-export default function StockSelectModal({ toggleModal }) {
+export default function StockSelectModal({ toggleModal, setValues }) {
+  const [searchWord, setSearchWord] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    const result = await getStockItemList2({
+      page: "1",
+      size: "20",
+      company_name: searchWord,
+    })
+      .then((res) => res.data)
+      .catch((err) => console.log(err));
+
+    setSearchResult(result);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchWord(e.target.value);
+  };
+
+  const handleStockSelect = (company_name) => {
+    setValues((state) => {
+      return { ...state, company_name: company_name };
+    });
+
+    toggleModal();
+  };
+
+  const paintSearchResult = searchResult.results
+    ? searchResult.results.map(({ financial_info, market_cap }, index) => (
+        <button
+          key={index}
+          type="button"
+          className="w-full grid grid-cols-3 my-2 h-8 justify-between items-center text-center hover:bg-indigo-100 border-b rounded p-1"
+          onClick={() =>
+            handleStockSelect(financial_info.basic_info.company_name)
+          }
+        >
+          <div className="col-span-1 text-left whitespace-nowrap">
+            {financial_info.basic_info.company_name}
+          </div>
+          <div className="col-span-1">
+            ({financial_info.basic_info.code_number})
+          </div>
+          <div className="col-span-1">{costMap(market_cap)}</div>
+        </button>
+      ))
+    : [];
+
   return (
     <div
       className="fixed z-20000 inset-0 overflow-y-auto"
@@ -37,27 +89,35 @@ export default function StockSelectModal({ toggleModal }) {
                   </p>
                 </div>
                 <div className="relative">
-                  <input
-                    id="company_name"
-                    name="company_name"
-                    type="number"
-                    className="w-full h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
-                  />
-                  <div className="absolute right-1 top-2">
-                    <Search />
-                  </div>
+                  <form onSubmit={(e) => handleSearchSubmit(e)}>
+                    <input
+                      id="company_name"
+                      name="company_name"
+                      type="text"
+                      onChange={(e) => handleSearchChange(e)}
+                      className="w-full h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
+                    />
+                    <button type="submit" className="absolute right-1 top-2">
+                      <Search />
+                    </button>
+                  </form>
                 </div>
+                {searchResult.results && (
+                  <div className="mt-1 border rounded p-3 overflow-y-scroll h-96 scroll-wrapper-box">
+                    {paintSearchResult}
+                  </div>
+                )}
               </div>
             </div>
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
+            {/* <button
               type="button"
               onClick={() => toggleModal()}
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
             >
               선택
-            </button>
+            </button> */}
             <button
               type="button"
               onClick={() => toggleModal()}
