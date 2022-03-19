@@ -23,4 +23,6 @@ def send_email(pw, to):
     send_email.content_subtype = "html"
     send_email.send()
     
-    return True
+@shared_task
+def add(a, b):
+    return a + b
