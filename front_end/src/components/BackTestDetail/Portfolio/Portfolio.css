@@ -8,17 +8,17 @@
   height: 450px;
 }
 
-.wrapper-box {
+.scroll-wrapper-box {
   scroll-behavior: smooth;
 }
-.wrapper-box::-webkit-scrollbar {
+.scroll-wrapper-box::-webkit-scrollbar {
   width: 10px;
 }
-.wrapper-box::-webkit-scrollbar-track {
+.scroll-wrapper-box::-webkit-scrollbar-track {
   background-color: transparent;
   cursor: pointer;
 }
-.wrapper-box::-webkit-scrollbar-thumb {
+.scroll-wrapper-box::-webkit-scrollbar-thumb {
   border-radius: 20px;
   background-clip: content-box;
   background-color: lightgray;
