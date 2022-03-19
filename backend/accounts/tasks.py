@@ -1,4 +1,11 @@
 from __future__ import absolute_import, unicode_literals
+
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
+
+import django
+django.setup()
+
 from django.core.mail.message import EmailMessage
 from django.core.mail import send_mail
 from celery import shared_task
