@@ -1,7 +1,6 @@
-import PageContainer from "../components/PageContainer";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { getStockItemList } from "../api/stock";
+import { getStockItemList } from "../api/stock";
 import Pagenation from "../components/Pagenation";
 import ListHeader from "../components/ListHeader";
 import { Fragment } from "react";
@@ -9,167 +8,61 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import CheckBoxGrid from "../components/FilterModal/CheckBoxGrid";
 import CheckedList from "../components/FilterModal/CheckedList";
+import costMap from "../util/costMap";
 
 import { ReactComponent as ModalCancle } from "../assets/modalCancle.svg";
 import OnOffToggle from "../components/OnOffToggle";
 
 export default function StockItemList() {
-  const [currentMarket, setCurrentMarket] = useState("kospi");
   const navigate = useNavigate();
   const [checkedList, setcheckedList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
   const [stocks, setStocks] = useState([]);
-  const kospi = [
-    {
-      id: "005930",
-      name: "삼성전자",
-      currentPrice: "72400",
-      volatility: 200,
-      volatilityRate: "+0.28%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "kospi",
-    },
-    {
-      id: 1346134,
-      name: "삼성전자",
-      currentPrice: "72400",
-      volatility: -500,
-      volatilityRate: "-1.90%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "kospi",
-    },
-    {
-      id: 13,
-      name: "삼성전자",
-      currentPrice: "72400",
-      volatility: 2000,
-      volatilityRate: "+0.41%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "kospi",
-    },
-    {
-      id: 4136136,
-      name: "삼성전자",
-      currentPrice: "72400",
-      volatility: -1500,
-      volatilityRate: "-1.90%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "kospi",
-    },
-  ];
-  const kosdaq = [
-    {
-      id: 22,
-      name: "티플랙스",
-      currentPrice: "72400",
-      volatility: 200,
-      volatilityRate: "+0.28%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "kosdaq",
-    },
-    {
-      id: 124151,
-      name: "티플랙스",
-      currentPrice: "72400",
-      volatility: -500,
-      volatilityRate: "-1.90%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "kosdaq",
-    },
-  ];
-  const konex = [
-    {
-      id: 13616,
-      name: "지오씨",
-      currentPrice: "72400",
-      volatility: 200,
-      volatilityRate: "+0.28%",
-      volume: "17640567",
-      marketPrice: "72400",
-      highPrice: "72400",
-      lowPrice: "72400",
-      marketCapitalization: "430421300000000",
-      market: "konex",
-    },
-  ];
-
-  // const [stockss, setStockss] = useState([]);   // 주식 종목 리스트
 
   // 주식 종목 초기화
-  const init = () => {
-    // const res = await getStockItemList(1, 10)
-    // console.log(res.data.results)
-    setTotalCount(stocks.length);
+  const init = async () => {
+    const res = await getStockItemList(1, pageSize);
+    setStocks(res.data.results);
+    setTotalCount(res.data.count);
   };
 
   useEffect(() => {
-    if (currentMarket === "kospi") {
-      setStocks(kospi);
-    } else if (currentMarket === "kosdaq") {
-      setStocks(kosdaq);
-    } else {
-      setStocks(konex);
-    }
     init();
-  }, [currentMarket]);
+  }, []);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    // const data = await getItems(1, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getStockItemList(1, pageSize);
+    setStocks(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    // const data = await getItems(pageNo - 1, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getStockItemList(pageNo - 1, pageSize);
+    setStocks(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    // const data = await getItems(pageNo + 1, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getStockItemList(pageNo + 1, pageSize);
+    setStocks(res.data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    // const data = await getItems(lastPageNum, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getStockItemList(lastPageNum, pageSize);
+    setStocks(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    // const data = await getItems(num, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getStockItemList(num, pageSize);
+    setStocks(res.data.results);
   };
 
   // 주식 데이터로 html 리스트를 만듬
@@ -188,72 +81,113 @@ export default function StockItemList() {
                 id="total-stock"
                 name="total-stock"
                 type="checkbox"
-                className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
-                onChange={onChecked.bind(this, stocks[i].id)}
-                checked={checkedList.includes(stocks[i].id) ? true : false}
+                className="h-4 w-4 text-indigo-300 focus:ring-indigo-900 border-gray-300 rounded"
+                onChange={onChecked.bind(
+                  this,
+                  stocks[i].financial_info.basic_info.code_number
+                )}
+                checked={
+                  checkedList.includes(
+                    stocks[i].financial_info.basic_info.code_number
+                  )
+                    ? true
+                    : false
+                }
               />
             </p>
             <p
               className="col-span-1"
-              onClick={goDetailPage.bind(this, stocks[i].id)}
+              onClick={goDetailPage.bind(
+                this,
+                stocks[i].financial_info.basic_info.code_number
+              )}
             >
-              {i + 1}
+              {(pageNo - 1) * pageSize + i + 1}
             </p>
           </div>
           <p
-            className="col-span-2 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            className="col-span-2 my-auto text-left ml-10"
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].name}
+            {stocks[i].financial_info.basic_info.company_name}
           </p>
           <p
-            className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            className="col-span-1 my-auto text-right mr-5"
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].currentPrice}
+            {(+stocks[i].current_price).toLocaleString()}
           </p>
           <p
             className={
-              stocks[i].volatility > 0
+              stocks[i].changes > 0
                 ? "col-span-2 my-auto text-red-500"
-                : "col-span-2 my-auto text-blue-600"
+                : stocks[i].changes < 0
+                ? "col-span-2 my-auto text-blue-600"
+                : "col-span-2 my-auto text-gray-600"
             }
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].volatility > 0
-              ? "▲ " + stocks[i].volatility
-              : "▼ " + -stocks[i].volatility}{" "}
-            ({stocks[i].volatilityRate})
+            {stocks[i].changes > 0
+              ? "▲ " + (+stocks[i].changes).toLocaleString()
+              : stocks[i].changes < 0
+              ? "▼ " + (-stocks[i].changes).toLocaleString()
+              : "- " + (+stocks[i].changes).toLocaleString()
+              }{" "}
+            ({stocks[i].chages_ratio + "%"})
           </p>
           <p
-            className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            className="col-span-1 my-auto text-right mr-5"
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].volume}
+            {(+stocks[i].volume).toLocaleString()}
           </p>
           <p
-            className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            className="col-span-1 my-auto text-right mr-5"
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].marketPrice}
+            {(+stocks[i].start_price).toLocaleString()}
           </p>
           <p
-            className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            className="col-span-1 my-auto text-right mr-5"
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].highPrice}
+            {(+stocks[i].high_price).toLocaleString()}
           </p>
           <p
-            className="col-span-1 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            className="col-span-1 my-auto text-right mr-5"
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].lowPrice}
+            {(+stocks[i].low_price).toLocaleString()}
           </p>
           <p
             className="col-span-2 my-auto"
-            onClick={goDetailPage.bind(this, stocks[i].id)}
+            onClick={goDetailPage.bind(
+              this,
+              stocks[i].financial_info.basic_info.code_number
+            )}
           >
-            {stocks[i].marketCapitalization}
+            {costMap(stocks[i].market_cap)}
           </p>
         </li>
       );
@@ -266,7 +200,9 @@ export default function StockItemList() {
     if (e.target.checked) {
       const checkedListArray = [];
 
-      stocks.forEach((stock) => checkedListArray.push(stock.id));
+      stocks.forEach((stock) =>
+        checkedListArray.push(stock.financial_info.basic_info.code_number)
+      );
 
       setcheckedList(checkedListArray);
     } else {
@@ -285,7 +221,7 @@ export default function StockItemList() {
 
   // 종목 클릭 시 해당 종목 디테일 페이지로
   const goDetailPage = (id) => {
-    navigate({ pathname: `${id}` });
+    navigate({ pathname: `${id}/detail` });
   };
 
   const onClickFilter = (filter) => {
@@ -345,49 +281,9 @@ export default function StockItemList() {
   const [filterToggle, setFilterToggle] = useState(true);
 
   return (
-    <div className={"my-pt-36 my-pl-10 my-pr-10"}>
-      <div className={"bg-white rounded-lg p-5 my-h-90"}>
-        <div className="my-5">
-          <span
-            id="kospi"
-            className={
-              "text-2xl font-bold hover:cursor-pointer " +
-              (currentMarket === "kospi" ? "text-indigo-900" : "text-gray-300")
-            }
-            onClick={() => {
-              setCurrentMarket("kospi");
-            }}
-          >
-            코스피
-          </span>
-          <span className="text-2xl font-bold mx-3">|</span>
-          <span
-            id="kosdaq"
-            className={
-              "text-2xl font-bold hover:cursor-pointer " +
-              (currentMarket === "kosdaq" ? "text-indigo-900" : "text-gray-300")
-            }
-            onClick={() => {
-              setCurrentMarket("kosdaq");
-            }}
-          >
-            코스닥
-          </span>
-          <span className="text-2xl font-bold mx-3">|</span>
-          <span
-            id="konex"
-            className={
-              "text-2xl font-bold hover:cursor-pointer " +
-              (currentMarket === "konex" ? "text-indigo-900" : "text-gray-300")
-            }
-            onClick={() => {
-              setCurrentMarket("konex");
-            }}
-          >
-            코넥스
-          </span>
-        </div>
-        <div className="flex flex-row justify-start">
+    <div className={"my-pt-28 my-pl-10 my-pr-10"}>
+      <div className={"bg-white rounded-lg p-5 my-h-80 drop-shadow-lg"}>
+        <div className="flex flex-row justify-start my-5">
           {sessionStorage.access_token && (
             <div className="">
               <Menu as="div" className="relative inline-block text-left">
@@ -419,7 +315,7 @@ export default function StockItemList() {
                             className={
                               "flex flex-row hover:cursor-pointer " +
                               (active
-                                ? "bg-yellow-50 text-gray-900"
+                                ? "bg-indigo-50 text-gray-900"
                                 : "text-gray-700")
                             }
                           >
@@ -479,7 +375,7 @@ export default function StockItemList() {
                     id="total-stock"
                     name="total-stock"
                     type="checkbox"
-                    className="h-4 w-4 text-amber-300 focus:ring-amber-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-indigo-300 focus:ring-indigo-500 border-gray-300 rounded"
                     onChange={onCheckedAll}
                     checked={
                       checkedList.length === 0

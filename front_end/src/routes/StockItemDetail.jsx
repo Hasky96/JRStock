@@ -5,15 +5,23 @@ import { useState } from "react";
 import Chart from "../components/StockItemDetail/Chart";
 import News from "../components/StockItemDetail/News";
 import BoardList from "../components/StockItemDetail/BoardList";
+import { useEffect } from "react";
 
 export default function StockItemDetail() {
-  // const { id } = useParams();
-  // console.log(id);
+  const { stockTab, id } = useParams();
 
-  const [currentTab, setCurrentTab] = useState("종합정보");
+  const setting = {
+    detail: "종합정보",
+    news: "뉴스",
+    board: "종목토론 게시판",
+  };
+
+  const [currentTab, setCurrentTab] = useState(setting[stockTab]);
   const tabInfo = ["종합정보", "뉴스", "종목토론 게시판"];
 
-  // console.log(currentTab);
+  useEffect(() => {
+    setCurrentTab(setting[stockTab]);
+  }, [stockTab]);
 
   const stock = {
     id: 1351,
@@ -43,8 +51,8 @@ export default function StockItemDetail() {
     dividendRate: "0.05%",
     foreignLimit: "446112896",
     foreignOwn: "126976103",
-    foreignRunout: "28.46%"
-  }
+    foreignRunout: "28.46%",
+  };
 
   return (
     <div className="grid grid-cols-12">
@@ -53,12 +61,13 @@ export default function StockItemDetail() {
           pr={currentTab === "종합정보" ? 2.5 : undefined}
           minH={currentTab === "종합정보" ? 60 : undefined}
         >
-          <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
+          <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} baseURL={`/stock/${id}`} currentTab={currentTab} />
           {currentTab === "종합정보" && <Chart />}
           {currentTab === "뉴스" && <News />}
           {currentTab === "종목토론 게시판" && <BoardList />}
         </PageContainer>
       </div>
+
       {currentTab === "종합정보" && (
         <div className="col-span-3">
           <PageContainer pl={2.5} pr={10} minH={60}>
@@ -91,7 +100,7 @@ export default function StockItemDetail() {
               <div>배당수익률</div>
               <div>{statement.dividendRate}</div>
             </div>
-            <hr className="my-2"/>
+            <hr className="my-2" />
             <div className="flex justify-between">
               <div>외국인한도주식수</div>
               <div>{statement.foreignLimit}</div>
