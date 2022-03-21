@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 import "./CandleChart.css";
 
-export const CandleChart = ({ candleData, volumeData }) => {
+export const CandleChart = ({ title, candleData, volumeData, period }) => {
   const chartContainerRef = useRef();
   const zeroFill = (s) => {
     return ("00" + s).slice(-2);
   };
+
+  var barSpacingPerPeriod = new Map([
+    ["일봉", 6],
+    ["주봉", 12],
+    ["월봉", 18],
+  ]);
 
   const stringToDate = (date) => {
     const [year, month, day] = date.split("-");
@@ -55,6 +61,7 @@ export const CandleChart = ({ candleData, volumeData }) => {
       },
       timeScale: {
         borderVisible: false,
+        barSpacing: barSpacingPerPeriod.get(period),
       },
       grid: {
         horzLines: {
@@ -142,7 +149,7 @@ export const CandleChart = ({ candleData, volumeData }) => {
 
       chart.remove();
     };
-  }, [candleData, volumeData]);
+  }, [candleData, volumeData, period]);
 
   return (
     <div
@@ -151,7 +158,7 @@ export const CandleChart = ({ candleData, volumeData }) => {
       ref={chartContainerRef}
     >
       <div className="three-line-legend bg-yellow-100 opacity-40">
-        <div className="legend-title">종목명!</div>
+        <div className="legend-title">{title}</div>
         <div className="legend-content">
           {"시가" + legends.open}
           <br />

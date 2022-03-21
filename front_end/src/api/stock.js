@@ -6,6 +6,24 @@ async function getStockItemList(page, size, sort, company_name, face_value) {
   return await api.get(`stock/?page=${page}&size=${size}`);
 }
 
+// 종목별 일봉 데이터 받아오기
+async function getDayStock(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/day/${codeNumber}`);
+}
+
+// 종목별 주봉 데이터 받아오기
+async function getWeekStock(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/week/${codeNumber}`);
+}
+
+// 종목별 월봉 데이터 받아오기
+async function getMonthStock(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/month/${codeNumber}`);
+}
+
 // 종목 토론 리스트 받아오기
 async function getBoardList(code, page, size) {
   const api = apiInstance();
@@ -51,4 +69,7 @@ export {
   getBoardDetail,
   deleteBoard,
   updateBoard,
+  getDayStock,
+  getWeekStock,
+  getMonthStock,
 };
