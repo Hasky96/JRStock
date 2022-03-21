@@ -9,15 +9,9 @@ COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-RUN pip install psycopg2
-
 RUN python manage.py migrate
 
 RUN python manage.py collectstatic
-
-# RUN celery -A JRstock worker -l info -P solo
-
-# RUN celery -A JRstock beat -l info
 
 ## Run the application on the port 8090
 EXPOSE 8090
