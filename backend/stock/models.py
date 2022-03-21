@@ -61,8 +61,15 @@ class DayStockInfo(models.Model):
 
     class Meta:
         ordering = ['stock_seq']
-
-# 조인이 불가능한 일일 데이터        
+        
+class Interest(models.Model):
+    basic_info = models.ForeignKey(BasicInfo, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ['-id']
+        
+# 조인이 불가능한 데이터들       
 class DayStock(models.Model):
     stock_seq = models.AutoField(primary_key=True)
     code_number = models.CharField(max_length=10)
@@ -83,12 +90,43 @@ class DayStock(models.Model):
         ordering = ['date']
         db_table = 'day_stock'
         
-class Interest(models.Model):
-    basic_info = models.ForeignKey(BasicInfo, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
+class WeekStock(models.Model):
+    stock_seq = models.AutoField(primary_key=True)
+    code_number = models.CharField(max_length=10)
+    current_price = models.CharField(max_length=20, blank=True, null=True)
+    changes = models.CharField(max_length=20, blank=True, null=True)
+    chages_ratio = models.CharField(max_length=20, blank=True, null=True)
+    start_price = models.CharField(max_length=20, blank=True, null=True)
+    high_price = models.CharField(max_length=20, blank=True, null=True)
+    low_price = models.CharField(max_length=20, blank=True, null=True)
+    volume = models.CharField(max_length=20, blank=True, null=True)
+    trade_price = models.CharField(max_length=50, blank=True, null=True)
+    market_cap = models.CharField(max_length=50, blank=True, null=True)
+    stock_amount = models.CharField(max_length=20, blank=True, null=True)
+    date = models.CharField(max_length=20, blank=True, null=True)
+
     class Meta:
-        ordering = ['-id']
+        managed = False
+        db_table = 'week_stock'
+        
+class MonthStock(models.Model):
+    stock_seq = models.AutoField(primary_key=True)
+    code_number = models.CharField(max_length=10)
+    current_price = models.CharField(max_length=20, blank=True, null=True)
+    changes = models.CharField(max_length=20, blank=True, null=True)
+    chages_ratio = models.CharField(max_length=20, blank=True, null=True)
+    start_price = models.CharField(max_length=20, blank=True, null=True)
+    high_price = models.CharField(max_length=20, blank=True, null=True)
+    low_price = models.CharField(max_length=20, blank=True, null=True)
+    volume = models.CharField(max_length=20, blank=True, null=True)
+    trade_price = models.CharField(max_length=50, blank=True, null=True)
+    market_cap = models.CharField(max_length=50, blank=True, null=True)
+    stock_amount = models.CharField(max_length=20, blank=True, null=True)
+    date = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'month_stock'
 
 # ====================================================================== 코스피 ======================================================================
 # class InfoKospi(models.Model):
