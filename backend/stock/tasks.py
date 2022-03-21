@@ -27,7 +27,7 @@ kosdaq_index=[0, 0, 0, 0]
 
 @shared_task
 def add_day_stocks():
-    dt_now = datetime.now() # 데이터를 불러올 날짜
+    dt_now = datetime.now() - timedelta(days=1) # 어제 날짜로 불러오기
     
     tdate = dt_now.year * 10000 + dt_now.month * 100 + dt_now.day # 오늘 날짜
     t_date = dt_now.date()
@@ -64,7 +64,7 @@ def add_day_stocks():
     # 일봉 데이터를 리스트에 저장    
     stock_list = []
     
-    for row in df.iterrows():
+    for idx, row in df.iterrows():
         if row['종가'] == '-':
             return
 
@@ -94,10 +94,10 @@ def add_day_stocks():
             date = str(t_date)
             
             # 조인된 테이블에 DB 넣는 부분
-            financial_info = FinancialInfo.objects.get(pk=code_nubmer)
-            serializer = DayStockInfoSerializer(data={'current_price' : current_price, 'changes' : changes, 'chages_ratio' : chages_ratio, 'start_price' : start_price, 'high_price' : high_price, 'low_price' : low_price, 'volume' : volume, 'trade_price' : trade_price, 'market_cap' : market_cap, 'stock_amount' : stock_amount, 'date' : date})
-            if serializer.is_valid(raise_exception=True):
-                serializer.save(financial_info=financial_info)
+            # financial_info = FinancialInfo.objects.get(pk=code_nubmer)
+            # serializer = DayStockInfoSerializer(data={'current_price' : current_price, 'changes' : changes, 'chages_ratio' : chages_ratio, 'start_price' : start_price, 'high_price' : high_price, 'low_price' : low_price, 'volume' : volume, 'trade_price' : trade_price, 'market_cap' : market_cap, 'stock_amount' : stock_amount, 'date' : date})
+            # if serializer.is_valid(raise_exception=True):
+            #     serializer.save(financial_info=financial_info)
                 
             # 조인안된 테이블에 DB 넣는 부분
             stock_list.append({'code_number' : code_nubmer, 'current_price' : current_price, 'changes' : changes, 'chages_ratio' : chages_ratio, 'start_price' : start_price, 'high_price' : high_price, 'low_price' : low_price, 'volume' : volume, 'trade_price' : trade_price, 'market_cap' : market_cap, 'stock_amount' : stock_amount, 'date' : date})
@@ -112,14 +112,14 @@ def add_day_stocks():
     kosdaq_week = data.get_data_yahoo("^KQ11", before_one_week, t_date)
     
     kospi_current_temp = []
-    for row in kospi_week.iterrows():
+    for idx, row in kospi_week.iterrows():
         kospi_current_temp.append(row['Close'])
     
     kospi_changes = kospi_current_temp[-1] - kospi_current_temp[-2]
     kospi_change_ratio = round(kospi_changes / kospi_current_temp[-2], 4) * 100
     
     # 코스피 데이터 넣기
-    for row in kospi_day.iterrows():
+    for idx, row in kospi_day.iterrows():
         financial_info = FinancialInfo.objects.get(pk='kospi')
         serializer = DayStockInfoSerializer(data={'current_price' : str(round(row['Close'], 6)), 'changes' : str(round(kospi_changes, 2)), 'chages_ratio' : str(kospi_change_ratio), 'start_price' : str(round(row['Open'], 6)), 'high_price' : str(round(row['High'], 6)), 'low_price' : str(round(row['Low'], 6)), 'volume' : str(kospi_index[0]), 'trade_price' : str(kospi_index[1]), 'market_cap' : str(kospi_index[2]), 'stock_amount' : str(kospi_index[3]), 'date' : str(t_date)})
         if serializer.is_valid(raise_exception=True):
@@ -128,14 +128,14 @@ def add_day_stocks():
         stock_list.append({'code_number' : 'kospi', 'current_price' : str(round(row['Close'], 6)), 'changes' : str(round(kospi_changes, 2)), 'chages_ratio' : str(kospi_change_ratio), 'start_price' : str(round(row['Open'], 6)), 'high_price' : str(round(row['High'], 6)), 'low_price' : str(round(row['Low'], 6)), 'volume' : str(kospi_index[0]), 'trade_price' : str(kospi_index[1]), 'market_cap' : str(kospi_index[2]), 'stock_amount' : str(kospi_index[3]), 'date' : str(t_date)})
     
     kosdaq_current_temp=[]
-    for row in kosdaq_week.iterrows():
+    for idx, row in kosdaq_week.iterrows():
         kosdaq_current_temp.append(row['Close'])
     
     kosdaq_changes = kosdaq_current_temp[-1] - kosdaq_current_temp[-2]
     kosdaq_change_ratio = round(kosdaq_changes / kosdaq_current_temp[-2], 4) * 100
 
     # 코스닥 데이터 넣기
-    for row in kosdaq_day.iterrows():
+    for idx, row in kosdaq_day.iterrows():
         financial_info = FinancialInfo.objects.get(pk='kosdaq')
         serializer = DayStockInfoSerializer(data={'current_price' : str(round(row['Close'], 6)), 'changes' : str(round(kosdaq_changes, 2)), 'chages_ratio' : str(kosdaq_change_ratio), 'start_price' : str(round(row['Open'], 6)), 'high_price' : str(round(row['High'], 6)), 'low_price' : str(round(row['Low'], 6)), 'volume' : str(kosdaq_index[0]), 'trade_price' : str(kosdaq_index[1]), 'market_cap' : str(kosdaq_index[2]), 'stock_amount' : str(kosdaq_index[3]), 'date' : str(t_date)})
         if serializer.is_valid(raise_exception=True):
