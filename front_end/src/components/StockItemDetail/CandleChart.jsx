@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 import "./CandleChart.css";
 
-export const CandleChart = ({ candleData, volumeData }) => {
+export const CandleChart = ({ title, candleData, volumeData, period }) => {
   const chartContainerRef = useRef();
   const zeroFill = (s) => {
     return ("00" + s).slice(-2);
   };
+
+  var barSpacingPerPeriod = new Map([
+    ["일봉", 6],
+    ["주봉", 12],
+    ["월봉", 18],
+  ]);
 
   const stringToDate = (date) => {
     const [year, month, day] = date.split("-");
@@ -42,15 +48,20 @@ export const CandleChart = ({ candleData, volumeData }) => {
     const height = 380;
 
     var chart = (window.tvchart = createChart(chartContainerRef.current, {
+      layout: {
+        backgroundColor: "#ffffff",
+        textColor: "#d1d4dc",
+      },
       rightPriceScale: {
         scaleMargins: {
-          top: 0.35,
-          bottom: 0.2,
+          // top: 0.35,
+          bottom: 0.4,
         },
         borderVisible: false,
       },
       timeScale: {
         borderVisible: false,
+        barSpacing: barSpacingPerPeriod.get(period),
       },
       grid: {
         horzLines: {
@@ -68,36 +79,38 @@ export const CandleChart = ({ candleData, volumeData }) => {
           width: 2,
           color: "rgba(32, 38, 46, 0.1)",
           labelVisible: true,
+          labelBackgroundColor: "rgba(49, 46, 129, 0.1)",
         },
         vertLine: {
           visible: true,
           style: 0,
           width: 2,
           color: "rgba(32, 38, 46, 0.1)",
-          labelVisible: false,
+          labelVisible: true,
+          labelBackgroundColor: "rgba(49, 46, 129, 0.1)",
         },
       },
     }));
 
     var series = chart.addCandlestickSeries({
-      upColor: "rgba(255, 144, 0, 1)",
-      downColor: "#000",
-      borderDownColor: "rgba(255, 144, 0, 1)",
-      borderUpColor: "rgba(255, 144, 0, 1)",
-      wickDownColor: "rgba(255, 144, 0, 1)",
-      wickUpColor: "rgba(255, 144, 0, 1)",
+      upColor: "#2563eb",
+      downColor: "#ef4444",
+      // borderDownColor: "rgba(255, 144, 0, 1)",
+      // borderUpColor: "rgba(255, 144, 0, 1)",
+      wickDownColor: "#ef4444",
+      wickUpColor: "#2563eb",
     });
 
     series.setData(candleData);
 
     var volumeSeries = chart.addHistogramSeries({
-      color: "#26a69a",
+      color: "#000",
       priceFormat: {
         type: "volume",
       },
       priceScaleId: "",
       scaleMargins: {
-        top: 0.8,
+        top: 0.9,
         bottom: 0,
       },
     });
@@ -136,7 +149,7 @@ export const CandleChart = ({ candleData, volumeData }) => {
 
       chart.remove();
     };
-  }, [candleData, volumeData]);
+  }, [candleData, volumeData, period]);
 
   return (
     <div
@@ -144,14 +157,18 @@ export const CandleChart = ({ candleData, volumeData }) => {
       className="w-full relative"
       ref={chartContainerRef}
     >
-      <div className="three-line-legend">
-        <div className="legend-title">종목명!</div>
+      <div className="three-line-legend bg-yellow-100 opacity-40">
+        <div className="legend-title">{title}</div>
         <div className="legend-content">
-          {"시" + legends.open}
-          {"  고" + legends.high}
-          {"  저" + legends.low}
-          {"  종" + legends.close}
-          {"  거래량" + legends.volume}
+          {"시가" + legends.open}
+          <br />
+          {"고가" + legends.high}
+          <br />
+          {"저가" + legends.low}
+          <br />
+          {"종가" + legends.close}
+          <br />
+          {"거래량" + legends.volume}
         </div>
         <div>{legends.dateStr}</div>
       </div>

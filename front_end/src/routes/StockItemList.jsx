@@ -140,8 +140,7 @@ export default function StockItemList() {
               ? "▲ " + (+stocks[i].changes).toLocaleString()
               : stocks[i].changes < 0
               ? "▼ " + (-stocks[i].changes).toLocaleString()
-              : "- " + (+stocks[i].changes).toLocaleString()
-              }{" "}
+              : "- " + (+stocks[i].changes).toLocaleString()}{" "}
             ({stocks[i].chages_ratio + "%"})
           </p>
           <p
