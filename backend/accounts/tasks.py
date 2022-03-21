@@ -7,9 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 import django
 django.setup()
 
-from django.core.mail.message import EmailMessage
 from celery import shared_task
-
 from django.conf import settings
 import smtplib
 from email.mime.text import MIMEText
@@ -28,6 +26,9 @@ def email_authentication(message, to):
     msg.attach(MIMEText(message, 'html'))
     smtp.sendmail(DEFAULT_FROM_EMAIL, to, msg.as_string())
     smtp.quit()
+    
+    message = 'Sent [' + to + '] an email authentication email'
+    return message
 
 @shared_task
 def reset_email(pw, to):
@@ -55,9 +56,8 @@ def reset_email(pw, to):
     smtp.sendmail(DEFAULT_FROM_EMAIL, to, msg.as_string())
     smtp.quit()
     
-    # send_email = EmailMessage(mail_title, message_data, to=[mail_to])
-    # send_email.content_subtype = "html"
-    # send_email.send()
+    message = 'Sent [' + to + '] a password initialization email'
+    return message  
     
 @shared_task
 def add(a, b):

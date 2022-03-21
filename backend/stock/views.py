@@ -10,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import BasicInfoSerializer, DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer, InterestSerializer
+from .serializers import BasicInfoSerializer, DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer, InterestSerializer, MonthStockSerializer, WeekStockSerializer
 
-from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest, MonthStock, WeekStock
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -20,8 +20,6 @@ from .parser import get_serializer
 
 import requests
 from bs4 import BeautifulSoup
-
-from django.core import serializers
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -189,8 +187,8 @@ def basic_info_list(request):
         paginator.page_size = page_size
 
     result = paginator.paginate_queryset(stock_list, request)
-    serializers = DayStockInfoSerializer(result, many=True)
-    return paginator.get_paginated_response(serializers.data)    
+    serializer = DayStockInfoSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)    
 
 @swagger_auto_schema(
     method='get',
@@ -232,15 +230,18 @@ def day_stock_list(request, code_number):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def week_stock_list(reqeust, code_number):
-    day_stock_list = DayStock.objects.filter(code_number=code_number)
-    day_stock_list = list(day_stock_list)
+    week_stock_list = WeekStock.objects.filter(code_number=code_number)
+    serializer = WeekStockSerializer(week_stock_list, many=True)
     
-    for day_stock in day_stock_list[:]:
-        datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
-        if datetime_date.weekday() != 0: # 월요일이 아닐 때
-            day_stock_list.remove(day_stock)
+    # ========== 전체 날짜에서 월요일만 뽑아내는 방법 ==========
+    # day_stock_list = DayStock.objects.filter(code_number=code_number)
+    # day_stock_list = list(day_stock_list)
     
-    serializer = DayStockSerializer(day_stock_list, many=True)
+    # for day_stock in day_stock_list[:]:
+    #     datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
+    #     if datetime_date.weekday() != 0: # 월요일이 아닐 때
+    #         day_stock_list.remove(day_stock)
+    # serializer = DayStockSerializer(day_stock_list, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -254,24 +255,28 @@ def week_stock_list(reqeust, code_number):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def month_stock_list(reqeust, code_number):
-    day_stock_list = DayStock.objects.filter(code_number=code_number)
-    day_stock_list = list(day_stock_list)
+    month_stock_list = MonthStock.objects.filter(code_number=code_number)
+    serializer = MonthStockSerializer(month_stock_list, many=True)
     
-    prev_month = None
+    # ========== 전체 날짜에서 매월 첫째날 뽑아내는 방법 ==========
+    # day_stock_list = DayStock.objects.filter(code_number=code_number)
+    # day_stock_list = list(day_stock_list)
     
-    for day_stock in day_stock_list[:]:
-        datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
-        if prev_month == None:
-            prev_month = datetime_date.month
-            continue
+    # prev_month = None
+    
+    # for day_stock in day_stock_list[:]:
+    #     datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
+    #     if prev_month == None:
+    #         prev_month = datetime_date.month
+    #         continue
         
-        if prev_month != datetime_date.month:
-            prev_month = datetime_date.month
-            continue
+    #     if prev_month != datetime_date.month:
+    #         prev_month = datetime_date.month
+    #         continue
         
-        day_stock_list.remove(day_stock)
+    #     day_stock_list.remove(day_stock)
     
-    serializer = DayStockSerializer(day_stock_list, many=True)
+    # serializer = DayStockSerializer(day_stock_list, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -542,8 +547,8 @@ def interest_stock_list(request):
         paginator.page_size = page_size
 
     result = paginator.paginate_queryset(stock_list, request)
-    serializers = DayStockInfoSerializer(result, many=True)
-    return paginator.get_paginated_response(serializers.data)        
+    serializer = DayStockInfoSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)        
 
 @swagger_auto_schema(
     method='post',
