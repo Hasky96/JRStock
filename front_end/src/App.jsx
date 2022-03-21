@@ -20,6 +20,7 @@ import NoticeDetail from "./routes/NoticeDetail";
 import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
 import BoardUpdate from "./components/StockItemDetail/Boardupdate";
+import Ranking from "./routes/Ranking";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
@@ -65,13 +66,17 @@ function App() {
           <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
           <Route path="/stock/:id/board/new" element={<BoardCreate />} />
           <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
-          <Route path="/stock/:id/board/:boardId/update" element={<BoardUpdate />} />
+          <Route
+            path="/stock/:id/board/:boardId/update"
+            element={<BoardUpdate />}
+          />
           <Route path="/backtest" element={<BackTestList />} />
           <Route path="/backtest/create" element={<BackTestCreate />} />
           <Route path="/backtest/:id" element={<BackTestDetail />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
+          <Route path="/ranking" element={<Ranking />} />
         </Routes>
       </div>
     </>

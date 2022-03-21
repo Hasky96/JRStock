@@ -5,6 +5,7 @@ export default function Header({ category }) {
     ["backtest", "백테스트"],
     ["mypage", "마이페이지"],
     ["notice", "공지사항"],
+    ["ranking", "랭킹"],
   ]);
   return (
     <div className="relative">
