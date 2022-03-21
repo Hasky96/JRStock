@@ -1,3 +1,3 @@
-from stock.tasks import add_day_stocks
+from stock.tasks import test
 
-add_day_stocks()
+test()

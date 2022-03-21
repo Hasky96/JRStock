@@ -12,10 +12,9 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-   'add-every-min' : {
-      'task': 'accounts.tasks.add',
-      'schedule' : crontab(),
-      'args' : (3, 4),
+   'add-daystock-everyday' : {
+      'task': 'stock.tasks.add_day_stocks',
+      'schedule' : crontab(hour=19, day_of_week='1-5'),
    },
 }
 
