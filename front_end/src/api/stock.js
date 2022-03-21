@@ -3,7 +3,29 @@ import { apiInstance, loginApiInstance } from "./index.js";
 // 주식 종목 리스트 받아오기
 async function getStockItemList(page, size, sort, company_name, face_value) {
   const api = apiInstance();
-  return await api.get(`stock/?page=${page}&size=${size}`);
+  return await api.get(
+    `stock/?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "") +
+      (company_name ? `company_name=${company_name}&` : "")
+  );
+}
+
+// 주식 종목 리스트 받아오기
+async function getStockItemList2({
+  page,
+  size,
+  sort,
+  company_name,
+  face_value,
+}) {
+  const api = apiInstance();
+  return await api.get(
+    `stock/?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "") +
+      (company_name ? `company_name=${company_name}&` : "")
+  );
 }
 
 // 종목 토론 리스트 받아오기
@@ -13,6 +35,20 @@ async function getBoardList(code, page, size) {
     `stock/post/${code}?` +
       (page ? `page=${page}&` : "") +
       (size ? `size=${size}&` : "")
+  );
+}
+
+// 주식 종목 검색 리스트 받아오기
+async function getStockItemListSearched(
+  page,
+  size,
+  sort,
+  company_name,
+  face_value
+) {
+  const api = apiInstance();
+  return await api.get(
+    `stock/?page=${page}&size=${size}&company_name=${company_name}`
   );
 }
 
@@ -46,6 +82,7 @@ async function updateBoard(title, content, boardId) {
 
 export {
   getStockItemList,
+  getStockItemList2,
   getBoardList,
   createBoard,
   getBoardDetail,
