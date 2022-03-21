@@ -1,0 +1,76 @@
+@media screen and (min-width: 1024px) {
+  .button-wrapper {
+    max-width: 80%;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .content-wrapper {
+    padding-bottom: 4rem;
+  }
+}
+
+.landing-block-container {
+  position: relative;
+  margin: 10rem 0 8rem;
+}
+
+.landing-block-container h1 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: rgb(24, 33, 109);
+  font-size: 56px;
+  line-height: 1.18;
+}
+
+.landing-block-container h2 {
+  color: rgb(24, 33, 109);
+  font-size: 21px;
+  line-height: 1.41;
+}
+
+.landing-block-container .memo-wrapper p {
+  font-weight: 100;
+}
+
+.landing-block-container .content {
+  margin: 1.5rem 0 2rem 0;
+}
+
+.landing-block-container .content-wrapper {
+  position: relative;
+  max-width: 540px;
+}
+
+.landing-block-container .button-wrapper {
+  display: flex;
+  max-width: 100%;
+}
+
+.landing-block-container .button-wrapper button:last-child {
+  margin-left: 20px;
+}
+
+.landing-block-container .button {
+  font-size: 1rem;
+  font-weight: 700;
+  width: 100%;
+  border: 1px solid #edf3f5;
+  border-radius: 4px;
+  padding: 13px 0;
+  cursor: pointer;
+  margin-top: 0.625rem;
+  max-width: 180px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 16px 30px rgb(23 31 114 / 20%);
+}
+
+.landing-block-container .button:hover,
+.landing-block-container .button:active,
+.landing-block-container .button:focus {
+  color: #fff;
+  border: 1px solid rgb(255, 130, 92);
+  background-color: rgb(255, 130, 92);
+  /* #fe7624 */
+}
