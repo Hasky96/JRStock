@@ -2,19 +2,28 @@ import { useState } from "react";
 import styles from "./BasicCondition.module.css";
 import StockSelectModal from "./StockSelectModal";
 
-export default function BasicCondition({ handleInputChange, setValues }) {
+export default function BasicCondition({
+  handleInputChange,
+  handleStateChange,
+  values,
+}) {
   const [isShowModal, setShowModal] = useState(false);
 
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
 
-  const handleStockSelectButton = () => {};
+  const handleStockSelectButton = () => {
+    toggleModal();
+  };
 
   return (
     <>
       {isShowModal && (
-        <StockSelectModal toggleModal={toggleModal} setValues={setValues} />
+        <StockSelectModal
+          toggleModal={toggleModal}
+          handleStateChange={handleStateChange}
+        />
       )}
       <div className="w-full">
         <div>
@@ -28,14 +37,14 @@ export default function BasicCondition({ handleInputChange, setValues }) {
               autoComplete="off"
               onChange={(e) => handleInputChange(e)}
             />
-            <div className={styles.inputLabel}></div>
+            <label htmlFor="title" className={styles.inputLabel}></label>
           </div>
         </div>
       </div>
-      <div className="w-full h-30 grid grid-cols-12 border-0 border-b-1 border-gray-200 shadow-lg rounded text-center mt-3 p-3 gap-2">
+      <div className="w-full h-30 grid grid-cols-12 border-0 border-b-1 border-gray-200 shadow rounded text-center mt-3 p-3 gap-2 gap-y-5">
         <div className="col-span-12 text-left text-xl">기본조건</div>
-        <div className="col-span-3 text-left">
-          <div>투자 원금</div>
+        <div className="col-span-4 text-left">
+          <label htmlFor="asset">투자 원금</label>
           <div className="flex items-center">
             <input
               id="asset"
@@ -48,11 +57,9 @@ export default function BasicCondition({ handleInputChange, setValues }) {
             <div className="pl-3">만원</div>
           </div>
         </div>
-        <div className="col-span-4 flex text-left gap-2">
+        <div className="col-span-5 flex text-left gap-2">
           <div>
-            <label htmlFor="start_at" className="fw-bold ms-1">
-              시작일
-            </label>
+            <label htmlFor="start_at">시작일</label>
             <input
               id="start_at"
               name="start_at"
@@ -61,9 +68,7 @@ export default function BasicCondition({ handleInputChange, setValues }) {
             ></input>
           </div>
           <div>
-            <label htmlFor="start_at" className="fw-bold ms-1">
-              종료일
-            </label>
+            <label htmlFor="end_at">종료일</label>
             <input
               id="end_at"
               name="end_at"
@@ -74,7 +79,7 @@ export default function BasicCondition({ handleInputChange, setValues }) {
         </div>
 
         <div className="col-span-2 text-left">
-          <div>수수료</div>
+          <label htmlFor="commission">수수료</label>
           <div className="flex items-center">
             <input
               id="commission"
@@ -87,17 +92,26 @@ export default function BasicCondition({ handleInputChange, setValues }) {
             <div className="pl-3">%</div>
           </div>
         </div>
-        <div className="col-start-1 col-span-3 text-left">
-          <div>종목 선택</div>
-          <button
-            onClick={() => toggleModal()}
-            className="mt-1 py-2 px-4 border border-transparent bg-indigo-600 text-white shadow-sm text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            선택
-          </button>
+        <div className="col-start-1 col-span-4 text-left">
+          <label>종목 선택</label>
+          <div className="flex">
+            {values.company_name ? (
+              <div className="my-auto text-lg font-medium mr-3">
+                {values.company_name}({values.company_code})
+              </div>
+            ) : (
+              ""
+            )}
+            <button
+              onClick={() => handleStockSelectButton()}
+              className="mt-1 py-2 px-4 border border-indigo-500 bg-indigo-50 text-indigo shadow-sm text-sm font-medium rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:bg-indigo-700 hover:text-white duration-200"
+            >
+              {values.company_name ? "변경" : "검색"}
+            </button>
+          </div>
         </div>
         <div className="col-span-4 text-left">
-          <div>목표 자산</div>
+          <label htmlFor="goal_asset">목표 자산</label>
           <div className="flex items-center">
             <input
               id="goal_asset"
@@ -111,7 +125,7 @@ export default function BasicCondition({ handleInputChange, setValues }) {
           </div>
         </div>
         <div className="col-span-2 text-left">
-          <div>목표 수익률</div>
+          <label htmlFor="goal_profit">목표 수익률</label>
           <div className="flex items-center">
             <input
               id="goal_profit"

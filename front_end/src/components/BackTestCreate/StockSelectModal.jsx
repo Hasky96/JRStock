@@ -4,9 +4,13 @@ import { getStockItemList2 } from "../../api/stock";
 import costMap from "../../util/costMap";
 import "./StockSelectModal.css";
 
-export default function StockSelectModal({ toggleModal, setValues }) {
+export default function StockSelectModal({ toggleModal, handleStateChange }) {
   const [searchWord, setSearchWord] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+
+  const handleCancelButton = () => {
+    toggleModal();
+  };
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
@@ -18,18 +22,18 @@ export default function StockSelectModal({ toggleModal, setValues }) {
       .then((res) => res.data)
       .catch((err) => console.log(err));
 
-    setSearchResult(result);
+    if (result) {
+      setSearchResult(result);
+    }
   };
 
   const handleSearchChange = (e) => {
     setSearchWord(e.target.value);
   };
 
-  const handleStockSelect = (company_name) => {
-    setValues((state) => {
-      return { ...state, company_name: company_name };
-    });
-
+  const handleStockSelect = (company_name, company_code) => {
+    handleStateChange("company_name", company_name);
+    handleStateChange("company_code", company_code);
     toggleModal();
   };
 
@@ -40,7 +44,10 @@ export default function StockSelectModal({ toggleModal, setValues }) {
           type="button"
           className="w-full grid grid-cols-3 my-2 h-8 justify-between items-center text-center hover:bg-indigo-100 border-b rounded p-1"
           onClick={() =>
-            handleStockSelect(financial_info.basic_info.company_name)
+            handleStockSelect(
+              financial_info.basic_info.company_name,
+              financial_info.basic_info.code_number
+            )
           }
         >
           <div className="col-span-1 text-left whitespace-nowrap">
@@ -85,7 +92,7 @@ export default function StockSelectModal({ toggleModal, setValues }) {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    아래에서 원하는 국내 주식 종목을 검색하세요.
+                    아래에서 원하는 국내 주식 종목을 검색하여 선택해주세요.
                   </p>
                 </div>
                 <div className="relative">
@@ -120,8 +127,8 @@ export default function StockSelectModal({ toggleModal, setValues }) {
             </button> */}
             <button
               type="button"
-              onClick={() => toggleModal()}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              onClick={() => handleCancelButton()}
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white hover:bg-red-100 text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:border-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               취소
             </button>
