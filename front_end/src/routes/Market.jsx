@@ -22,24 +22,6 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const kospiInfo = {
-  date: "2021-02-02 16:00:00",
-  open: 2134.9307,
-  low: 2134.9105,
-  high: 2135.4215,
-  close: 2135.0087,
-  volume: 73591581,
-};
-
-const kosdaqInfo = {
-  date: "2021-02-02 16:00:00",
-  open: 2135.9307,
-  low: 2134.9105,
-  high: 2135.4215,
-  close: 2134.0087,
-  volume: 73591581,
-};
-
 export default function Market() {
   const [selectedChart, setSelectedChart] = useState("kospi");
   const [kospiTab, setKospiTab] = useState("정보");
@@ -52,8 +34,8 @@ export default function Market() {
 
   const [kospiSeriesesData, setKospiSeriesesData] = useState(new Map());
   const [kosdaqSeriesesData, setKosdaqSeriesesData] = useState(new Map());
-  // const [kospiInfo, setKospiInfo] = useState();
-  // const [kosdaqInfo, setKosdaqInfo] = useState();
+  const [kospiInfo, setKospiInfo] = useState();
+  const [kosdaqInfo, setKosdaqInfo] = useState();
 
   // 처음 화면 변수 초기화
   const init = async () => {
@@ -61,6 +43,17 @@ export default function Market() {
     // kospiSeriesData 초기화
     const kospiDayStock = await getDayStock("kospi");
     console.log(kospiDayStock);
+
+    setKospiInfo({
+      open: parseFloat(kospiDayStock[kospiDayStock.length - 1].start_price),
+      close: parseFloat(kospiDayStock[kospiDayStock.length - 1].current_price),
+      high: parseFloat(kospiDayStock[kospiDayStock.length - 1].high_price),
+      low: parseFloat(kospiDayStock[kospiDayStock.length - 1].low_price),
+      date: kospiDayStock[kospiDayStock.length - 1].date,
+      volume: kospiDayStock[kospiDayStock.length - 1].volume,
+      tradePrice:
+        kospiDayStock[kospiDayStock.length - 1].trade_price.toString(),
+    });
 
     const kospiLineData = transLineData(kospiDayStock);
 
@@ -108,6 +101,20 @@ export default function Market() {
     // kospiSeriesData 초기화
     const kosdaqDayStock = await getDayStock("kosdaq");
     console.log(kosdaqDayStock);
+
+    setKosdaqInfo({
+      open: parseFloat(kosdaqDayStock[kosdaqDayStock.length - 1].start_price),
+      close: parseFloat(
+        kosdaqDayStock[kosdaqDayStock.length - 1].current_price
+      ),
+      high: parseFloat(kosdaqDayStock[kosdaqDayStock.length - 1].high_price),
+      low: parseFloat(kosdaqDayStock[kosdaqDayStock.length - 1].low_price),
+      date: kosdaqDayStock[kosdaqDayStock.length - 1].date,
+      volume: kosdaqDayStock[kosdaqDayStock.length - 1].volume,
+      tradePrice:
+        kosdaqDayStock[kosdaqDayStock.length - 1].trade_price.toString(),
+    });
+
     const kosdaqLineData = transLineData(kosdaqDayStock);
 
     setKosdaqSeriesesData((cur) =>

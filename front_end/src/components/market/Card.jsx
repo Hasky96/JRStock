@@ -1,3 +1,5 @@
+import costMap from "../../util/costMap";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -8,7 +10,7 @@ export default function card({ info }) {
       <div
         className={classNames(
           "m-5 text-2xl mb-10",
-          info.open > info.close ? "text-red-900" : "text-green-900"
+          info.open > info.close ? "text-red-500" : "text-blue-600"
         )}
       >
         <span className="mr-3">{info.close.toFixed(2)}</span>
@@ -26,9 +28,7 @@ export default function card({ info }) {
           </div>
           <div className="grid grid-cols-1">
             <div className="font-bold">거래 대금</div>
-            <div>{`${parseInt(
-              info.volume * info.open
-            ).toLocaleString()} 원`}</div>
+            <div>{`${costMap(info.tradePrice)}`}</div>
           </div>
         </div>
         <div className="grid grid-rows-1 grid-cols-2">
