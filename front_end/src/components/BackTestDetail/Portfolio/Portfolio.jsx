@@ -57,7 +57,7 @@ export default function Portfolio() {
       <div className="flex gap-3">
         <div className="rounded shadow-lg p-3 mt-5">
           <div>매매 종목 리스트</div>
-          <div className="stock-list-container overflow-y-scroll wrapper-box ">
+          <div className="stock-list-container overflow-y-scroll scroll-wrapper-box">
             <table className="table-auto  w-full text-left">
               {/* <colgroup>
               <col span="1" style={{ width: 5 + "%" }} />

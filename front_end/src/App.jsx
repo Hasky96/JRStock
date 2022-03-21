@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./routes/Home";
+import Landing from "./routes/Landing";
 import Login from "./routes/Login";
 import PasswordReset from "./routes/PasswordReset";
 import Signup from "./routes/Signup";
@@ -57,7 +57,7 @@ function App() {
           </div>
         )}
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login/help" element={<PasswordReset />} />
           <Route path="/signup" element={<Signup />} />
