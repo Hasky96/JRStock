@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 from celery import Celery
+from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 app = Celery('JRstock')
@@ -9,6 +10,13 @@ app = Celery('JRstock')
 # namespace = 'CELERY'는 Celery관련 세팅 파일에서 변수 Prefix가 CELERY_ 라고 알림
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
+app.conf.beat_schedule = {
+   'add-daystock-everyday' : {
+      'task': 'stock.tasks.add_day_stocks',
+      'schedule' : crontab(hour=19, day_of_week='1-5'),
+   },
+}
 
 
 @app.task(bind=True)
