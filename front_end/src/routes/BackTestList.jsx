@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { getItems } from "../api/notice";
 import PageContainer from "../components/PageContainer";
 import ListHeader from "../components/ListHeader";
@@ -9,7 +9,6 @@ import Pagenation from "../components/Pagenation";
 import { ReactComponent as Create } from "../assets/create.svg";
 
 export default function BackTestList() {
-  const navigate = useNavigate();
   const data = [
     {
       id: 0,
@@ -22,6 +21,19 @@ export default function BackTestList() {
       created_at: "2022-03-09",
     },
   ];
+
+  const navigate = useNavigate();
+  // 현재 로그인 상태 확인
+  const isLoggedIn = window.sessionStorage.getItem("access_token")
+    ? true
+    : false;
+
+  // 로그인하지 않은 상태라면 /login 로 이동
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/login", { state: { from: { pathname: "/mypage" } } });
+    }
+  }, [isLoggedIn]);
 
   const [backTestItems, setbackTestItems] = useState(data);
   const [checkedList, setcheckedList] = useState([]);
@@ -111,24 +123,26 @@ export default function BackTestList() {
     // pageNo 1로 초기화
   };
 
-  const handleCreateButtonClick = () => {
-    if (sessionStorage.getItem("access_token")) {
-      navigate("create");
-    } else {
-      navigate("/login");
-    }
-  };
+  // const handleCreateButtonClick = () => {
+  //   if (sessionStorage.getItem("access_token")) {
+  //     navigate("create");
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // };
 
   return (
     <PageContainer>
       <div className="flex">
-        <button
-          className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg"
-          onClick={() => handleCreateButtonClick()}
-        >
-          <Create />
-          <div className="col-span-2 my-auto">백테스트 생성</div>
-        </button>
+        <Link to="create">
+          <button
+            className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg"
+            // onClick={() => handleCreateButtonClick()}
+          >
+            <Create />
+            <div className="col-span-2 my-auto">백테스트 생성</div>
+          </button>
+        </Link>
         <ListHeader
           optionKind={["aaa", "bbb", "ccc"]}
           onClickFilter={onClickFilter}
@@ -167,7 +181,6 @@ export default function BackTestList() {
           onClickLast={onClickLast}
           onClickNumber={onClickNumber}
         ></Pagenation>
-        <button className="absolute right-0 top-5">백테스트 생성</button>
       </div>
     </PageContainer>
   );

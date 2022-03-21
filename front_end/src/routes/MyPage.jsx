@@ -7,11 +7,9 @@ import Portfolio from "../components/MyPage/Portfolio";
 import { useNavigate } from "react-router-dom";
 
 export default function MyPage() {
-  const navigate = useNavigate();
-
   // tab 이동 시 시용
   const [currentTab, setCurrentTab] = useState("관심종목");
-  const tabInfo = ["관심종목", "포트폴리오", "백테스트 결과", "회원정보 수정"];
+  const tabInfo = ["관심종목", "포트폴리오", "회원정보 수정"];
 
   const tabInfo2 = [
     {
@@ -20,6 +18,7 @@ export default function MyPage() {
     },
   ];
 
+  const navigate = useNavigate();
   // 현재 로그인 상태 확인
   const isLoggedIn = window.sessionStorage.getItem("access_token")
     ? true
@@ -28,7 +27,7 @@ export default function MyPage() {
   // 로그인하지 않은 상태라면 /login 로 이동
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate("/login");
+      navigate("/login", { state: { from: { pathname: "/backtest" } } });
     }
   }, [isLoggedIn]);
 
