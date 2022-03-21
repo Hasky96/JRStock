@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./routes/Home";
+import Landing from "./routes/Landing";
 import Login from "./routes/Login";
 import PasswordReset from "./routes/PasswordReset";
 import Signup from "./routes/Signup";
@@ -56,7 +56,7 @@ function App() {
           </div>
         )}
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login/help" element={<PasswordReset />} />
           <Route path="/signup" element={<Signup />} />
@@ -65,7 +65,10 @@ function App() {
           <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
           <Route path="/stock/:id/board/new" element={<BoardCreate />} />
           <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
-          <Route path="/stock/:id/board/:boardId/update" element={<BoardUpdate />} />
+          <Route
+            path="/stock/:id/board/:boardId/update"
+            element={<BoardUpdate />}
+          />
           <Route path="/backtest" element={<BackTestList />} />
           <Route path="/backtest/create" element={<BackTestCreate />} />
           <Route path="/backtest/:id" element={<BackTestDetail />} />
