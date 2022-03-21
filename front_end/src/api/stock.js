@@ -24,6 +24,18 @@ async function getMonthStock(codeNumber) {
   return await api.get(`stock/month/${codeNumber}`);
 }
 
+// 종목 상세 정보 받아오기
+async function getDetail(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/detail/${codeNumber}`);
+}
+
+// 종목 실시간 정보 받아오기
+async function getLive(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/live/${codeNumber}`);
+}
+
 // 종목 토론 리스트 받아오기
 async function getBoardList(code, page, size) {
   const api = apiInstance();
@@ -72,4 +84,6 @@ export {
   getDayStock,
   getWeekStock,
   getMonthStock,
+  getDetail,
+  getLive,
 };
