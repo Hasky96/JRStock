@@ -40,7 +40,12 @@ def updateDayStock(dt_now):
     }
     r = requests.post(gen_req_url, form_data, headers=headers)
     bio = io.BytesIO(r.content) # Some random BytesIO Object
-    df = pd.read_excel(bio)
+    
+    import warnings
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")
+        df = pd.read_excel(bio, engine="openpyxl")
+        
     insert_str='insert into day_stock (`code_number`,`current_price`,`changes`,`chages_ratio`,`start_price`,`high_price`,`low_price`,`volume`,`trade_price`,`market_cap`,`stock_amount`,`date`) VALUES '
     for idx, row in df.iterrows():
         if row['종가']=='-':
