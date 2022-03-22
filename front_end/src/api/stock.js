@@ -126,6 +126,12 @@ async function createComment(board_id, content) {
   await authApi.post("stock/comment/create/", { board_id, content });
 }
 
+// 토론 댓글 삭제
+async function deleteComment(id) {
+  const authApi = loginApiInstance();
+  await authApi.delete(`stock/comment/delete/${id}`);
+}
+
 export {
   getStockItemList,
   getStockItemList2,
@@ -141,4 +147,5 @@ export {
   getLive,
   getCommentList,
   createComment,
+  deleteComment,
 };
