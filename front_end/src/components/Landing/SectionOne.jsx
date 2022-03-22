@@ -1,33 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { ReactComponent as Graphs } from "../../assets/landing_page/graphs.svg";
+import { ReactComponent as Launch } from "../../assets/landing_page/product-launch.svg";
 import { ReactComponent as Notes } from "../../assets/landing_page/notes.svg";
-import "./Intro.css";
 
 export default function SectionOne() {
   return (
-    <div className="w-full flex flex-col md:flex-row justify-evenly items-center gap-10 landing-block-container">
+    <div className="mt-10 mb-60 landing-block-container w-full flex flex-col md:flex-row justify-evenly items-center gap-10 ">
       <div className="w-full lg:w-1/3">
-        <Graphs />
+        <Launch />
       </div>
       <div className="content-wrapper w-full lg:w-2/3">
-        <h1>Light, fast {`&`} responsive</h1>
+        <h1>빠르고 쉬운 백테스트</h1>
         <h2 className="content">
-          This template is ready to use, so you don't need to change anything at
-          a component level, unless you want to customize the default styling.
+          현재 자신의 투자전략을 과거 데이터에 대입하여 검증하고, 안전성과
+          고수익이 보장되는 전략을 수립해보세요!
         </h2>
-        <div className="memo-wrapper flex w-full">
-          <div className="w-1/2">
+        <div className="flex w-full">
+          <div className="memo-wrapper w-1/2">
             <Notes />
-            <h4>Why?</h4>
+            <h4>Why JRStock?</h4>
             <p>
-              과거 데이터를 이용한 백테스트로 안전하고 고수익률을 보장하는 전략
-              수립 가능
+              1. 다량 축적된 국내 주식 데이터 <br />
+              2. 손쉬운 검색 &amp; 필터링
             </p>
           </div>
-          <div className="w-1/2">
+          <div className="memo-wrapper w-1/2">
             <Notes />
             <h4>How?</h4>
-            <p>JRStock 에 축적된 데이터와 추천 전략으로 손쉽게 시작</p>
+            <p>이미 검증된 추천 전략으로 손쉽게 시작!</p>
           </div>
         </div>
       </div>
