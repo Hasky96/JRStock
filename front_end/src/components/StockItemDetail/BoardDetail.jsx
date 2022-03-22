@@ -10,6 +10,7 @@ import {
 import { userDetail } from "../../api/user";
 import PageContainer from "../PageContainer";
 import Pagenation from "../Pagenation";
+import { timeMark } from "../../config/datetime";
 
 export default function BoardDetail() {
   const { id, boardId } = useParams();
@@ -145,6 +146,9 @@ export default function BoardDetail() {
               </div>
             )}
           </div>
+          <div className="mt-2 mb-5 text-gray-400">
+            {timeMark(comment[i].created_at)}
+          </div>
           <div className="mt-3 mb-5">{comment[i].content}</div>
         </div>
       );
@@ -155,7 +159,7 @@ export default function BoardDetail() {
   return (
     <PageContainer>
       <div className="p-10 grid grid-cols-12">
-        <div className="col-start-3 col-end-11">
+        <div className="col-start-3 col-end-11 border-0 shadow-lg p-10 rounded-xl">
           <div className="flex justify-between items-end">
             <h1 className="text-4xl font-bold">{board?.title}</h1>
             {user && user?.id === board?.user.id && (
@@ -214,7 +218,9 @@ export default function BoardDetail() {
           >
             목록
           </button>
-          <div className="text-2xl font-bold mt-10">댓글 {totalCount}</div>
+        </div>
+        <div className="col-start-3 col-end-11 border-0 shadow-lg p-10 rounded-xl mt-10">
+          <div className="text-2xl font-bold">댓글 {totalCount}</div>
           <form
             className="mt-3"
             onSubmit={function (e) {
