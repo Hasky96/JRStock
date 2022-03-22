@@ -3,8 +3,8 @@ import { ReactComponent as Notes } from "../../assets/landing_page/notes.svg";
 
 export default function SectionOne() {
   return (
-    <div className="mt-10 mb-60 landing-block-container w-full flex flex-col md:flex-row justify-evenly items-center gap-10 ">
-      <div className="w-full lg:w-1/3">
+    <div className="landing-block-container w-full flex flex-col md:flex-row justify-evenly items-center gap-10 ">
+      <div className="svg-container w-full lg:w-1/3">
         <Launch />
       </div>
       <div className="content-wrapper w-full lg:w-2/3">

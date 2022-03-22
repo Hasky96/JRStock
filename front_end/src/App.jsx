@@ -50,7 +50,11 @@ function App() {
           <SideBar />
         </div>
       )}
-      <div className={showSideBar ? "ml-20 bg-gray-50 min-h-screen" : ""}>
+      <div
+        className={
+          showSideBar ? "ml-20 bg-gray-50 min-h-screen" : "scroll-wrapper-box"
+        }
+      >
         {showSideBar && (
           <div>
             <Header category={category}></Header>

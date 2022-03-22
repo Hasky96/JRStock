@@ -3,9 +3,9 @@ import { ReactComponent as TrophyLarge } from "../../assets/landing_page/trophy_
 
 export default function SectionThree() {
   return (
-    <div className="mt-10 mb-60 landing-block-container w-full flex flex-col md:flex-row justify-evenly items-center gap-10 ">
-      <div className="w-full lg:w-1/3">
-        <TrophyLarge />
+    <div className="landing-block-container w-full flex flex-col md:flex-row justify-evenly items-center gap-10 ">
+      <div className="svg-container w-full lg:w-1/3">
+        <TrophyLarge width={"100%"} />
       </div>
       <div className="content-wrapper w-full lg:w-2/3">
         <h1>랭킹 시스템</h1>

@@ -10,11 +10,16 @@ export default function Intro() {
   };
 
   return (
-    <div className="landing-block-container w-full h-screen flex flex-col md:flex-row justify-evenly items-center gap-10">
+    <div
+      id="intro"
+      className="landing-block-container w-full h-screen flex flex-col mt-40 md:mt-0 md:flex-row justify-evenly items-center gap-10"
+    >
       <div className="content-wrapper w-full lg:w-2/3">
-        <div className="flex">
+        <div className="flex relative">
           <h1>JRStock</h1>
-          <Rocket fill="#ff825c" width={50} height={50} />
+          <div className="absolute left-52 top-3">
+            <Rocket fill="#ff825c" width={50} height={50} />
+          </div>
         </div>
         <h2 className="content">
           굶주린 주식 어린이들을 위한 주식 백테스트 서비스
@@ -31,11 +36,11 @@ export default function Intro() {
             className="button text-indigo-900"
             onClick={() => handleButtonClick("signup")}
           >
-            Signup
+            회원가입
           </button>
         </div>
       </div>
-      <div className="w-full lg:w-1/3">
+      <div className="svg-container w-full">
         <Developer />
       </div>
     </div>

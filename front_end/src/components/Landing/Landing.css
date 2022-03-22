@@ -10,8 +10,32 @@
   }
 }
 
+@media screen and (max-width: 1240px) {
+  .scroll-to-top {
+    display: none;
+  }
+}
+
+/* .landing-page-container {
+  scroll-snap-type: y proximity;
+  height: 100vh;
+  overflow-y: scroll;
+} */
+
+.scroll-snap {
+  scroll-snap-align: start;
+}
+
 .landing-block-container {
   position: relative;
+  min-height: 30vh;
+  margin-bottom: 8rem;
+  overflow-x: hidden;
+}
+
+.landing-block-container .svg-container {
+  max-width: 400px;
+  margin: auto;
 }
 
 .landing-block-container h1 {
@@ -21,12 +45,14 @@
   color: rgb(24, 33, 109);
   font-size: 56px;
   line-height: 1.18;
+  pointer-events: none;
 }
 
 .landing-block-container h2 {
   color: rgb(24, 33, 109);
   font-size: 21px;
   line-height: 1.41;
+  pointer-events: none;
 }
 
 .landing-block-container .memo-wrapper:last-child {
@@ -77,4 +103,83 @@
   border: 1px solid rgb(255, 130, 92);
   background-color: rgb(255, 130, 92);
   /* #fe7624 */
+}
+
+.input-container {
+  display: inline-block;
+  width: 100%;
+  padding: 10px 5px;
+}
+
+.input-container input,
+textarea {
+  font-size: 0.875rem;
+  border-radius: 4px;
+  border: 0px;
+  background: rgb(241, 242, 243);
+  transition: all 0.3s ease-in-out 0s;
+  outline: none;
+  width: 100%;
+  padding: 1rem 1.25rem;
+}
+
+.input-container input:focus,
+textarea:focus {
+  outline: none;
+  background-color: white;
+}
+
+.input-container label {
+  display: block;
+  font-size: 0.8rem;
+  padding-bottom: 10px;
+  text-transform: capitalize;
+}
+
+/* .textarea-container {
+  display: inline-block;
+  width: 100%;
+  padding: 10px 5px;
+  margin-bottom: -0.625rem;
+}
+
+.textarea-container label {
+  display: block;
+  font-size: 0.8rem;
+  padding-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.textarea-container textarea {
+  resize: none;
+  font-size: 0.875rem;
+  height: 185px;
+  border-radius: 4px;
+  border: 0px;
+  background: rgb(241, 242, 243);
+  transition: all 0.3s ease-in-out 0s;
+  outline: none;
+  width: 100%;
+  padding: 1rem 1.25rem;
+} */
+
+.scroll-to-top {
+  padding: 10px;
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 10;
+  cursor: pointer;
+  background: rgb(241, 242, 243);
+  text-align: center;
+  align-items: center;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+}
+
+.scroll-to-top:hover,
+.scroll-to-top:active,
+.scroll-to-top:focus {
+  background: rgb(224, 224, 224);
 }
