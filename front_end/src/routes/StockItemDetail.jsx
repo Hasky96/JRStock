@@ -207,7 +207,7 @@ export default function StockItemDetail() {
         <PageContainer
           pr={currentTab === "종합정보" ? 2.5 : undefined}
           pt={currentTab === "종합정보" ? 5 : 5}
-          minH={currentTab === "종합정보" ? 55 : undefined}
+          minH={currentTab === "종합정보" ? 55 : 73}
         >
           {currentTab === "종합정보" && (
             <Chart title={detail.basic_info.company_name} />
