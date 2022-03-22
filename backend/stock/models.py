@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Cast
 from django.conf import settings
 
 # ====================================================================== 통합 ======================================================================
@@ -60,7 +61,9 @@ class DayStockInfo(models.Model):
     date = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
-        ordering = ['stock_seq']
+        ordering = [
+            Cast('market_cap', output_field=models.BigIntegerField()).desc(),
+        ]
         
 class Interest(models.Model):
     basic_info = models.ForeignKey(BasicInfo, on_delete=models.CASCADE)

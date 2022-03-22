@@ -1,3 +1,6 @@
-from stock.tasks import add_day_stocks
+sort = '-id'
 
-add_day_stocks()
+print(sort[:1])
+
+sort = sort[1:]
+print(sort)
