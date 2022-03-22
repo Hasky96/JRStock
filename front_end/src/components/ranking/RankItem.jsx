@@ -22,7 +22,7 @@ export default function RankItem({ onChecked, checked, index, item }) {
 
   return (
     <tr
-      className="h-14 hover:bg-indigo-700 hover:cursor-pointer text-center text-white"
+      className="h-14 hover:bg-indigo-900 hover:bg-opacity-50 hover:cursor-pointer text-center text-white"
       onClick={() => handleOnClick()}
     >
       <td className="font-bold">{rankElement(index + 1)}</td>
