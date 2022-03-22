@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { userDetail } from "../api/user";
+
 export default function Header({ category }) {
   const nameMap = new Map([
     ["market", "주요 시세 정보"],
@@ -7,6 +11,22 @@ export default function Header({ category }) {
     ["notice", "공지사항"],
     ["ranking", "랭킹"],
   ]);
+
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const { id, email, name, profile_img_url } = await userDetail();
+      setUser({
+        id,
+        email,
+        name,
+        profile_img_url,
+      });
+    };
+    fetchUserInfo();
+  }, []);
+
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
@@ -47,13 +67,45 @@ export default function Header({ category }) {
           {/* 사진 그리드 */}
           <div className="grid justify-items-end mr-5">
             {/* 프로필 */}
-            <div className="w-14 p-1">
-              <img
-                className="rounded-full"
-                src="https://source.unsplash.com/random/200x200"
-                alt="profile"
-              />
-            </div>
+            {user ? (
+              <button className="w-14 p-1 group duration-300 relative">
+                <img
+                  className="rounded-full w-[50px] h-[50px]"
+                  src={`${user.profile_img_url}`}
+                  alt="profile"
+                />
+                <div class="absolute -left-5 top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
+                  <ul class="text-left border rounded ">
+                    <li
+                      class="px-4 py-1 hover:bg-indigo-900 hover:text-white border-b duration-300"
+                      onClick={() => {
+                        window.sessionStorage.removeItem("access_token");
+                      }}
+                    >
+                      <Link to="/">로그아웃</Link>
+                    </li>
+                  </ul>
+                </div>
+              </button>
+            ) : (
+              <button className="w-14 p-1 group duration-300 relative">
+                <img
+                  className="rounded-full w-[50px] h-[50px]"
+                  src={require("../assets/profile1.jpg")}
+                  alt="profile"
+                />
+                <div class="absolute top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
+                  <ul class="text-left border rounded ">
+                    <li class="px-4 py-1 hover:bg-indigo-900 hover:text-white border-b duration-300">
+                      <Link to="/login">로그인</Link>
+                    </li>
+                    <li class="px-4 py-1 hover:bg-indigo-900 hover:text-white border-b duration-300">
+                      <Link to="/signup">회원가입</Link>
+                    </li>
+                  </ul>
+                </div>
+              </button>
+            )}
           </div>
         </div>
       </div>
