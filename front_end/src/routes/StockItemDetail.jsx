@@ -34,7 +34,7 @@ export default function StockItemDetail() {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     setCurrentTab(setting[stockTab]);
@@ -231,11 +231,17 @@ export default function StockItemDetail() {
               <div className="col-start-10 col-end-12 font-bold">
                 <div className="flex justify-between mb-2">
                   <div>연중최고</div>
-                  <div>{detail.year_high_price && (+detail.year_high_price).toLocaleString()}</div>
+                  <div>
+                    {detail.year_high_price &&
+                      (+detail.year_high_price).toLocaleString()}
+                  </div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>연중최저</div>
-                  <div>{detail.year_low_price && (+detail.year_low_price).toLocaleString()}</div>
+                  <div>
+                    {detail.year_low_price &&
+                      (+detail.year_low_price).toLocaleString()}
+                  </div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>거래량</div>

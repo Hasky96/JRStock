@@ -45,7 +45,7 @@ export default function Chart({ title }) {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [id]);
 
   let seriesesData = new Map([
     ["1D", data],
