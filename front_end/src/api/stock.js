@@ -110,6 +110,16 @@ async function updateBoard(title, content, boardId) {
   await authApi.put(`stock/post/update/${boardId}`, { title, content });
 }
 
+// 토론 댓글 리스트 받아오기
+async function getCommentList(boardId, page, size) {
+  const api = apiInstance();
+  return await api.get(
+    `stock/comment/${boardId}?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "")
+  );
+}
+
 export {
   getStockItemList,
   getStockItemList2,
@@ -123,4 +133,5 @@ export {
   getMonthStock,
   getDetail,
   getLive,
+  getCommentList,
 };

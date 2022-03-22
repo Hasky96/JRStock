@@ -9,7 +9,6 @@ export default function BoardCreate() {
   const [content, setContent] = useState();
   const { id } = useParams();
 
-  console.log(navigate);
   const getTitle = (e) => {
     setTitle(e.target.value);
   };
