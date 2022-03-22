@@ -1,6 +1,6 @@
 import PageContainer from "../PageContainer";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createBoard } from "../../api/stock";
 
 export default function BoardCreate() {
@@ -9,6 +9,7 @@ export default function BoardCreate() {
   const [content, setContent] = useState();
   const { id } = useParams();
 
+  console.log(navigate);
   const getTitle = (e) => {
     setTitle(e.target.value);
   };
@@ -17,6 +18,15 @@ export default function BoardCreate() {
     setContent(e.target.value);
   };
 
+  useEffect(() => {
+    if (!sessionStorage.getItem("access_token")) {
+      navigate("/login", {
+        state: { from: { pathname: `/stock/${id}/board/new` } },
+        replace: true,
+      });
+    }
+  });
+
   const create = () => {
     if (!title.trim()) {
       alert("제목을 입력해주세요.");
@@ -24,7 +34,7 @@ export default function BoardCreate() {
       alert("내용을 입력해주세요.");
     } else {
       createBoard(title, content, id);
-      navigate(`/stock/${id}/board`)
+      navigate(`/stock/${id}/board`);
     }
   };
   return (
@@ -74,7 +84,7 @@ export default function BoardCreate() {
             <div
               className="mt-5 w-full text-center border rounded-md bg-slate-300 text-white hover:bg-slate-400 py-2 col-start-8 col-span-1 cursor-pointer"
               onClick={function () {
-                navigate(-1);
+                navigate(`/stock/${id}/board`);
               }}
             >
               돌아가기

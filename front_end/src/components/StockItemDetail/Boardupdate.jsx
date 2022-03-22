@@ -17,6 +17,12 @@ export default function BoardUpdate() {
 
   useEffect(() => {
     init();
+    if (!sessionStorage.getItem("access_token")) {
+      navigate("/login", {
+        state: { from: { pathname: `/stock/${id}/board/${boardId}/update` } },
+        replace: true,
+      });
+    }
   }, []);
 
   const getTitle = (e) => {
@@ -63,7 +69,7 @@ export default function BoardUpdate() {
                 type="text"
                 className="w-full rounded-lg mt-1 border-indigo-800 ring-indigo-800 focus:border-indigo-300 focus:ring-indigo-300"
                 required
-                value={title || ''}
+                value={title || ""}
                 onChange={getTitle}
               />
             </div>
@@ -87,7 +93,7 @@ export default function BoardUpdate() {
             <div
               className="mt-5 w-full text-center border rounded-md bg-slate-300 text-white hover:bg-slate-400 py-2 col-start-8 col-span-1 cursor-pointer"
               onClick={function () {
-                navigate(-1);
+                navigate(`/stock/${id}/board/${boardId}`);
               }}
             >
               돌아가기

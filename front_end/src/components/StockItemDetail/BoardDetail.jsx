@@ -5,7 +5,7 @@ import { userDetail } from "../../api/user";
 import PageContainer from "../PageContainer";
 
 export default function BoardDetail() {
-  const { boardId } = useParams();
+  const { id, boardId } = useParams();
   const [board, setBoard] = useState();
   const [comment, setComment] = useState();
   const [user, setUser] = useState();
@@ -92,7 +92,7 @@ export default function BoardDetail() {
           className="block m-auto rounded-xl border-2 w-32 h-12 bg-indigo-100 text-xl font-bold text-indigo-500 border-indigo-800 bottom-5"
           onClick={(e) => {
             e.preventDefault();
-            navigate(`/stock/${board.data.basic_info.code_number}/board`);
+            navigate(`/stock/${id}/board`);
           }}
         >
           목록
