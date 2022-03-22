@@ -1,4 +1,8 @@
 import { Route, Routes, useLocation } from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Landing from "./routes/Landing";
 import Login from "./routes/Login";
 import PasswordReset from "./routes/PasswordReset";
@@ -12,15 +16,13 @@ import BackTestDetail from "./routes/BackTestDetail";
 import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
-import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Notice from "./routes/Notice";
 import NoticeDetail from "./routes/NoticeDetail";
 import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
 import BoardUpdate from "./components/StockItemDetail/Boardupdate";
 import Ranking from "./routes/Ranking";
+// import useIsLoggedIn from "./util/useIsLoggedIn";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
@@ -28,6 +30,7 @@ function App() {
   const [category, setCategory] = useState("");
 
   const location = useLocation();
+  // const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
     const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
@@ -74,10 +77,24 @@ function App() {
             path="/stock/:id/board/:boardId/update"
             element={<BoardUpdate />}
           />
-          <Route path="/backtest" element={<BackTestList />} />
+          <Route
+            path="/backtest"
+            element={
+              <PrivateRoute redirectPath="/backtest">
+                <BackTestList />
+              </PrivateRoute>
+            }
+          />
           <Route path="/backtest/create" element={<BackTestCreate />} />
           <Route path="/backtest/:id" element={<BackTestDetail />} />
-          <Route path="/mypage" element={<MyPage />} />
+          <Route
+            path="/mypage"
+            element={
+              <PrivateRoute redirectPath="/mypage">
+                <MyPage />
+              </PrivateRoute>
+            }
+          />
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
           <Route path="/ranking" element={<Ranking />} />

@@ -21,6 +21,7 @@ export default function Login() {
     try {
       const result = await login({ email, password });
       sessionStorage.setItem("access_token", result.data.access_token);
+      console.log(from);
       navigate(from);
     } catch (e) {
       console.log(e);

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { getItems } from "../api/notice";
 import PageContainer from "../components/PageContainer";
 import ListHeader from "../components/ListHeader";
@@ -21,19 +21,6 @@ export default function BackTestList() {
       created_at: "2022-03-09",
     },
   ];
-
-  const navigate = useNavigate();
-  // 현재 로그인 상태 확인
-  const isLoggedIn = window.sessionStorage.getItem("access_token")
-    ? true
-    : false;
-
-  // 로그인하지 않은 상태라면 /login 로 이동
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login", { state: { from: { pathname: "/mypage" } } });
-    }
-  }, [isLoggedIn]);
 
   const [backTestItems, setbackTestItems] = useState(data);
   const [checkedList, setcheckedList] = useState([]);

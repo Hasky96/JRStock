@@ -12,16 +12,16 @@ export default function Landing() {
   return (
     <div className="relative container  max-w-7xl mx-auto px-10">
       <ScrollToTop />
-      <Fade direction="left">
+      <Fade direction="up">
         <Intro />
       </Fade>
-      <Fade direction="up">
+      <Fade direction="left">
         <SectionOne />
       </Fade>
-      <Fade direction="up">
+      <Fade direction="right">
         <SectionTwo />
       </Fade>
-      <Fade direction="up">
+      <Fade direction="left">
         <SectionThree />
       </Fade>
       <Contact />
