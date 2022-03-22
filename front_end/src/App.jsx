@@ -71,11 +71,22 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
-          <Route path="/stock/:id/board/new" element={<BoardCreate />} />
+          <Route
+            path="/stock/:id/board/new"
+            element={
+              <PrivateRoute redirectPath="/board">
+                <BoardCreate />
+              </PrivateRoute>
+            }
+          />
           <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
           <Route
             path="/stock/:id/board/:boardId/update"
-            element={<BoardUpdate />}
+            element={
+              <PrivateRoute redirectPath="/board">
+                <BoardUpdate />
+              </PrivateRoute>
+            }
           />
           <Route
             path="/backtest"
@@ -85,8 +96,22 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/backtest/create" element={<BackTestCreate />} />
-          <Route path="/backtest/:id" element={<BackTestDetail />} />
+          <Route
+            path="/backtest/create"
+            element={
+              <PrivateRoute redirectPath="/backtest/create">
+                <MyPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/backtest/:id"
+            element={
+              <PrivateRoute redirectPath="/backtest">
+                <MyPage />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/mypage"
             element={
