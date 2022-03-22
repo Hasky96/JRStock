@@ -27,7 +27,10 @@ export default function MyPage() {
   // 로그인하지 않은 상태라면 /login 로 이동
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate("/login", { state: { from: { pathname: "/mypage" } } });
+      navigate("/login", {
+        state: { from: { pathname: "/mypage" } },
+        replace: true,
+      });
     }
   }, [isLoggedIn]);
 
