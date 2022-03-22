@@ -1,12 +1,19 @@
-@media screen and (min-width: 1024px) {
-  .button-wrapper {
-    max-width: 80%;
-  }
-}
-
 @media only screen and (max-width: 575px) {
   .content-wrapper {
     padding-bottom: 4rem;
+  }
+}
+
+/* @media only screen and (max-width: 768) {
+  .landing-block-container .svg-container {
+    max-width: 300px;
+    margin: auto;
+  }
+} */
+
+@media screen and (min-width: 1024px) {
+  .button-wrapper {
+    max-width: 80%;
   }
 }
 
@@ -34,7 +41,7 @@
 }
 
 .landing-block-container .svg-container {
-  max-width: 400px;
+  max-width: 500px;
   margin: auto;
 }
 

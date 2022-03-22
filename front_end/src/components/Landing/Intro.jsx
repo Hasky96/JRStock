@@ -17,13 +17,19 @@ export default function Intro() {
       <div className="content-wrapper w-full lg:w-2/3">
         <div className="flex relative">
           <h1>JRStock</h1>
-          <div className="absolute left-52 top-3">
+          <div className="absolute left-52 top-2">
             <Rocket fill="#ff825c" width={50} height={50} />
           </div>
         </div>
         <h2 className="content">
-          굶주린 주식 어린이들을 위한 주식 백테스트 서비스
+          <p>
+            굶<a class="underline decoration-active decoration-4">주린</a>{" "}
+            <a class="underline decoration-active decoration-4">주</a>식 어
+            <a class="underline decoration-active decoration-4">린이</a>들을
+            위한 주식 백테스트 서비스
+          </p>
         </h2>
+
         <div className="button-wrapper">
           <button
             className="button bg-indigo-900 text-white"
@@ -36,7 +42,7 @@ export default function Intro() {
             className="button text-indigo-900"
             onClick={() => handleButtonClick("signup")}
           >
-            회원가입
+            Signup
           </button>
         </div>
       </div>
