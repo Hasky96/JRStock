@@ -1,5 +1,5 @@
 # 백테스트 초기 세팅
-#   account = {"balance":1000000, "my_stock":{
+#   accounts = {"balance":1000000, "my_stock":{
 #                                              "005930":{"주식":100, "avg_price":10000}
 #                                              "005930":{"주식":100, "avg_price":10000}
 #                                           }
