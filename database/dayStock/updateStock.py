@@ -97,7 +97,6 @@ def updateDayStock(dt_now):
 
 
 dt_now = datetime.now()
-# tdate=20220313
 
 print("start")
 result= updateDayStock(dt_now)
