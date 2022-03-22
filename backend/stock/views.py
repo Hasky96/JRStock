@@ -1,7 +1,5 @@
-from datetime import datetime
-from django.http import QueryDict
+from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
-from numpy import where
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -55,7 +53,19 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def basic_info_list(request):
-    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date='2022-03-10')
+    # 어제 날짜에 해당하는 데이터 가져오기
+    yesterday = datetime.now() - timedelta(days=1)
+    
+    # 0 월요일, 6 일요일
+    # 어제가 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if yesterday.weekday() == 6:
+        yesterday = yesterday - timedelta(days=2)
+    if yesterday.weekday() == 5:
+        yesterday = yesterday - timedelta(days=1)
+    
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    
+    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date=yesterday)
     
     # 검색 기능
     if request.GET.get('company_name'):
@@ -424,9 +434,21 @@ def interest_stock_list(request):
     # 비어있는 쿼리셋 만들기
     stock_list = DayStockInfo.objects.none()
     
+    # 어제 날짜에 해당하는 데이터 가져오기
+    yesterday = datetime.now() - timedelta(days=1)
+    
+    # 0 월요일, 6 일요일
+    # 어제가 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if yesterday.weekday() == 6:
+        yesterday = yesterday - timedelta(days=2)
+    if yesterday.weekday() == 5:
+        yesterday = yesterday - timedelta(days=1)
+    
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    
     # 관심종목의 상세 정보를 불러와서 합침
     for interest in interest_list:
-        stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date='2022-03-10')
+        stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date=yesterday)
         stock_list = stock_list | stock
 
     # 검색 기능

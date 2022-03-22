@@ -6,15 +6,13 @@ from celery.schedules import crontab
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 app = Celery('JRstock')
 
-# 문자열로 등록은 Celery Worker가 자식 프로세스에게 피클링하지 하지 않아도 되다고 알림
-# namespace = 'CELERY'는 Celery관련 세팅 파일에서 변수 Prefix가 CELERY_ 라고 알림
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
    'add-daystock-everyday' : {
       'task': 'stock.tasks.add_day_stocks',
-      'schedule' : crontab(hour=19, day_of_week='1-5'),
+      'schedule' : crontab(minute=0, hour=4, day_of_week='2-6'),
    },
 }
 
