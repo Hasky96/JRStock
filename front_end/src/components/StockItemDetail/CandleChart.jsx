@@ -93,12 +93,12 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
     }));
 
     var series = chart.addCandlestickSeries({
-      upColor: "#2563eb",
-      downColor: "#ef4444",
-      // borderDownColor: "rgba(255, 144, 0, 1)",
-      // borderUpColor: "rgba(255, 144, 0, 1)",
-      wickDownColor: "#ef4444",
-      wickUpColor: "#2563eb",
+      upColor: "#ef4444",
+      downColor: "#2563eb",
+      borderDownColor: "#2563eb",
+      borderUpColor: "#ef4444",
+      wickDownColor: "#2563eb",
+      wickUpColor: "#ef4444",
     });
 
     series.setData(candleData);
