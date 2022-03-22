@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -19,6 +21,7 @@ from .parser import get_serializer
 import requests
 from bs4 import BeautifulSoup
 import re
+
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -67,6 +70,19 @@ def basic_info_list(request):
     yesterday = yesterday.strftime('%Y-%m-%d')
     
     stock_list = DayStockInfo.objects.select_related('financial_info').filter(date=yesterday)
+    
+    # 코스피 코스닥 제외
+    stock_list = stock_list.exclude(financial_info__basic_info__code_number='kospi')
+    stock_list = stock_list.exclude(financial_info__basic_info__code_number='kosdaq')
+    
+    sort = request.GET.get('sort')
+    
+    if not sort == None:
+        if sort[:1] == '-':
+            sort = sort[1:]
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('-order_column', sort)
+        else:
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('order_column', sort)
     
     # 검색 기능
     if request.GET.get('company_name'):
@@ -451,6 +467,15 @@ def interest_stock_list(request):
     for interest in interest_list:
         stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date=yesterday)
         stock_list = stock_list | stock
+        
+    sort = request.GET.get('sort')
+    
+    if not sort == None:
+        if sort[:1] == '-':
+            sort = sort[1:]
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('-order_column', sort)
+        else:
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('order_column', sort)
 
     # 검색 기능
     if request.GET.get('company_name'):
