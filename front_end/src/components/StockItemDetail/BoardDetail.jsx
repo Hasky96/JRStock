@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBoardDetail, deleteBoard, getCommentList } from "../../api/stock";
+import {
+  getBoardDetail,
+  deleteBoard,
+  getCommentList,
+  createComment,
+} from "../../api/stock";
 import { userDetail } from "../../api/user";
 import PageContainer from "../PageContainer";
+import Pagenation from "../Pagenation";
 
 export default function BoardDetail() {
   const { id, boardId } = useParams();
   const [board, setBoard] = useState();
-  const [comment, setComment] = useState();
+  const [comment, setComment] = useState([]);
+  const [content, setContent] = useState("");
   const [user, setUser] = useState();
   const [pageNo, setPageNo] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
-  const pageSize = 1;
+  const pageSize = 10;
   const isLogin = !sessionStorage.getItem("access_token") ? false : true;
 
   const init = async () => {
@@ -23,7 +31,8 @@ export default function BoardDetail() {
     setBoard(boardData.data);
 
     const commentData = await getCommentList(boardId, pageNo, pageSize);
-    setComment(commentData.data);
+    setComment(commentData.data.results);
+    setTotalCount(commentData.data.count);
   };
 
   useEffect(() => {
@@ -41,6 +50,18 @@ export default function BoardDetail() {
     navigate(`update`);
   };
 
+  // 댓글 입력 받기
+  const inputContent = (e) => {
+    setContent(e.target.value);
+  };
+
+  // 댓글 작성
+  const newComment = () => {
+    createComment(boardId, content);
+    setContent("");
+    init();
+  };
+
   // 로그인 페이지로
   const goLogin = () => {
     if (!isLogin) {
@@ -50,6 +71,56 @@ export default function BoardDetail() {
         });
       }
     }
+  };
+
+  // 페이지네이션 동작
+  const onClickFirst = async () => {
+    setPageNo(1);
+    const res = await getCommentList(boardId, 1, pageSize);
+    setComment(res.data.results);
+  };
+
+  const onClickLeft = async () => {
+    setPageNo((cur) => cur - 1);
+    const res = await getCommentList(boardId, pageNo - 1, pageSize);
+    setComment(res.data.results);
+  };
+
+  const onClickRight = async () => {
+    setPageNo((cur) => cur + 1);
+    const res = await getCommentList(boardId, pageNo + 1, pageSize);
+    setComment(res.data.results);
+  };
+
+  const onClickLast = async () => {
+    const lastPageNum =
+      parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
+    setPageNo(lastPageNum);
+    const res = await getCommentList(boardId, lastPageNum, pageSize);
+    setComment(res.data.results);
+  };
+
+  const onClickNumber = async (num) => {
+    setPageNo(num);
+    const res = await getCommentList(boardId, num, pageSize);
+    setComment(res.data.results);
+  };
+
+  // 댓글 태그 구성
+  const commentList = () => {
+    const result = [];
+    for (let i = 0; i < comment.length; i++) {
+      if (i > 0) {
+        result.push(<hr key={i} className="my-2" />);
+      }
+      result.push(
+        <div key={"comment" + i}>
+          <div className="font-bold mt-3">{comment[i].user.name}</div>
+          <div className="mt-3 mb-5">{comment[i].content}</div>
+        </div>
+      );
+    }
+    return result;
   };
 
   return (
@@ -105,13 +176,21 @@ export default function BoardDetail() {
             </p>
           </div>
           <div className="text-xl py-10 px-5">{board?.content}</div>
-          <div className="text-2xl font-bold mt-28">
-            댓글 {!!comment?.count && comment.count}
-          </div>
+          <button
+            className="block mt-24 m-auto rounded-xl border-2 w-32 h-12 bg-indigo-100 text-xl font-bold text-indigo-500 border-indigo-800 bottom-5"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/stock/${id}/board`);
+            }}
+          >
+            목록
+          </button>
+          <div className="text-2xl font-bold mt-10">댓글 {totalCount}</div>
           <form
             className="mt-3"
             onSubmit={function (e) {
               e.preventDefault();
+              newComment();
             }}
           >
             <textarea
@@ -124,29 +203,36 @@ export default function BoardDetail() {
                   : "댓글을 작성해주세요."
               }
               onClick={goLogin}
+              onChange={inputContent}
+              value={content}
               className={
                 "w-full rounded-lg border-indigo-800 ring-indigo-800 focus:border-indigo-300 focus:ring-indigo-300" +
                 (!isLogin ? " cursor-pointer" : "")
               }
             ></textarea>
             {isLogin && (
-              <div className="flex justify-end">
+              <div className="flex justify-end mb-5">
                 <button className="mt-1 border px-5 rounded-md bg-indigo-500 text-white hover:bg-indigo-800 py-2 col-start-5 col-span-1">
                   작성
                 </button>
               </div>
             )}
           </form>
-          <div className="mt-10">{comment?.results}</div>
-          <button
-            className="block m-auto rounded-xl border-2 w-32 h-12 bg-indigo-100 text-xl font-bold text-indigo-500 border-indigo-800 bottom-5"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate(`/stock/${id}/board`);
-            }}
-          >
-            목록
-          </button>
+          {comment.length ? (
+            commentList()
+          ) : (
+            <div className="text-gray-400">댓글이 없습니다..</div>
+          )}
+          <Pagenation
+            selectedNum={pageNo}
+            totalCnt={totalCount}
+            pageSize={pageSize}
+            onClickFirst={onClickFirst}
+            onClickLeft={onClickLeft}
+            onClickRight={onClickRight}
+            onClickLast={onClickLast}
+            onClickNumber={onClickNumber}
+          />
         </div>
       </div>
     </PageContainer>

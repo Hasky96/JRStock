@@ -120,6 +120,12 @@ async function getCommentList(boardId, page, size) {
   );
 }
 
+// 토론 댓글 작성
+async function createComment(board_id, content) {
+  const authApi = loginApiInstance();
+  await authApi.post("stock/comment/create/", { board_id, content });
+}
+
 export {
   getStockItemList,
   getStockItemList2,
@@ -134,4 +140,5 @@ export {
   getDetail,
   getLive,
   getCommentList,
+  createComment,
 };
