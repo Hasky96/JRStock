@@ -15,7 +15,7 @@ function transVolumeData(data) {
     return {
       time: e.date,
       value: e.volume,
-      color: parseFloat(e.changes) < 0 ? "#ef4444" : "#2563eb",
+      color: parseFloat(e.changes) < 0 ? "#2563eb" : "#ef4444",
     };
   });
 }
