@@ -1,7 +1,7 @@
-from datetime import datetime
-from django.http import QueryDict
+from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
-from numpy import where
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -20,6 +20,8 @@ from .parser import get_serializer
 
 import requests
 from bs4 import BeautifulSoup
+import re
+
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -55,7 +57,32 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def basic_info_list(request):
-    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date='2022-03-10')
+    # 어제 날짜에 해당하는 데이터 가져오기
+    yesterday = datetime.now() - timedelta(days=1)
+    
+    # 0 월요일, 6 일요일
+    # 어제가 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if yesterday.weekday() == 6:
+        yesterday = yesterday - timedelta(days=2)
+    if yesterday.weekday() == 5:
+        yesterday = yesterday - timedelta(days=1)
+    
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    
+    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date=yesterday)
+    
+    # 코스피 코스닥 제외
+    stock_list = stock_list.exclude(financial_info__basic_info__code_number='kospi')
+    stock_list = stock_list.exclude(financial_info__basic_info__code_number='kosdaq')
+    
+    sort = request.GET.get('sort')
+    
+    if not sort == None:
+        if sort[:1] == '-':
+            sort = sort[1:]
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('-order_column', sort)
+        else:
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('order_column', sort)
     
     # 검색 기능
     if request.GET.get('company_name'):
@@ -424,10 +451,31 @@ def interest_stock_list(request):
     # 비어있는 쿼리셋 만들기
     stock_list = DayStockInfo.objects.none()
     
+    # 어제 날짜에 해당하는 데이터 가져오기
+    yesterday = datetime.now() - timedelta(days=1)
+    
+    # 0 월요일, 6 일요일
+    # 어제가 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if yesterday.weekday() == 6:
+        yesterday = yesterday - timedelta(days=2)
+    if yesterday.weekday() == 5:
+        yesterday = yesterday - timedelta(days=1)
+    
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    
     # 관심종목의 상세 정보를 불러와서 합침
     for interest in interest_list:
-        stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date='2022-03-10')
+        stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date=yesterday)
         stock_list = stock_list | stock
+        
+    sort = request.GET.get('sort')
+    
+    if not sort == None:
+        if sort[:1] == '-':
+            sort = sort[1:]
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('-order_column', sort)
+        else:
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('order_column', sort)
 
     # 검색 기능
     if request.GET.get('company_name'):
@@ -577,102 +625,53 @@ def interset_stock_delete(request):
             interest.delete()
     
     return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 최신 뉴스 조회(아무나)',
+    operation_description='요청한 종목의 최신 뉴스를 조회합니다',
+    tags=['주식_뉴스'],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'date': openapi.Schema(type=openapi.TYPE_STRING, description="날짜"),
+                'title': openapi.Schema(type=openapi.TYPE_STRING, description="뉴스 제목"),
+                'source': openapi.Schema(type=openapi.TYPE_STRING, description="뉴스 출처"),
+                'link': openapi.Schema(type=openapi.TYPE_STRING, description="뉴스 기사 주소"),
+            }
+        )
+    )}
+)    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_recent_news(reqeust, code_number):
+    news_list = []
     
-# ====================================================================== 코스피 ======================================================================
+    url = 'https://finance.naver.com/item/news_news.nhn?code=' + str(code_number) + '&page=1' 
+    source_code = requests.get(url).text
+    html = BeautifulSoup(source_code, "lxml")
 
-
-
-# @swagger_auto_schema(
-#     method='get',
-#     operation_id='코스피 주식 종목 전체 조회(아무나)',
-#     operation_description='코스피 주식 종목 전체를 조회 합니다',
-#     tags=['주식_코스피'],
-#     manual_parameters=[page, size, sort, company_name, face_value],
-#     responses={status.HTTP_200_OK: openapi.Response(
-#         description="200 OK",
-#         schema=openapi.Schema(
-#             type=openapi.TYPE_OBJECT,
-#             properties={
-#                 'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
-#                 'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
-#                 'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-#                 'results' : get_serializer("info", "종목 정보"),
-#             }
-#         )
-#     )}
-# )
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def info_kospi_list(request):
-#     sort = request.GET.get('sort')
+    title_data = html.select('.title')
+    dates = html.select('.date')
+    sources = html.select('.info')
     
-#     # 정렬을 원한다면
-#     if not sort == None:
-#         if sort.startswith('-'):
-#             sort = sort[1:]
-#             kospi_list = FinancialKospi.objects.all().order_by(f"-info_kospi__{sort}")
-#         else:
-#             kospi_list = FinancialKospi.objects.all().order_by(f"info_kospi__{sort}")
-#     else:
-#         kospi_list = FinancialKospi.objects.all()
+    for idx in range(0, len(title_data)):        
+        # 제목
+        title = title_data[idx].get_text() 
+        title = re.sub('\n','',title)
         
-    
-#     # 검색 기능
-#     if request.GET.get('company_name'):
-#         value = request.GET.get('company_name')
-#         kospi_list = kospi_list.filter(info_kospi__company_name__contains=value)
+        # 링크
+        link = 'https://finance.naver.com' + title_data[idx].find('a')['href']
         
-#     if request.GET.get('code_number'):
-#         value = request.GET.get('code_number')
-#         kospi_list = kospi_list.filter(info_kospi__code_number__contains=value)
-    
-#     # 필터링
-#     columns = ['face_value', 'capital_stock', 'number_of_listings', 'credit_rate', 'year_high_price', 'year_low_price', 
-#                     'market_cap', 'foreigner_percent', 'substitute_price', 'per', 'eps', 'roe', 'pbr', 'ev', 'bps', 'sales_revenue',
-#                     'operating_income', 'net_income', 'shares_outstanding', 'shares_outstanding_rate']
-#     for column in columns:
-#         if request.GET.get(column):
-#             value = request.GET.get(column)
-#             value = value.split('-')
-#             query = f"{column} BETWEEN {value[0]} AND {value[1]}"
-#             kospi_list = kospi_list.extra(where={query})
-            
-#     paginator = PageNumberPagination()
+        # 날짜
+        date = dates[idx].get_text()
+        
+        # 출처
+        source = sources[idx].get_text()
+        
+        result = {'date' : date, 'title' : title, 'source' : source, 'link' : link}
+        news_list.append(result)
 
-#     page_size = request.GET.get('size')
-#     if not page_size == None:
-#         paginator.page_size = page_size
-
-#     result = paginator.paginate_queryset(kospi_list, request)
-#     serializers = KospiCustomSerializer(result, many=True)
-#     return paginator.get_paginated_response(serializers.data)
-
-# @swagger_auto_schema(
-#     method='get',
-#     operation_id='코스피 주식 상세 조회(아무나)',
-#     operation_description='코스피 주식 상세 조회 합니다',
-#     tags=['주식_코스피'],
-#     responses={status.HTTP_200_OK: InfoKospiSerializer},
-# )
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def info_kospi_detail(request, code_number):
-#     info_kospi = get_object_or_404(InfoKospi, pk=code_number)
-#     serializer = InfoKospiSerializer(info_kospi)
-    
-#     return Response(serializer.data, status=status.HTTP_200_OK)
-
-# @swagger_auto_schema(
-#     method='get',
-#     operation_id='코스피 주식 재무제표 상세 조회(아무나)',
-#     operation_description='코스피 주식 재무제표를 상세 조회 합니다',
-#     tags=['주식_코스피'],
-#     responses={status.HTTP_200_OK: FinancialKospiSerializer},
-# )
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def financial_kospi_detail(request, code_number):
-#     financial_kospi = get_object_or_404(FinancialKospi, pk=code_number)
-#     serializer = FinancialKospiSerializer(financial_kospi)
-    
-#     return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(news_list, status=status.HTTP_200_OK)
