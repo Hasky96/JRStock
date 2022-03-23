@@ -1,3 +1,6 @@
-from stock.tasks import test
+sort = '-id'
 
-test()
+print(sort[:1])
+
+sort = sort[1:]
+print(sort)
