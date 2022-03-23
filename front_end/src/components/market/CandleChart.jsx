@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
-import "./CandleChart.css";
+import styles from "./CandleChart.module.css";
 
 export const CandleChart = ({ title, candleData, volumeData, period }) => {
   const chartContainerRef = useRef();
@@ -97,10 +97,12 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
     // rgba(255,0,0, 0.8)" },
     // { time: "2019-05-24", value: 8755506.0, color: "rgba(0,0,255, 0.8)
     var series = chart.addCandlestickSeries({
-      upColor: "#2563eb",
-      downColor: "#ef4444",
-      wickDownColor: "#ef4444",
-      wickUpColor: "#2563eb",
+      upColor: "#ef4444",
+      wickUpColor: "#ef4444",
+      borderUpColor: "#ef4444",
+      downColor: "#2563eb",
+      wickDownColor: "#2563eb",
+      borderDownColor: "#2563eb",
     });
 
     series.setData(candleData);
@@ -160,9 +162,9 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
       className="w-full relative"
       ref={chartContainerRef}
     >
-      <div className="three-line-legend bg-yellow-100 opacity-40">
-        <div className="legend-title">{title}</div>
-        <div className="legend-content">
+      <div className={styles["market-three-line-legend"]}>
+        <div className={styles["legend-title"]}>{title}</div>
+        <div className={styles["legend-content"]}>
           {"시가 " + legends.open}
           <br />
           {"  고가 " + legends.high}

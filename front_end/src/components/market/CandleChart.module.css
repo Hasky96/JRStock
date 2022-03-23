@@ -1,4 +1,4 @@
-.three-line-legend {
+.market-three-line-legend {
   display: block;
   left: 3px;
   right: 3px;
@@ -12,6 +12,9 @@
   text-align: left;
   z-index: 20;
   pointer-events: none;
+  /* 추가한 것 */
+  /* opacity: 0.4; */
+  background-color: rgba(224, 231, 255, 0.4);
 }
 .legend-title {
   font-size: 24px;
