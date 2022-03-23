@@ -77,7 +77,7 @@ export default function Ranking() {
 
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>
-      <div className={"bg-indigo-900 rounded-lg shadow-lg p-5 my-h-80"}>
+      <div className={"bg-primary rounded-lg shadow-lg p-5 my-h-80"}>
         {/* 제목 */}
         <div className="m-5">
           <span

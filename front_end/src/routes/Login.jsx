@@ -64,12 +64,12 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-img">
         <div className="max-w-lg w-full space-y-8 border-2 p-12 rounded-md bg-white">
           <div>
-            <h2 className="text-3xl font-extrabold text-indigo-900 text-center">
+            <h2 className="text-3xl font-extrabold text-primary text-center">
               JRstock
             </h2>
           </div>
           <div>
-            <h2 className="text-xl font-extrabold text-indigo-900">
+            <h2 className="text-xl font-extrabold text-primary">
               Login in to your account
             </h2>
           </div>
@@ -95,7 +95,7 @@ export default function Login() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="Email address"
                   onChange={inputEmail}
                 />
@@ -108,7 +108,7 @@ export default function Login() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="Password"
                   onChange={inputPassword}
                 />
@@ -122,7 +122,7 @@ export default function Login() {
                   name="remember-me"
                   type="checkbox"
                   onChange={rememberMe}
-                  className="h-4 w-4 text-indigo-900 focus:ring-indigo-900 border-gray-300 rounded"
+                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                 />
                 <label
                   htmlFor="remember-me"
@@ -145,11 +145,11 @@ export default function Login() {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-900"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-900"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   <LockClosedIcon
-                    className="h-5 w-5 text-indigo-900 group-hover:text-indigo-900"
+                    className="h-5 w-5 text-primary group-hover:text-primary"
                     aria-hidden="true"
                   />
                 </span>

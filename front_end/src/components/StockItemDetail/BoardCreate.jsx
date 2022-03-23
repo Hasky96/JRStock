@@ -48,11 +48,9 @@ export default function BoardCreate() {
               create();
             }}
           >
-            <div className="col-span-12 mt-5 text-3xl text-indigo-900">
-              글쓰기
-            </div>
+            <div className="col-span-12 mt-5 text-3xl text-primary">글쓰기</div>
             <div className="w-full col-start-4 col-end-10 mt-10">
-              <label htmlFor="title" className="text-indigo-900 text-xl">
+              <label htmlFor="title" className="text-primary text-xl">
                 제목
               </label>
               <input
@@ -65,7 +63,7 @@ export default function BoardCreate() {
               />
             </div>
             <div className="w-full col-start-4 col-end-10 mt-10">
-              <label htmlFor="content" className="text-indigo-900 text-xl">
+              <label htmlFor="content" className="text-primary text-xl">
                 내용
               </label>
               <textarea

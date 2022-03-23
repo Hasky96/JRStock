@@ -56,9 +56,9 @@ export default function Chart({ data, period }) {
         areaSeries = null;
       }
       areaSeries = chart.addAreaSeries({
-        topColor: "rgba(67, 56, 202, 0.56)",
-        bottomColor: "rgba(67, 56, 202, 0.04)",
-        lineColor: "rgba(67, 56, 202, 1)",
+        topColor: "rgba(24, 33, 109, 0.56)",
+        bottomColor: "rgba(24, 33, 109, 0.04)",
+        lineColor: "rgba(24, 33, 109, 1)",
         lineWidth: 2,
       });
       areaSeries.setData(data);
@@ -66,12 +66,24 @@ export default function Chart({ data, period }) {
 
     syncToInterval(data);
 
+    const handleResize = () => {
+      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    };
+
+    window.addEventListener("resize", handleResize);
     // 종료시 차트 제거
     return () => {
+      window.removeEventListener("resize", handleResize);
+
       chart.remove();
     };
   }, [data, period]);
 
   // 컴포넌트 반환
-  return <div ref={chartContainerRef} />;
+  return (
+    <div
+      className="absolute w-full top-0 left-0 h-full"
+      ref={chartContainerRef}
+    />
+  );
 }

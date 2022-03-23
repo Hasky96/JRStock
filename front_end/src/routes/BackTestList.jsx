@@ -58,7 +58,7 @@ export default function BackTestList() {
     );
   });
 
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(1);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
 

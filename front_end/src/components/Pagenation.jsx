@@ -100,7 +100,7 @@ export default function Pagenation({
     let cnt = 0;
     // 선택된 버튼 className
     const selectedItemClassName =
-      "z-10 bg-indigo-50 border-indigo-900 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
+      "z-10 bg-indigo-50 border-primary text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
     // 선택 안된 버튼 className
     const notSelectedItemClassName =
       "bg-white border-gray-300 text-gray-900 hover:bg-indigo-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
@@ -165,7 +165,7 @@ export default function Pagenation({
           >
             {firstBtn}
             {leftBtn}
-            {/* Current: "z-10 bg-indigo-50 border-indigo-900 text-indigo-600", Default: "bg-white border-gray-300 text-gray-900 hover:bg-gray-50" */}
+            {/* Current: "z-10 bg-indigo-50 border-primary text-indigo-600", Default: "bg-white border-gray-300 text-gray-900 hover:bg-gray-50" */}
             {numBtnList()}
             {rightBtn}
             {LastBtn}

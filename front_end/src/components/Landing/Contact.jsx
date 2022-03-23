@@ -43,7 +43,7 @@ export default function Contact() {
           </div>
           <div className="flex justify-end">
             <button
-              className="button bg-indigo-900 text-white"
+              className="button bg-primary text-white"
               onClick={() => handleSubmit()}
             >
               submit

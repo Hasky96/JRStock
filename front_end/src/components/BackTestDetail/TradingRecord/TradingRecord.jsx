@@ -82,7 +82,7 @@ export default function TradingRecord() {
       { id, time, buy, type, stock, stockCode, price, quantity, asset, profit },
       index
     ) => (
-      <tr key={index} className="h-12 border-b hover:bg-yellow-50">
+      <tr key={index} className="h-12 border-b hover:bg-indigo-50">
         <td>{id}</td>
         <td>{time}</td>
         <td>{buy}</td>
@@ -102,7 +102,7 @@ export default function TradingRecord() {
       <div className="w-full mb-3">
         <Menu as="div" className="relative inline-block text-left">
           <div>
-            <Menu.Button className="inline-flex justify-center w-full rounded-md border hover:border-yellow-300 focus:border-yellow-300 border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-yellow-500">
+            <Menu.Button className="inline-flex justify-center w-full rounded-md border hover:border-indigo-300 focus:border-indigo-300 border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-primary">
               <FilterIcon
                 className="h-5 w-5 -ml-1 mr-2 p-0"
                 aria-hidden="true"
