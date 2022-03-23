@@ -1,4 +1,4 @@
-from bt_common_kjin import *
+from bt_common_yw import *
 
 current_stock_price=get_current_stock_price()   # {'005930': 71000}
 # day_stocks=get_day_stock('005380', '1995-05-02', '2022-03-22')
@@ -8,6 +8,7 @@ day_stocks=get_day_stock('005380', '2015-05-02', '2022-03-22')
 
 account = {
     "balance":1000000,
+    "start_price":1000000, 
     "stocks":{
         # "005930":{
         #     "amount":100,
@@ -88,17 +89,15 @@ def RSI_buy_sell(stocks, high_index=70, low_index=30, account={}, buy_percent=50
     print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
     for idx, row in stocks.iterrows():
         if row['RSI']>=high_index:
-            print(row['date'], end=' ')
-            account=sell(account, row['code_number'], row['current_price'], sell_percent)
+            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
         elif row['RSI']<=low_index:
-            print(row['date'], end=' ')
-            account=buy(account, row['code_number'], row['current_price'], buy_percent)
+            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적 강도 지수")
 
 
 # 단기이평선이 장기이평선을 상향돌파하면 매수, 하향돌파하면 매도
 # 추가 : 팔 가격이 산 가격보다 높아야되고 살 가격이 판 가격보다 낮아야함
 def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent=50, sell_percent=50):
-    print(f'단순이동평균선(SMA) 전략: 단기-{short_period} 장기-{long_period}')
+    print(f'단순이동평균선(SMA) 전략: 단기-{short_period}일 장기-{long_period}일')
     df_day_stocks['SMA_short']=SMA(df_day_stocks, short_period)
     df_day_stocks['SMA_long']=SMA(df_day_stocks, long_period)
     before_flag=0
@@ -117,12 +116,10 @@ def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent
             before_price=current_price
 
         if before_flag<current_flag and before_price<current_price:
-            print(row['date'], end=' ')
-            account=sell(account, row['code_number'], row['current_price'], sell_percent)
+            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "단순이동평균선")
             before_price=max(before_price, current_price)
         elif before_flag>current_flag and before_price>current_price:
-            print(row['date'], end=' ')
-            account=buy(account, row['code_number'], row['current_price'], buy_percent)
+            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "단순이동평균선")
             before_price=min(before_price, current_price)
         
         before_flag=current_flag
@@ -155,7 +152,25 @@ buy_percent=50
 sell_percent=50
 
 # print(account)
-# RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
-SMA_buy_sell(df_day_stocks, sma_short_period, sma_long_period, account, buy_percent, sell_percent)
+RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
+# SMA_buy_sell(df_day_stocks, sma_short_period, sma_long_period, account, buy_percent, sell_percent)
 print(account)
 print(calculate_total_account(account, current_stock_price))
+
+
+# 영워니 화이팅
+# 결과값 : 시작일, 종료일, 투자원금, 총손익, 최종자산, 최종수익률
+# 일평균수익률=총수익률/거래가능한 기간
+# 연평균수익률=1년씩 (최종가치-시초가치)/시초가치 년도별로 또는 연평균  - 영원 date split해서
+
+# 시장수익률=알파 코스피의 (현재가격-시초가격)/시초가격     
+# 종목시장수익률=알파 그 종목의 (현재가격-시초가격)/시초가격
+# 시장초과수익률 = 내꺼수익률-시장수익률
+# 역대 최고, 최저 내자산
+# 최저 수익률, 최고 수익률 : 역대 최고/최저 / 초기자금
+# 연도별 자산운영 
+
+# 최대손실폭=??? - 하석
+
+
+

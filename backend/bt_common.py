@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 import django   
 django.setup()
 
-from stock.models import DayStock, FinancialInfo
+from stock.models import DayStock, FinancialInfo, BasicInfo
 
 def get_day_stock(code_number, start_date, end_date):
     """ 주식 select 함수
@@ -28,23 +28,25 @@ def get_day_stock(code_number, start_date, end_date):
     financial_info = FinancialInfo.objects.get(pk=code_number)  # 재무제표
     day_stock_list = list(day_stock_list) 
     
-    # print(financial_info.face_value)
-    # print(day_stock_list[0].current_price)
-    # print(day_stock_list[0].changes)
-    # print(day_stock_list[0].chages_ratio)
-    # print(day_stock_list[0].date)
-    
     return day_stock_list
 
-def get_current_stock_price():
+def get_current_stock_price(code_number=None):
     """ 최신 주식 가격
 
     Args:
-
+        없는 경우 모든 주식
+        code_number (String) : 주식 종목 1개 코드 '005930'
     Returns:
         최신 주식별 가격 (Dict) {'005930': 71000, '005380': 205000, ...}
+        주식 종목 1개 가격 (Integer) 71000
     """
 
+
+    if (code_number!=None):     # 단일종목 가격
+        day_stock_list = DayStock.objects.filter(code_number=code_number).order_by('-date')
+        return day_stock_list[0].current_price
+
+    # 모든 종목 가격
     # select * from day_stock where date=(select max(date) from day_stock); 
     current_date=DayStock.objects.aggregate(Max('date'))['date__max']   # DB에 저장된 마지막 날짜 {'date__max': '2022-03-21'}
     day_stock_list = DayStock.objects.filter(date=current_date)
@@ -54,7 +56,7 @@ def get_current_stock_price():
     return current_stock_price
 
 
-def buy(account, code, price, percent):
+def buy(account, code, price, percent, date, option):
     """주식구매 함수
 
     Args:
@@ -62,6 +64,8 @@ def buy(account, code, price, percent):
         code (String): 매수하고자 하는 주식 코드
         price (Integer): 매수하는 가격
         percent (Integer): 현금자산의 몇 퍼센트의 비중으로 매수할지
+        date (String): 기준 날짜
+        option (String): 사용한 방법
 
     Returns:
         구매 완료시 수정된 현금 재산과 보유주식목록 딕셔너리 반환
@@ -75,16 +79,30 @@ def buy(account, code, price, percent):
         print("구매가 불가합니다. 잔액부족")
         return account
     account['balance'] -= buy_price # 구매후 가격 갱신
+    
+    # 구매한 주식이 보유 목록에 있다면
     if code in account['stocks'].keys():
         info = account['stocks'][code]
         account['stocks'][code]['avg_price'] = int((info['amount'] * info['avg_price'] + price*stock_amount) // (info['amount']+ stock_amount)) # 평단가 갱신 
         account['stocks'][code]['amount'] += stock_amount
+    # 없다면
     else:
         account['stocks'][code] = {"amount":stock_amount, "avg_price":price}
-    print(f'매수알림 : {code} 주식 {price:,} 가격에 {stock_amount:,}주 매수')
+        
+    # 현재 자산 계산
+    current_asset = int(account['balance'])
+    for code_num in account['stocks'].keys():
+        cur_price = get_stock_price(code_num, date)
+        current_asset += (int(cur_price) * int(account['stocks'][code_num]['amount']))
+    
+    earn_rate = (current_asset - account['start_price']) / account['start_price']
+    earn_rate = round(earn_rate, 3) * 100
+    name=get_stock_name_by_code(code)
+    
+    print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
-def sell(account, code, price, percent):
+def sell(account, code, price, percent, date, option):
     """주식구매 함수
 
     Args:
@@ -92,6 +110,8 @@ def sell(account, code, price, percent):
         code (String): 매도하고자 하는 주식 코드
         price (Integer): 매도하는 가격
         percent (Integer): 보유주식수의 몇 퍼센트의 비중으로 매도할지
+        date (String): 기준 날짜
+        option (String): 사용한 방법
 
     Returns:
         구매 완료시 수정된 현금 재산과 보유주식목록 딕셔너리 반환
@@ -105,9 +125,34 @@ def sell(account, code, price, percent):
     account['stocks'][code]['amount'] -= stock_amount
     if account['stocks'][code]['amount'] == 0:
         del account['stocks'][code]
-    print(f'매도알림 : {code} 주식 {price:,} 가격에 {stock_amount:,}주 매도')
+        
+    # 현재 자산 계산
+    current_asset = int(account['balance'])
+    for code_num in account['stocks'].keys():
+        cur_price = get_stock_price(code_num, date)
+        current_asset += (int(cur_price) * int(account['stocks'][code_num]['amount']))
+    
+    earn_rate = (current_asset - account['start_price']) / account['start_price']
+    earn_rate = round(earn_rate, 3) * 100
+    name=get_stock_name_by_code(code)
+    print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
+def get_stock_data(code_number, date):
+    day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
+    
+    return day_stock_list[0]
+    
+
+def get_stock_name_by_code(code_number):
+    stock=BasicInfo.objects.get(pk=code_number)
+    return stock.company_name
+
+def get_stock_price(code_number, date):
+    day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
+    
+    return day_stock_list[0].current_price
+    
 
 def calculate_total_account(account, current_stock_price):
     """ 현재 자산 총합
@@ -117,15 +162,15 @@ def calculate_total_account(account, current_stock_price):
         current_stock_price (Dict) : 최신 주식별 가격 딕셔너리
 
     Returns:
-        총액 (String)    4,103,320원
+        총액 (Integer)    4,103,320원
     """
 
     total_account=account['balance']
     for key in account['stocks'].keys():
         total_account+=current_stock_price[key]*account['stocks'][key]['amount']
     total_account=int(total_account)
-    result=f'{total_account:,}원'
-    return result
+    # result=f'{total_account:,}원'
+    return total_account
 
 
 def object_to_dataframe(stocks):
