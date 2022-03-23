@@ -4,8 +4,6 @@ import Card from "../components/market/Card";
 import TabBar from "../components/TabBar/TabBar";
 import LineChart from "../components/market/LineChart";
 import "../components/market/style.css";
-import NewsList from "../components/market/NewsList";
-import NewsTitle from "../components/market/NewsTitle";
 
 import { getDayStock, getWeekStock, getMonthStock } from "../api/market";
 
@@ -42,8 +40,8 @@ export default function Market() {
     // 일봉
     // kospiSeriesData 초기화
     const kospiDayStock = await getDayStock("kospi");
-    console.log(kospiDayStock);
 
+    // 코스피 카드 정보 초기화
     setKospiInfo({
       open: parseFloat(kospiDayStock[kospiDayStock.length - 1].start_price),
       close: parseFloat(kospiDayStock[kospiDayStock.length - 1].current_price),
@@ -69,11 +67,8 @@ export default function Market() {
         .set("1Y", kospiLineData)
     );
 
-    console.log("코스피 일별 데이터 전처리 끝");
-
     // 주봉
     const kospiWeekStock = await getWeekStock("kospi");
-    console.log(kospiWeekStock);
     setKospiSeriesesData((cur) =>
       new Map(cur).set("주봉", {
         candleData: transCandleData(kospiWeekStock),
@@ -81,11 +76,8 @@ export default function Market() {
       })
     );
 
-    console.log("코스피 주별 데이터 전처리 끝");
-
     // 월봉
     const kospiMonthStock = await getMonthStock("kospi");
-    console.log(kospiMonthStock);
 
     setKospiSeriesesData((cur) =>
       new Map(cur).set("월봉", {
@@ -94,14 +86,12 @@ export default function Market() {
       })
     );
 
-    console.log("코스피 월별 데이터 전처리 끝");
-
     //////// 코스닥
     // 일봉
-    // kospiSeriesData 초기화
+    // kosdaqSeriesData 초기화
     const kosdaqDayStock = await getDayStock("kosdaq");
-    console.log(kosdaqDayStock);
 
+    // 코스닥 카드 정보 초기화
     setKosdaqInfo({
       open: parseFloat(kosdaqDayStock[kosdaqDayStock.length - 1].start_price),
       close: parseFloat(
@@ -129,11 +119,8 @@ export default function Market() {
         .set("1Y", kosdaqLineData)
     );
 
-    console.log("코스닥 일별 데이터 전처리 끝");
-
     // 주봉
     const kosdaqWeekStock = await getWeekStock("kosdaq");
-    console.log(kosdaqWeekStock);
     setKosdaqSeriesesData((cur) =>
       new Map(cur).set("주봉", {
         candleData: transCandleData(kosdaqWeekStock),
@@ -141,19 +128,14 @@ export default function Market() {
       })
     );
 
-    console.log("코스닥 주별 데이터 전처리 끝");
-
     // 월봉
     const kosdaqMonthStock = await getMonthStock("kosdaq");
-    console.log(kosdaqMonthStock);
     setKosdaqSeriesesData((cur) =>
       new Map(cur).set("월봉", {
         candleData: transCandleData(kosdaqMonthStock),
         volumeData: transVolumeData(kosdaqMonthStock),
       })
     );
-
-    console.log("코스닥 월별 데이터 전처리 끝");
   };
 
   useEffect(() => {
