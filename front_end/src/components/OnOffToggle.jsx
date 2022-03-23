@@ -5,7 +5,7 @@ export default function OnOffToggle({ toggle, setToggle }) {
   return (
     <div
       className={`md:w-16 md:h-7 mx-2 w-15 h-6 flex items-center m-auto rounded-full p-1 cursor-pointer ${
-        toggle ? null : "bg-indigo-700"
+        !toggle ? null : "bg-indigo-700"
       }`}
       onClick={() => {
         setToggle(!toggle);
@@ -15,12 +15,12 @@ export default function OnOffToggle({ toggle, setToggle }) {
       <div
         className={
           "bg-indigo-900 md:w-6 md:h-6 h-5 w-5 rounded-full shadow-md transform duration-300 ease-in-out z-10" +
-          (toggle ? null : toggleClass)
+          (!toggle ? null : toggleClass)
         }
       ></div>
-      <span className={`text-md w-6 ${toggle ? null : tmpClass}`}>
-        {toggle && <>&nbsp;</>}
-        {toggle ? "off" : "on"}
+      <span className={`text-md w-6 ${!toggle ? null : tmpClass}`}>
+        {!toggle && <>&nbsp;</>}
+        {!toggle ? "off" : "on"}
       </span>
     </div>
   );
