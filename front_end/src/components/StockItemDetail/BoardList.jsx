@@ -11,12 +11,12 @@ export default function BoardList() {
   const [boards, setBoards] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
-  const pageSize = 10;
+  const pageSize = 14;
 
   const init = async () => {
-    const data = await getBoardList(id, pageNo, 10);
-    setBoards(data.data.results);
-    setTotalCount(boards.length);
+    const res = await getBoardList(id, pageNo, pageSize);
+    setBoards(res.data.results);
+    setTotalCount(res.data.count);
   };
 
   useEffect(() => {
@@ -26,40 +26,40 @@ export default function BoardList() {
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    // const data = await getItems(1, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getBoardList(id, 1, pageSize);
+    setBoards(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    // const data = await getItems(pageNo - 1, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getBoardList(id, pageNo - 1, pageSize);
+    setBoards(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    // const data = await getItems(pageNo + 1, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getBoardList(id, pageNo + 1, pageSize);
+    setBoards(res.data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    // const data = await getItems(lastPageNum, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getBoardList(id, lastPageNum, pageSize);
+    setBoards(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    // const data = await getItems(num, pageSize);
-    // setNoticeItems(data.results);
+    const res = await getBoardList(id, num, pageSize);
+    setBoards(res.data.results);
   };
 
   // 게시글 상세 페이지로 이동
   const goDetail = (board) => {
-    navigate(`${board.id}`)
-  }
+    navigate(`${board.id}`);
+  };
 
   // 게시판 데이터로 li태그 만들기
   const boardList = () => {
@@ -103,11 +103,7 @@ export default function BoardList() {
           <button
             className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 rounded-lg grid grid-cols-3 hover:fill-indigo-600"
             onClick={function () {
-              if (sessionStorage.getItem("access_token")) {
-                navigate("new");
-              } else {
-                navigate("/login");
-              }
+              navigate("new");
             }}
           >
             <svg

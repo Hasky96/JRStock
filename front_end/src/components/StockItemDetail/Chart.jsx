@@ -82,7 +82,7 @@ export default function Chart({ title }) {
 
   return (
     <div className="pt-1 grid grid-cols-1">
-      <div className="grid border-2 my-h-50 grid-rows-6 rounded-xl m-2 p-3">
+      <div className="grid border-2 my-h-45 grid-rows-6 rounded-xl m-2 p-3">
         {"1D1W1M1Y".includes(period) && (
           <div className="grid row-span-5">
             {data && <LineChart data={data} period={period} />}
