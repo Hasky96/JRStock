@@ -1,4 +1,8 @@
 import { Route, Routes, useLocation } from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Landing from "./routes/Landing";
 import Login from "./routes/Login";
 import PasswordReset from "./routes/PasswordReset";
@@ -12,15 +16,13 @@ import BackTestDetail from "./routes/BackTestDetail";
 import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
-import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Notice from "./routes/Notice";
 import NoticeDetail from "./routes/NoticeDetail";
 import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
 import BoardUpdate from "./components/StockItemDetail/Boardupdate";
 import Ranking from "./routes/Ranking";
+// import useIsLoggedIn from "./util/useIsLoggedIn";
 
 function App() {
   // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
@@ -28,6 +30,7 @@ function App() {
   const [category, setCategory] = useState("");
 
   const location = useLocation();
+  // const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
     const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
@@ -50,7 +53,11 @@ function App() {
           <SideBar />
         </div>
       )}
-      <div className={showSideBar ? "ml-20 bg-gray-50 min-h-screen" : ""}>
+      <div
+        className={
+          showSideBar ? "ml-20 bg-gray-50 min-h-screen" : "scroll-wrapper-box"
+        }
+      >
         {showSideBar && (
           <div>
             <Header category={category}></Header>
@@ -64,16 +71,55 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
-          <Route path="/stock/:id/board/new" element={<BoardCreate />} />
+          <Route
+            path="/stock/:id/board/new"
+            element={
+              <PrivateRoute redirectPath="/board">
+                <BoardCreate />
+              </PrivateRoute>
+            }
+          />
           <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
           <Route
             path="/stock/:id/board/:boardId/update"
-            element={<BoardUpdate />}
+            element={
+              <PrivateRoute redirectPath="/board">
+                <BoardUpdate />
+              </PrivateRoute>
+            }
           />
-          <Route path="/backtest" element={<BackTestList />} />
-          <Route path="/backtest/create" element={<BackTestCreate />} />
-          <Route path="/backtest/:id" element={<BackTestDetail />} />
-          <Route path="/mypage" element={<MyPage />} />
+          <Route
+            path="/backtest"
+            element={
+              <PrivateRoute redirectPath="/backtest">
+                <BackTestList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/backtest/create"
+            element={
+              <PrivateRoute redirectPath="/backtest/create">
+                <BackTestCreate />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/backtest/:id"
+            element={
+              <PrivateRoute redirectPath="/backtest">
+                <BackTestDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypage"
+            element={
+              <PrivateRoute redirectPath="/mypage">
+                <MyPage />
+              </PrivateRoute>
+            }
+          />
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
           <Route path="/ranking" element={<Ranking />} />
