@@ -1,9 +1,10 @@
-from bt_common import *
+from bt_common_kjin import *
 
 current_stock_price=get_current_stock_price()   # {'005930': 71000}
-day_stocks=get_day_stock('005380', '1995-05-02', '2022-03-22')
+# day_stocks=get_day_stock('005380', '1995-05-02', '2022-03-22')
+day_stocks=get_day_stock('005380', '2015-05-02', '2022-03-22')
 # day_stocks=get_day_stock('005930', '2022-01-02', '2022-03-01')
-
+# print(get_current_stock_price('005930'))
 
 account = {
     "balance":1000000,
@@ -84,6 +85,7 @@ def RSI(stocks, period=14, column='current_price'):
 
 # RSI지수가 high_index 이상이면 매도, low_index 이하면 매수
 def RSI_buy_sell(stocks, high_index=70, low_index=30, account={}, buy_percent=50, sell_percent=50):
+    print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
     for idx, row in stocks.iterrows():
         if row['RSI']>=high_index:
             print(row['date'], end=' ')
@@ -96,6 +98,7 @@ def RSI_buy_sell(stocks, high_index=70, low_index=30, account={}, buy_percent=50
 # 단기이평선이 장기이평선을 상향돌파하면 매수, 하향돌파하면 매도
 # 추가 : 팔 가격이 산 가격보다 높아야되고 살 가격이 판 가격보다 낮아야함
 def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent=50, sell_percent=50):
+    print(f'단순이동평균선(SMA) 전략: 단기-{short_period} 장기-{long_period}')
     df_day_stocks['SMA_short']=SMA(df_day_stocks, short_period)
     df_day_stocks['SMA_long']=SMA(df_day_stocks, long_period)
     before_flag=0
@@ -116,22 +119,22 @@ def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent
         if before_flag<current_flag and before_price<current_price:
             print(row['date'], end=' ')
             account=sell(account, row['code_number'], row['current_price'], sell_percent)
-            before_price=current_price
+            before_price=max(before_price, current_price)
         elif before_flag>current_flag and before_price>current_price:
             print(row['date'], end=' ')
             account=buy(account, row['code_number'], row['current_price'], buy_percent)
-            before_price=current_price
+            before_price=min(before_price, current_price)
         
         before_flag=current_flag
 
 
 
 # MACD
-macd_period_long=26
-macd_period_short=12
+macd_period_long=120
+macd_period_short=20
 macd_period_signal=9
 rsi_period=14
-sma_period=30
+sma_period=120
 ema_period=20
 
 # MA 
@@ -152,7 +155,7 @@ buy_percent=50
 sell_percent=50
 
 # print(account)
-RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
-# SMA_buy_sell(df_day_stocks, sma_short_period, sma_long_period, account, buy_percent, sell_percent)
+# RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
+SMA_buy_sell(df_day_stocks, sma_short_period, sma_long_period, account, buy_percent, sell_percent)
 print(account)
 print(calculate_total_account(account, current_stock_price))
