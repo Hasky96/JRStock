@@ -1,38 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PageContainer from "../components/PageContainer";
 import TabBar from "../components/TabBar/TabBar";
 import UserUpdate from "../components/MyPage/UserUpdate";
 import InterestingStock from "../components/MyPage/InterestingStock";
 import Portfolio from "../components/MyPage/Portfolio";
-import { useNavigate } from "react-router-dom";
 
 export default function MyPage() {
   // tab 이동 시 시용
   const [currentTab, setCurrentTab] = useState("관심종목");
   const tabInfo = ["관심종목", "포트폴리오", "회원정보 수정"];
-
-  const tabInfo2 = [
-    {
-      name: "관심종목",
-      link: "linkStock",
-    },
-  ];
-
-  const navigate = useNavigate();
-  // 현재 로그인 상태 확인
-  const isLoggedIn = window.sessionStorage.getItem("access_token")
-    ? true
-    : false;
-
-  // 로그인하지 않은 상태라면 /login 로 이동
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login", {
-        state: { from: { pathname: "/mypage" } },
-        replace: true,
-      });
-    }
-  }, [isLoggedIn]);
 
   return (
     <PageContainer>

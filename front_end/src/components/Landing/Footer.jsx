@@ -1,39 +1,22 @@
-import { useNavigate } from "react-router-dom";
-import { ReactComponent as Developer } from "../../assets/landing_page/developer.svg";
-import "./Intro.css";
+import { Link } from "react-router-dom";
+import { ReactComponent as Group } from "../../assets/group.svg";
 
-export default function Intro() {
-  const navigate = useNavigate();
-
-  const handleButtonClick = (path) => {
-    navigate(path);
-  };
-
+export default function Footer() {
   return (
-    <div className="w-full flex flex-col md:flex-row justify-between items-center gap-10 landing-block-container">
-      <div className="content-wrapper w-full lg:w-1/2">
-        <h6>JRStock</h6>
-        <p className="content">
-          굶주린 주식 어린이들을 위한 주식 백테스트 서비스
+    <div className="h-60 w-full bg-gray-200 border-t-4 grid md:grid-cols-2 p-5">
+      <div className="col-span-1 flex flex-col">
+        <h1 className="text-2xl text-indigo-900">4차동학개미운동</h1>
+        <p className="text-gray-500 ">SSAFY 6기 특화 프로젝트</p>
+        <p className="text-indigo-900 text-sm flex items-center gap-2">
+          <Group fill="#18216d" />
+          강진 박지후 안영원 이재만 장하석 정지욱
         </p>
-        <div className="button-wrapper">
-          <button
-            className="button bg-indigo-900 text-white"
-            onClick={() => handleButtonClick("market")}
-          >
-            Explore
-          </button>
-
-          <button
-            className="button text-indigo-900"
-            onClick={() => handleButtonClick("signup")}
-          >
-            Signup
-          </button>
-        </div>
       </div>
-      <div className="w-full lg:w-1/2">
-        <Developer />
+      <div className="col-span-1 flex flex-col"></div>
+      <div className="absolute h-10 text-xs bottom-3">
+        <Link to="terms">이용약관</Link>
+        <span> | </span>
+        <Link to="privacy">개인정보처리방침 </Link>
       </div>
     </div>
   );
