@@ -4,7 +4,15 @@ import TabBar from "../components/TabBar/TabBar";
 import styles from "../components/ranking/list.module.css";
 import RankItem from "../components/ranking/RankItem";
 import Pagenation from "../components/Pagenation";
-import { dayData, weekData, monthData } from "../components/ranking/data.js";
+import {
+  dayData,
+  weekData,
+  monthData,
+  dayData2,
+  weekData2,
+  monthData2,
+} from "../components/ranking/data.js";
+import OnOffToggle from "../components/OnOffToggle";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -13,8 +21,10 @@ function classNames(...classes) {
 export default function Ranking() {
   const [currentTab, setCurrentTab] = useState("일간");
   const tabInfo = ["일간", "주간", "월간"];
+  const [searchWord, setSearchWord] = useState("");
+  const [toggle, setToggle] = useState(false); // 필터 미적용
 
-  const init = async () => {
+  const initToggleOff = async () => {
     // 데이터 요청
     // 탭 종류에 따라 다르게 요청
     let resData;
@@ -31,15 +41,61 @@ export default function Ranking() {
     setTotalCount(resData.length);
   };
 
+  const initToggleOn = async () => {
+    // 데이터 요청
+    // 탭 종류에 따라 다르게 요청
+    // search word 필터를 적용한 호출
+    let resData;
+    if (currentTab === "일간") {
+      resData = dayData2;
+    } else if (currentTab === "주간") {
+      resData = weekData2;
+    } else if (currentTab === "월간") {
+      resData = monthData2;
+    }
+    // 데이터 설정
+    setPageNo(1);
+    setData(resData);
+    setTotalCount(resData.length);
+  };
+
   useEffect(() => {
     // 초기 데이터 설정
-    init();
+    initToggleOff();
+
+    // 초기에 검색창 잠깐 보이는 것 방지
+    const el = document.getElementById("rank-search-bar");
+    el.classList.toggle("opacity-0");
+    el.classList.toggle("invisible");
   }, []);
 
   // 탭이 바뀌면 초기 데이터 다시 설정
   useEffect(() => {
-    init();
+    console.log(toggle);
+    if (toggle) {
+      initToggleOn();
+    } else {
+      // 데이터 초기화
+      initToggleOff();
+    }
   }, [currentTab]);
+
+  // 검색창 on/off 시
+  useEffect(() => {
+    // 검색어 초기화
+    setSearchWord("");
+
+    const el = document.getElementById("rank-search-bar");
+    el.classList.toggle("opacity-0");
+    el.classList.toggle("invisible");
+
+    if (toggle) {
+      initToggleOn();
+    } else {
+      // 데이터 초기화
+      initToggleOff();
+    }
+  }, [toggle]);
 
   const rankList = () => {
     const list = [];
@@ -55,22 +111,31 @@ export default function Ranking() {
   const pageSize = 10;
 
   const onClickFirst = () => {
-    setPageNo(1);
+    if (toggle) {
+      initToggleOn();
+    } else {
+      initToggleOff();
+    }
   };
+
+  // toggle 에 따라 다르게 api 호출
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
   };
 
+  // toggle 에 따라 다르게 api 호출
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
   };
 
+  // toggle 에 따라 다르게 api 호출
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
   };
 
+  // toggle 에 따라 다르게 api 호출
   const onClickNumber = async (num) => {
     setPageNo(num);
   };
@@ -78,14 +143,63 @@ export default function Ranking() {
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>
       <div className={"bg-indigo-900 rounded-lg shadow-lg p-5 my-h-80"}>
-        {/* 제목 */}
-        <div className="m-5">
-          <span
-            id="kospi"
-            className={classNames("text-2xl font-bold", "text-white")}
-          >
-            수익률 순위
-          </span>
+        <div className="flex justify-between  items-center">
+          {/* 제목 */}
+          <div className="flex m-5 gap-2">
+            <span
+              id="kospi"
+              className={classNames("text-2xl font-bold", "text-white")}
+            >
+              수익률 순위
+            </span>
+            <OnOffToggle toggle={toggle} setToggle={setToggle} />
+          </div>
+          {/* 검색창  */}
+          {
+            <div
+              className="flex h-9 w-1/2 invisible opacity-0 duration-500"
+              id="rank-search-bar"
+            >
+              <div className="flex w-full justify-end gap-4">
+                <label
+                  className="text-xl flex items-center text-white"
+                  htmlFor="rank-search"
+                >
+                  순위 검색
+                </label>
+                <div className="relative w-4/5">
+                  {/* 검색 아이콘 */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 absolute left-2 top-2.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#d1d5db"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  {/* 검색창 */}
+                  <input
+                    type="text"
+                    name="price"
+                    id="rank-search"
+                    className="hover:border-active focus:ring-active focus:border-active text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                    placeholder="Search..."
+                    onKeyUp={(e) => {
+                      e.preventDefault();
+                      setSearchWord(e.target.value);
+                      initToggleOn();
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          }
         </div>
         {/* 탭바 */}
         <div className="text-white">
