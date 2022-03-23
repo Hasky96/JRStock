@@ -17,15 +17,6 @@ export default function BoardCreate() {
     setContent(e.target.value);
   };
 
-  useEffect(() => {
-    if (!sessionStorage.getItem("access_token")) {
-      navigate("/login", {
-        state: { from: { pathname: `/stock/${id}/board/new` } },
-        replace: true,
-      });
-    }
-  });
-
   const create = () => {
     if (!title.trim()) {
       alert("제목을 입력해주세요.");

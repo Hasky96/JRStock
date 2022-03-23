@@ -17,12 +17,6 @@ export default function BoardUpdate() {
 
   useEffect(() => {
     init();
-    if (!sessionStorage.getItem("access_token")) {
-      navigate("/login", {
-        state: { from: { pathname: `/stock/${id}/board/${boardId}/update` } },
-        replace: true,
-      });
-    }
   }, []);
 
   const getTitle = (e) => {

@@ -132,6 +132,12 @@ async function deleteComment(id) {
   await authApi.delete(`stock/comment/delete/${id}`);
 }
 
+// 종목 뉴스 조회
+async function getNews(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/news/${codeNumber}`);
+}
+
 export {
   getStockItemList,
   getStockItemList2,
@@ -148,4 +154,5 @@ export {
   getCommentList,
   createComment,
   deleteComment,
+  getNews,
 };
