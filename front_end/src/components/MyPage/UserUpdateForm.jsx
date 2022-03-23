@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { validPassword } from "../../regex";
 import { userDetail, userUpdate } from "../../api/user";
-import PasswordHide from "./PasswordHide";
+import { API_MEDIA_URL } from "../../config";
 import { toast } from "react-toastify";
+import PasswordHide from "./PasswordHide";
 
 export default function UserUpdate() {
   const [values, setValues] = useState({
@@ -23,7 +24,7 @@ export default function UserUpdate() {
   const disabledInputBoxStyle =
     "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-900 text-gray-900 rounded-md sm:text-sm";
   const buttonStyle =
-    "relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-900";
+    "w-full py-2 px-4 text-sm font-medium rounded-md text-white bg-primary hover:bg-active duration-300";
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -169,7 +170,7 @@ export default function UserUpdate() {
               setLookPassword={setLookPassword}
             />
             {values.password && !passwordValid && (
-              <p className="text-red-900">비밀번호가 유효하지 않습니다.</p>
+              <p className="text-active">비밀번호가 유효하지 않습니다.</p>
             )}
           </div>
           {/* 비밀번호 확인 input 부분 */}
@@ -186,7 +187,7 @@ export default function UserUpdate() {
               placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
             />
             {values.password && passwordErr && (
-              <p className="text-red-900">비밀번호가 일치하지 않습니다.</p>
+              <p className="text-active">비밀번호가 일치하지 않습니다.</p>
             )}
           </div>
           <div className="my-5 flex flex-col">
@@ -202,7 +203,7 @@ export default function UserUpdate() {
                 {values.profile_img ? (
                   <img
                     className="rounded-full w-36"
-                    src={`http://localhost:8000${values.profile_img}`}
+                    src={API_MEDIA_URL + `${values.profile_img}`}
                     alt="profile_img"
                   />
                 ) : (
