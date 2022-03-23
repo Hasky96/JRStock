@@ -17,6 +17,7 @@ export default function Header({ category }) {
   const [data, setData] = useState({});
   const navigate = useNavigate();
   const [selectedNum, setSelectedNum] = useState(0); // 현재 선택된 검색 리스트 아이템
+  const [preword, setPreword] = useState("");
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -136,9 +137,14 @@ export default function Header({ category }) {
                     return;
                   }
 
+                  // 불필요한 중복 검색 방지
+                  if (preword === e.target.value) return;
+                  setPreword(e.target.value);
+
                   // 빈 입력값은 data 초기화
                   if (e.target.value === "") {
                     setData({});
+                    setSelectedNum(0);
                     return;
                   }
 
@@ -153,6 +159,7 @@ export default function Header({ category }) {
 
                   // 읽어온 데이터 state 저장
                   if (result) {
+                    setSelectedNum(0); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
                     setData(result);
                   }
                 }}
