@@ -10,6 +10,7 @@ account = {
 }
 
 def ma5_20_strategy(account, code, start, end):
+    start_balance = account['balance']
     day_stocks=get_day_stock(code, start, end)
     df_day_stocks=object_to_dataframe(day_stocks)   # dataframe으로 변환
     # ma5, ma20 추가    
@@ -19,6 +20,9 @@ def ma5_20_strategy(account, code, start, end):
     # 로직
     print(df_day_stocks)
     for i in range(19,len(df_day_stocks)):
+        mdd_max = 0
+        mdd_min = 987654321
+        # if(mdd_max)
         yesterday = df_day_stocks.iloc[i-1]
         today = df_day_stocks.iloc[i]
         yesterday_candle = yesterday['candle']
@@ -40,10 +44,9 @@ def ma5_20_strategy(account, code, start, end):
                 
     current_stock_price=get_current_stock_price()   # {'005930': 71000}
     result = calculate_total_account(account, current_stock_price)
-    print(today['current_price'], df_day_stocks.iloc[0]['current_price'])
-    market_profit = today['current_price'] / df_day_stocks.iloc[0]['current_price'] * 100
-    print(f'결과 : {result}')
-    print(f'시장수익률 : {market_profit}')
+    market_profit = df_day_stocks.iloc[-1]['current_price'] / df_day_stocks.iloc[0]['current_price'] * 100
+    print(f'결과 : {start_balance:,}원 => {result}')
+    print(f'종목시장수익률 : {market_profit:,.2f} %')
     
 #실행
 code = "005380"
