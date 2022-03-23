@@ -100,7 +100,7 @@ function App() {
             path="/backtest/create"
             element={
               <PrivateRoute redirectPath="/backtest/create">
-                <MyPage />
+                <BackTestCreate />
               </PrivateRoute>
             }
           />
@@ -108,7 +108,7 @@ function App() {
             path="/backtest/:id"
             element={
               <PrivateRoute redirectPath="/backtest">
-                <MyPage />
+                <BackTestDetail />
               </PrivateRoute>
             }
           />
