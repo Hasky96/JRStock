@@ -100,7 +100,7 @@ export default function Ranking() {
   const rankList = () => {
     const list = [];
     data.forEach((el, idx) => {
-      list.push(<RankItem item={el} index={idx} />);
+      list.push(<RankItem item={el} index={idx} key={idx} />);
     });
     return list;
   };

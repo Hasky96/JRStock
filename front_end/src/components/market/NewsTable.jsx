@@ -58,7 +58,7 @@ export default function NewsTable({ kind }) {
   const newsList = () => {
     const list = [];
     newsData.forEach((el, idx) => {
-      list.push(<NewsList item={el} index={idx} />);
+      list.push(<NewsList item={el} index={idx} key={idx} />);
     });
     return list;
   };
