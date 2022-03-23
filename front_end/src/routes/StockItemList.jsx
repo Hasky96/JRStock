@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getStockItemList } from "../api/stock";
+import { getStockItemList, addInterest } from "../api/stock";
 import Pagenation from "../components/Pagenation";
 import ListHeader from "../components/ListHeader";
 import { Fragment } from "react";
@@ -20,17 +20,20 @@ export default function StockItemList() {
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
   const [stocks, setStocks] = useState([]);
+  const [sortBy, setSortBy] = useState("-market_cap");
+  const tag = { 시가총액: "market_cap" };
 
   // 주식 종목 초기화
   const init = async () => {
     const res = await getStockItemList(1, pageSize);
     setStocks(res.data.results);
     setTotalCount(res.data.count);
+    console.log(sortBy);
   };
 
   useEffect(() => {
     init();
-  }, []);
+  }, [sortBy]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
@@ -238,12 +241,21 @@ export default function StockItemList() {
   };
 
   // 관심 종목 추가
-  const addBookMark = () => {
+  const addBookMark = async () => {
     if (checkedList.length) {
-      console.log(checkedList);
+      const res = await addInterest(checkedList);
       alert("관심종목에 추가되었습니다.");
     } else {
       alert("하나 이상의 종목을 선택해주세요.");
+    }
+  };
+
+  // 정렬 변경
+  const changeSort = (e) => {
+    if (sortBy === tag[e.target.innerText]) {
+      setSortBy("-" + tag[e.target.innerText]);
+    } else {
+      setSortBy(tag[e.target.innerText].slice(0));
     }
   };
 
@@ -394,7 +406,12 @@ export default function StockItemList() {
               <p className="col-span-1 my-auto">시가</p>
               <p className="col-span-1 my-auto">고가</p>
               <p className="col-span-1 my-auto">저가</p>
-              <p className="col-span-2 my-auto">시가총액</p>
+              <p
+                className="col-span-2 my-auto cursor-pointer"
+                onClick={changeSort}
+              >
+                시가총액
+              </p>
             </li>
             {stockList()}
           </ul>
@@ -409,50 +426,50 @@ export default function StockItemList() {
           onClickLast={onClickLast}
           onClickNumber={onClickNumber}
         ></Pagenation>
-        {/* 모달창 */}
-        {isShowModal && (
-          <div
-            className="bg-black bg-opacity-50 fixed inset-0 flex justify-center items-start z-50 overflow-auto py-20"
-            id="overlay"
-          >
-            <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800">
-              <div className="flex justify-between items-center">
-                <h4 className="text-lg font-bold">필터 설정</h4>
-                <ModalCancle
-                  onClick={() => {
-                    toggleModal();
-                  }}
-                />
-              </div>
-              {/* 체크박스 공간 */}
-              <CheckBoxGrid
-                indicators={Array.from(indicatorInfo.keys())}
-                onChecked={setCheckedIndicators}
-                checkedIndicators={checkedIndicators}
-                indicatorInfo={indicatorInfo}
+      </div>
+      {/* 모달창 */}
+      {isShowModal && (
+        <div
+          className="bg-black bg-opacity-50 fixed inset-0 flex justify-center items-start z-50 overflow-auto py-20"
+          id="overlay"
+        >
+          <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800">
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-bold">필터 설정</h4>
+              <ModalCancle
+                onClick={() => {
+                  toggleModal();
+                }}
               />
-              {/* 선택된 리스트 공간 */}
-              <CheckedList
-                checkedIndicators={checkedIndicators}
-                indicatorInfo={indicatorInfo}
-                onChange={setCheckedIndicators}
-              />
-              {/* 버튼 공간 */}
-              <div className="mt-3 flex justify-end space-x-3">
-                {/* 필터 선택 완료 버튼 */}
-                <button
-                  className="px-3 py-1 bg-indigo-900 hover:bg-indigo-700 text-gray-200 rounded"
-                  onClick={() => {
-                    toggleModal();
-                  }}
-                >
-                  확인
-                </button>
-              </div>
+            </div>
+            {/* 체크박스 공간 */}
+            <CheckBoxGrid
+              indicators={Array.from(indicatorInfo.keys())}
+              onChecked={setCheckedIndicators}
+              checkedIndicators={checkedIndicators}
+              indicatorInfo={indicatorInfo}
+            />
+            {/* 선택된 리스트 공간 */}
+            <CheckedList
+              checkedIndicators={checkedIndicators}
+              indicatorInfo={indicatorInfo}
+              onChange={setCheckedIndicators}
+            />
+            {/* 버튼 공간 */}
+            <div className="mt-3 flex justify-end space-x-3">
+              {/* 필터 선택 완료 버튼 */}
+              <button
+                className="px-3 py-1 bg-indigo-900 hover:bg-indigo-700 text-gray-200 rounded"
+                onClick={() => {
+                  toggleModal();
+                }}
+              >
+                확인
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

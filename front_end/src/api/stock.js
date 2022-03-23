@@ -138,6 +138,12 @@ async function getNews(codeNumber) {
   return await api.get(`stock/news/${codeNumber}`);
 }
 
+// 관심 종목 추가
+async function addInterest(code_number) {
+  const authApi = loginApiInstance();
+  return await authApi.post(`stock/interest/create/`, { code_number });
+}
+
 export {
   getStockItemList,
   getStockItemList2,
@@ -155,4 +161,5 @@ export {
   createComment,
   deleteComment,
   getNews,
+  addInterest,
 };
