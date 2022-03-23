@@ -405,7 +405,7 @@ def live_data(request, code_number):
 @authentication_classes([JWTAuthentication])
 def interest_stock_create(request):
     # 체크박스를 리스트 형식으로 받아와서 저장
-    code_numbers = request.data.getlist('code_number')
+    code_numbers = request.data.get('code_number')
     
     duplicate_list = []
     
@@ -616,7 +616,7 @@ def interest_stock_list(request):
 @authentication_classes([JWTAuthentication])
 def interset_stock_delete(request):
     # 체크박스를 리스트 형식으로 받아와서 저장
-    code_numbers = request.data.getlist('code_number')
+    code_numbers = request.data.get('code_number')
     
     # DB에 있는 값이면 제거 아니면 오류
     for code_number in code_numbers:
