@@ -7,12 +7,15 @@ import News from "../components/StockItemDetail/News";
 import BoardList from "../components/StockItemDetail/BoardList";
 import { getDetail, getDayStock, getLive } from "../api/stock";
 import costMap from "../util/costMap";
+import { toast } from "react-toastify";
 
 export default function StockItemDetail() {
   const { stockTab, id } = useParams();
   const [detail, setDetail] = useState({ basic_info: "" });
   const [stock, setStock] = useState({ market_cap: "" });
   const [live, setLive] = useState({ current_price: "" });
+  const [isError, setIsError] = useState(false);
+  const [isLive, setIsLive] = useState(false);
 
   const setting = {
     detail: "종합정보",
@@ -32,8 +35,11 @@ export default function StockItemDetail() {
     try {
       const resLive = await getLive(id);
       setLive(resLive.data);
+      setIsLive(true);
     } catch (e) {
       console.log(e);
+      setIsError(true);
+      toast.error("실시간 데이터가 없습니다!");
     }
   };
 
@@ -108,16 +114,24 @@ export default function StockItemDetail() {
                     </div>
                   </div>
                 )}
-                <div className="text-gray-400">{live.time} 기준</div>
+                {isError ? (
+                  <div className="text-gray-400">
+                    실시간 데이터가 없습니다..
+                  </div>
+                ) : (
+                  <div className="text-gray-400">
+                    {live.time} {isLive && "기준"}
+                  </div>
+                )}
               </div>
               <div className="col-start-4 col-end-6 font-bold">
                 <div className="flex justify-between mb-2">
                   <div>전일</div>
-                  <div>{live.prev}</div>
+                  <div>{isError ? "-" : live.prev}</div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>상한가</div>
-                  <div>{live.upper_limit}</div>
+                  <div>{isError ? "-" : live.upper_limit}</div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>고가</div>
@@ -134,7 +148,7 @@ export default function StockItemDetail() {
                         : "text-gray-600"
                     }
                   >
-                    {live.high}
+                    {isError ? "-" : live.high}
                   </div>
                 </div>
               </div>
@@ -154,12 +168,12 @@ export default function StockItemDetail() {
                         : "text-gray-600"
                     }
                   >
-                    {live.open}
+                    {isError ? "-" : live.open}
                   </div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>하한가</div>
-                  <div>{live.lower_limit}</div>
+                  <div>{isError ? "-" : live.lower_limit}</div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>저가</div>
@@ -176,7 +190,7 @@ export default function StockItemDetail() {
                         : "text-gray-600"
                     }
                   >
-                    {live.low}
+                    {isError ? "-" : live.low}
                   </div>
                 </div>
               </div>
@@ -197,11 +211,11 @@ export default function StockItemDetail() {
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>거래량</div>
-                  <div>{live.volume}</div>
+                  <div>{isError ? "-" : live.volume}</div>
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>거래대금</div>
-                  <div>{live.volume_price}</div>
+                  <div>{isError ? "-" : live.volume_price}</div>
                 </div>
               </div>
             </div>
