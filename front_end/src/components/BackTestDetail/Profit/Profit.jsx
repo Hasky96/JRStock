@@ -2,7 +2,6 @@ import { AnnualProfit } from "./AnnualProfit";
 import { PortfolioProfitChart } from "../ResultSummary/PortfolioProfitChart";
 import { ProfitLineChart } from "../ResultSummary/ProfitLineChart";
 import { monthData, monthData2 } from "../data";
-import "./Profit.css";
 
 export default function Profit() {
   const yearLabels = [

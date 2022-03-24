@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getStockItemList } from "../api/stock";
+import { getStockItemList, addInterest } from "../api/stock";
 import Pagenation from "../components/Pagenation";
 import ListHeader from "../components/ListHeader";
 import { Fragment } from "react";
@@ -20,34 +20,48 @@ export default function StockItemList() {
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
   const [stocks, setStocks] = useState([]);
+  const [sortBy, setSortBy] = useState("-market_cap");
+  // const tag = {
+  //   현재가: "current_price",
+  //   "변동률(전일대비)": "chages_ratio",
+  //   거래량: "volume",
+  //   시가: "start_price",
+  //   고가: "high_price",
+  //   저가: "low_price",
+  //   시가총액: "market_cap",
+  // };
 
   // 주식 종목 초기화
   const init = async () => {
-    const res = await getStockItemList(1, pageSize);
+    const res = await getStockItemList({
+      page: 1,
+      size: pageSize,
+      sort: sortBy,
+    });
     setStocks(res.data.results);
     setTotalCount(res.data.count);
   };
 
   useEffect(() => {
     init();
-  }, []);
+  }, [sortBy]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    const res = await getStockItemList(1, pageSize);
+    const res = await getStockItemList({ page: 1, size: pageSize });
     setStocks(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const res = await getStockItemList(pageNo - 1, pageSize);
+    const res = await getStockItemList({ page: pageNo - 1, size: pageSize });
     setStocks(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const res = await getStockItemList(pageNo + 1, pageSize);
+    const res = await getStockItemList({ page: pageNo + 1, size: pageSize });
     setStocks(res.data.results);
   };
 
@@ -55,13 +69,13 @@ export default function StockItemList() {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const res = await getStockItemList(lastPageNum, pageSize);
+    const res = await getStockItemList({ page: lastPageNum, size: pageSize });
     setStocks(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const res = await getStockItemList(num, pageSize);
+    const res = await getStockItemList({ page: num, size: pageSize });
     setStocks(res.data.results);
   };
 
@@ -81,7 +95,7 @@ export default function StockItemList() {
                 id="total-stock"
                 name="total-stock"
                 type="checkbox"
-                className="h-4 w-4 text-indigo-300 focus:ring-indigo-900 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
                 onChange={onChecked.bind(
                   this,
                   stocks[i].financial_info.basic_info.code_number
@@ -238,12 +252,21 @@ export default function StockItemList() {
   };
 
   // 관심 종목 추가
-  const addBookMark = () => {
+  const addBookMark = async () => {
     if (checkedList.length) {
-      console.log(checkedList);
+      const res = await addInterest(checkedList);
       alert("관심종목에 추가되었습니다.");
     } else {
       alert("하나 이상의 종목을 선택해주세요.");
+    }
+  };
+
+  // 정렬 변경
+  const changeSort = (text) => {
+    if (sortBy === text) {
+      setSortBy("-" + text);
+    } else {
+      setSortBy(text);
     }
   };
 
@@ -281,13 +304,13 @@ export default function StockItemList() {
 
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>
-      <div className={"bg-white rounded-lg p-5 my-h-80 drop-shadow-lg"}>
+      <div className={"bg-white rounded-lg p-5 my-h-80 shadow-lg"}>
         <div className="flex flex-row justify-start my-5">
           {sessionStorage.access_token && (
             <div className="">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-indigo-900 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-900">
+                  <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-primary shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary">
                     Actions
                     <ChevronDownIcon
                       className="-mr-1 ml-2 h-5 w-5"
@@ -350,7 +373,7 @@ export default function StockItemList() {
             </div>
           )}
           <button
-            className="h-38px w-20 ml-2 px-3 py-1 rounded-md text-white bg-indigo-900 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700"
+            className="h-38px w-20 ml-2 px-3 py-1 rounded-md text-white bg-primary hover:bg-active duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700"
             onClick={toggleModal}
           >
             필터
@@ -374,7 +397,7 @@ export default function StockItemList() {
                     id="total-stock"
                     name="total-stock"
                     type="checkbox"
-                    className="h-4 w-4 text-indigo-300 focus:ring-indigo-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
                     onChange={onCheckedAll}
                     checked={
                       checkedList.length === 0
@@ -388,13 +411,223 @@ export default function StockItemList() {
                 <p className="col-span-1">No</p>
               </div>
               <p className="col-span-2 my-auto">종목명</p>
-              <p className="col-span-1 my-auto">현재가</p>
-              <p className="col-span-2 my-auto">변동률(전일대비)</p>
-              <p className="col-span-1 my-auto">거래량</p>
-              <p className="col-span-1 my-auto">시가</p>
-              <p className="col-span-1 my-auto">고가</p>
-              <p className="col-span-1 my-auto">저가</p>
-              <p className="col-span-2 my-auto">시가총액</p>
+              <p
+                className="col-span-1 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "current_price")}
+              >
+                현재가
+                {sortBy === "current_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-current_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
+              <p
+                className="col-span-2 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "chages_ratio")}
+              >
+                변동률(전일대비)
+                {sortBy === "chages_ratio" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-chages_ratio" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
+              <p
+                className="col-span-1 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "volume")}
+              >
+                거래량
+                {sortBy === "volume" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-volume" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
+              <p
+                className="col-span-1 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "start_price")}
+              >
+                시가
+                {sortBy === "start_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-start_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
+              <p
+                className="col-span-1 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "high_price")}
+              >
+                고가
+                {sortBy === "high_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-high_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
+              <p
+                className="col-span-1 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "low_price")}
+              >
+                저가
+                {sortBy === "low_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-low_price" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
+              <p
+                className="col-span-2 my-auto cursor-pointer flex justify-center"
+                onClick={changeSort.bind(this, "market_cap")}
+              >
+                시가총액
+                {sortBy === "market_cap" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z" />
+                  </svg>
+                ) : sortBy === "-market_cap" ? (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2"
+                  >
+                    <path d="M311.9 335.1l-132.4 136.8C174.1 477.3 167.1 480 160 480c-7.055 0-14.12-2.702-19.47-8.109l-132.4-136.8C-9.229 317.8 3.055 288 27.66 288h264.7C316.9 288 329.2 317.8 311.9 335.1z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 320 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-2 w-2 fill-gray-300"
+                  >
+                    <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                  </svg>
+                )}
+              </p>
             </li>
             {stockList()}
           </ul>
@@ -412,10 +645,10 @@ export default function StockItemList() {
         {/* 모달창 */}
         {isShowModal && (
           <div
-            className="bg-black bg-opacity-50 fixed inset-0 flex justify-center items-start z-50 overflow-auto py-20"
+            className="fixed inset-0 flex justify-center items-center z-50 py-20 bg-gray-500 bg-opacity-75 transition-opacity"
             id="overlay"
           >
-            <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800">
+            <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800 max-h-[75vh] overflow-y-scroll">
               <div className="flex justify-between items-center">
                 <h4 className="text-lg font-bold">필터 설정</h4>
                 <ModalCancle
@@ -441,7 +674,7 @@ export default function StockItemList() {
               <div className="mt-3 flex justify-end space-x-3">
                 {/* 필터 선택 완료 버튼 */}
                 <button
-                  className="px-3 py-1 bg-indigo-900 hover:bg-indigo-700 text-gray-200 rounded"
+                  className="px-3 py-1 bg-primary hover:bg-active duration-300 text-gray-200 rounded"
                   onClick={() => {
                     toggleModal();
                   }}

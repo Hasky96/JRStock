@@ -5,13 +5,7 @@ export const ProfitLineChart = ({ marketData, testData }) => {
   const chartContainerRef = useRef();
 
   useEffect(() => {
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-    };
-
     const chart = createChart(chartContainerRef.current, {
-      width: 800,
-      height: 400,
       layout: {
         fontFamily: "Comic Sans MS",
         textColor: "#d1d4dc",
@@ -39,11 +33,11 @@ export const ProfitLineChart = ({ marketData, testData }) => {
     chart.timeScale().fitContent();
 
     const marketSeries = chart.addLineSeries({
-      color: "rgba(251, 191, 36, 0.8)",
+      color: "rgba(255, 130, 92, 0.8)",
       lineWidth: 3,
     });
     const testSeries = chart.addLineSeries({
-      color: "rgba(14, 24, 95, 0.8)",
+      color: "rgba(24, 33, 109, 0.8)",
       lineWidth: 3,
     });
 
@@ -80,6 +74,11 @@ export const ProfitLineChart = ({ marketData, testData }) => {
     testSeries.createPriceLine(minPriceLine);
     testSeries.createPriceLine(maxPriceLine);
 
+    const handleResize = () => {
+      console.log("@ resized here");
+      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    };
+
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -88,5 +87,9 @@ export const ProfitLineChart = ({ marketData, testData }) => {
     };
   }, [marketData, testData]);
 
-  return <div id="chartContainer" className="w-full" ref={chartContainerRef} />;
+  return (
+    <div className="parent-container">
+      <div className="child-container" ref={chartContainerRef} />
+    </div>
+  );
 };

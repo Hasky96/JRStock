@@ -2,7 +2,7 @@
   display: block;
   left: 3px;
   right: 3px;
-  width: 400px;
+  width: 150px;
   /* height: 70px; */
   position: absolute;
   padding: 8px;
@@ -12,6 +12,7 @@
   text-align: left;
   z-index: 20;
   pointer-events: none;
+  background-color: rgba(224, 231, 255, 0.4);
 }
 .legend-title {
   font-size: 24px;

@@ -66,7 +66,7 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
       grid: {
         horzLines: {
           color: "#eee",
-          visible: false,
+          visible: true,
         },
         vertLines: {
           color: "#ffffff",
@@ -77,17 +77,17 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
           visible: true,
           style: 0,
           width: 2,
-          color: "rgba(32, 38, 46, 0.1)",
+          color: "rgba(24, 33, 109, 0.1)",
           labelVisible: true,
-          labelBackgroundColor: "rgba(49, 46, 129, 0.1)",
+          labelBackgroundColor: "rgba(24, 33, 109, 0.1)",
         },
         vertLine: {
           visible: true,
           style: 0,
           width: 2,
-          color: "rgba(32, 38, 46, 0.1)",
+          color: "rgba(24, 33, 109, 0.1)",
           labelVisible: true,
-          labelBackgroundColor: "rgba(49, 46, 129, 0.1)",
+          labelBackgroundColor: "rgba(24, 33, 109, 0.1)",
         },
       },
     }));
@@ -154,21 +154,21 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
   return (
     <div
       id="chartContainer"
-      className="w-full relative"
+      className="absolute w-full top-0 left-0 h-full"
       ref={chartContainerRef}
     >
-      <div className="three-line-legend bg-yellow-100 opacity-40">
+      <div className="three-line-legend bg-indigo-100">
         <div className="legend-title">{title}</div>
         <div className="legend-content">
-          {"시가" + legends.open}
+          {"시가 " + legends.open}
           <br />
-          {"고가" + legends.high}
+          {"고가 " + legends.high}
           <br />
-          {"저가" + legends.low}
+          {"저가 " + legends.low}
           <br />
-          {"종가" + legends.close}
+          {"종가 " + legends.close}
           <br />
-          {"거래량" + legends.volume}
+          {"거래량 " + legends.volume}
         </div>
         <div>{legends.dateStr}</div>
       </div>

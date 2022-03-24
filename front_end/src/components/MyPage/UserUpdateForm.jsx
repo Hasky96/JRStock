@@ -20,7 +20,7 @@ export default function UserUpdate() {
   const [passwordValid, setPasswordValid] = useState(false);
   const [lookPassword, setLookPassword] = useState(false);
   const inputBoxStyle =
-    "appearance-none relative block w-full px-3 py-2 border border-indigo-900 placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-900 focus:border-indigo-900 sm:text-sm";
+    "appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ";
   const disabledInputBoxStyle =
     "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-900 text-gray-900 rounded-md sm:text-sm";
   const buttonStyle =
@@ -120,7 +120,7 @@ export default function UserUpdate() {
   };
 
   return (
-    <div className="w-1/2">
+    <div className="w-full sm:w-96 shadow-lg p-5">
       <form className="space-y-6">
         {/* 이름 input 부분 */}
         <div className="rounded-md shadow-sm">
@@ -192,35 +192,44 @@ export default function UserUpdate() {
           </div>
           <div className="my-5 flex flex-col">
             프로필 이미지 수정
-            {values.profile_img_preview ? (
-              <img
-                className="rounded-full w-36"
-                src={values.profile_img_preview}
-                alt="profile_img_preview"
+            <div className="flex items-end">
+              {values.profile_img_preview ? (
+                <img
+                  className="rounded-full w-20"
+                  src={values.profile_img_preview}
+                  alt="profile_img_preview"
+                />
+              ) : (
+                <>
+                  {values.profile_img ? (
+                    <img
+                      className="rounded-full w-36"
+                      src={API_MEDIA_URL + `${values.profile_img}`}
+                      alt="profile_img"
+                    />
+                  ) : (
+                    <img
+                      className="rounded-full w-36"
+                      src={values.profile_img_url}
+                      alt="profile_img_url"
+                    />
+                  )}
+                </>
+              )}
+              <label
+                htmlFor="profile_img"
+                className="ml-3 w-30 h-10 rounded-lg shadow-lg p-2 text-primary border hover:bg-active hover:text-white duration-300 font-bold"
+              >
+                이미지 변경
+              </label>
+              <input
+                id="profile_img"
+                name="profile_img"
+                type="file"
+                className="hidden"
+                onChange={(e) => handleImageChange(e)}
               />
-            ) : (
-              <>
-                {values.profile_img ? (
-                  <img
-                    className="rounded-full w-36"
-                    src={API_MEDIA_URL + `${values.profile_img}`}
-                    alt="profile_img"
-                  />
-                ) : (
-                  <img
-                    className="rounded-full w-36"
-                    src={values.profile_img_url}
-                    alt="profile_img_url"
-                  />
-                )}
-              </>
-            )}
-            <input
-              id="profile_img"
-              name="profile_img"
-              type="file"
-              onChange={(e) => handleImageChange(e)}
-            />
+            </div>
           </div>
         </div>
         {/* 회원가입 버튼 */}
@@ -230,7 +239,6 @@ export default function UserUpdate() {
             onClick={() => handleSubmit()}
             className={buttonStyle}
           >
-            <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
             회원 정보 수정
           </button>
         </div>

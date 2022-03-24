@@ -15,7 +15,6 @@ import {
   assetData,
   profitData,
 } from "../data.js";
-import "./ResultSummary.css";
 
 export default function ResultSummary() {
   const portfolio = ["삼성전자", "SK하이닉스", "네이버"];
@@ -42,10 +41,11 @@ export default function ResultSummary() {
     <button
       key={idx}
       onClick={(e) => {
-        e.preventDefault();
         setData1(seriesesData.get(e.target.innerText));
         setData2(seriesesData2.get(e.target.innerText));
         setPeriod(e.target.innerText);
+        console.log("trigger resize");
+        window.dispatchEvent(new Event("resize"));
       }}
       className={
         period === el ? "switcher-item switcher-active-item" : "switcher-item"
@@ -82,20 +82,18 @@ export default function ResultSummary() {
         </div>
       </div>
 
-      <div className="flex flex-col 2xl:flex-row items-center gap-3">
-        <div className="rounded shadow-lg p-3 mt-5">
-          <div className="profit-chart-container text-lg">
-            <div>자산 운용 차트</div>
-            <ProfitLineChart marketData={data1} testData={data2} />
-            <div className="switcher">{paintSwitcher}</div>
-          </div>
+      <div className="w-full flex flex-col 2xl:flex-row items-center justify-center gap-3">
+        <div className="chart-container rounded shadow-lg p-3 mt-5 text-lg">
+          <div>자산 운용 차트</div>
+          <ProfitLineChart marketData={data1} testData={data2} />
+          <div className="switcher">{paintSwitcher}</div>
         </div>
-        <div className="rounded shadow-lg p-3 mt-5">
+        {/* <div className="rounded shadow-lg p-3 mt-5">
           <div className="portfolio-chart-container text-lg">
             <div>포트폴리오 구성</div>
             <PortfolioChart labels={portfolio} />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

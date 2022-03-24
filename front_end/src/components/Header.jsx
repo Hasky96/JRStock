@@ -83,7 +83,7 @@ export default function Header({ category }) {
     <div className="relative">
       {/* Header 상단 고정 */}
       <div className="fixed  w-full pl-4 pr-24 z-30">
-        <div className="grid grid-cols-12 m-6 rounded-xl bg-indigo-900">
+        <div className="grid grid-cols-12 m-6 rounded-xl bg-primary">
           {/* 카테고리 그리드 */}
           <div className="col-span-7 text-3xl my-auto ml-5 text-indigo-50">
             {nameMap.get(category)}
@@ -112,7 +112,7 @@ export default function Header({ category }) {
                 name="price"
                 id="header-search-input"
                 autocomplete="off"
-                className="hover:border-indigo-900 focus:ring-indigo-900 focus:border-indigo-900 text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
+                className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
                 placeholder="Search..."
                 onKeyUp={async (e) => {
                   e.preventDefault();
@@ -207,7 +207,7 @@ export default function Header({ category }) {
                 <div class="absolute -left-5 top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
                   <ul class="text-left border rounded ">
                     <li
-                      class="px-4 py-1 hover:bg-indigo-900 hover:text-white border-b duration-300"
+                      class="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300"
                       onClick={() => {
                         window.sessionStorage.removeItem("access_token");
                       }}
@@ -227,10 +227,10 @@ export default function Header({ category }) {
                 />
                 <div class="absolute top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
                   <ul class="text-left border rounded ">
-                    <li class="px-4 py-1 hover:bg-indigo-900 hover:text-white border-b duration-300">
+                    <li class="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
                       <Link to="/login">로그인</Link>
                     </li>
-                    <li class="px-4 py-1 hover:bg-indigo-900 hover:text-white border-b duration-300">
+                    <li class="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
                       <Link to="/signup">회원가입</Link>
                     </li>
                   </ul>

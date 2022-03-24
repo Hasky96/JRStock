@@ -85,18 +85,22 @@ export default function Chart({ title }) {
       <div className="grid border-2 my-h-45 grid-rows-6 rounded-xl m-2 p-3">
         {"1D1W1M1Y".includes(period) && (
           <div className="grid row-span-5">
-            {data && <LineChart data={data} period={period} />}
+            <div className="relative w-full h-96">
+              {data && <LineChart data={data} period={period} />}
+            </div>
           </div>
         )}
         {"일봉주봉월봉".includes(period) && (
           <div className="grid row-span-5">
             {seriesesData.get(period) && (
-              <CandleChart
-                title={title}
-                candleData={seriesesData.get(period).candleData}
-                volumeData={seriesesData.get(period).volumeData}
-                period={period}
-              />
+              <div className="relative w-full h-96">
+                <CandleChart
+                  title={title}
+                  candleData={seriesesData.get(period).candleData}
+                  volumeData={seriesesData.get(period).volumeData}
+                  period={period}
+                />
+              </div>
             )}
           </div>
         )}

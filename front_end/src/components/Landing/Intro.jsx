@@ -23,23 +23,23 @@ export default function Intro() {
         </div>
         <h2 className="content">
           <p>
-            굶<a class="underline decoration-active decoration-4">주린</a>{" "}
-            <a class="underline decoration-active decoration-4">주</a>식 어
-            <a class="underline decoration-active decoration-4">린이</a>들을
-            위한 주식 백테스트 서비스
+            굶<span class="underline decoration-active decoration-4">주린</span>{" "}
+            <span class="underline decoration-active decoration-4">주</span>식
+            어<span class="underline decoration-active decoration-4">린이</span>
+            들을 위한 주식 백테스트 서비스
           </p>
         </h2>
 
         <div className="button-wrapper">
           <button
-            className="button bg-indigo-900 text-white"
+            className="button bg-primary text-white"
             onClick={() => handleButtonClick("market")}
           >
             Explore
           </button>
 
           <button
-            className="button text-indigo-900"
+            className="button text-primary"
             onClick={() => handleButtonClick("signup")}
           >
             Signup

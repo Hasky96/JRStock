@@ -28,8 +28,13 @@ export default function StockItemDetail() {
     setDetail(resDetail.data);
     const resStock = await getDayStock(id);
     setStock(resStock.data[resStock.data.length - 1]);
-    const resLive = await getLive(id);
-    setLive(resLive.data);
+
+    try {
+      const resLive = await getLive(id);
+      setLive(resLive.data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {

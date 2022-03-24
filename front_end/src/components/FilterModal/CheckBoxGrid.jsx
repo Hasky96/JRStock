@@ -9,7 +9,7 @@ export default function CheckBoxGrid({
       return (
         <div className="form-check" key={el}>
           <input
-            className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm text-indigo-900 rotate-90 hover:rotate-0 checked:rotate-0 bg-white focus-within:ring-indigo-900 checked:bg-indigo-900 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+            className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm text-primary rotate-90 hover:rotate-0 checked:rotate-0 bg-white focus-within:ring-primary checked:bg-primary focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
             type="checkbox"
             value={el}
             id={el}

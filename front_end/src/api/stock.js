@@ -1,12 +1,19 @@
 import { apiInstance, loginApiInstance } from "./index.js";
 
 // 주식 종목 리스트 받아오기
-async function getStockItemList(page, size, sort, company_name, face_value) {
+async function getStockItemList({
+  page,
+  size,
+  sort,
+  company_name,
+  face_value,
+}) {
   const api = apiInstance();
   return await api.get(
     `stock/?` +
       (page ? `page=${page}&` : "") +
       (size ? `size=${size}&` : "") +
+      (sort ? `sort=${sort}&` : "") +
       (company_name ? `company_name=${company_name}&` : "")
   );
 }
@@ -132,6 +139,18 @@ async function deleteComment(id) {
   await authApi.delete(`stock/comment/delete/${id}`);
 }
 
+// 종목 뉴스 조회
+async function getNews(codeNumber) {
+  const api = apiInstance();
+  return await api.get(`stock/news/${codeNumber}`);
+}
+
+// 관심 종목 추가
+async function addInterest(code_number) {
+  const authApi = loginApiInstance();
+  return await authApi.post(`stock/interest/create/`, { code_number });
+}
+
 export {
   getStockItemList,
   getStockItemList2,
@@ -148,4 +167,6 @@ export {
   getCommentList,
   createComment,
   deleteComment,
+  getNews,
+  addInterest,
 };
