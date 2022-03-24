@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { userDetail } from "../api/user";
 import { getStockItemList2 } from "../api/stock";
+import { API_MEDIA_URL } from "../config";
 
 export default function Header({ category }) {
   const nameMap = new Map([
@@ -21,11 +22,13 @@ export default function Header({ category }) {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const { id, email, name, profile_img_url } = await userDetail();
+      const { id, email, name, profile_img, profile_img_url } =
+        await userDetail();
       setUser({
         id,
         email,
         name,
+        profile_img,
         profile_img_url,
       });
     };
@@ -194,7 +197,11 @@ export default function Header({ category }) {
               <button className="w-14 p-1 group duration-300 relative">
                 <img
                   className="rounded-full w-[50px] h-[50px]"
-                  src={`${user.profile_img_url}`}
+                  src={
+                    user.profile_img
+                      ? API_MEDIA_URL + `${user.profile_img}`
+                      : `${user.profile_img_url}`
+                  }
                   alt="profile"
                 />
                 <div class="absolute -left-5 top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
