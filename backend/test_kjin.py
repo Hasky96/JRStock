@@ -172,6 +172,9 @@ rsi_period=14
 sma_period=120
 ema_period=20
 
+# RSI 
+
+
 # MA 
 sma_short_period=20
 sma_long_period=60
