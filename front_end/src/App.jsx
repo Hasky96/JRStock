@@ -30,7 +30,6 @@ function App() {
   const [category, setCategory] = useState("");
 
   const location = useLocation();
-  // const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
     const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
@@ -74,7 +73,7 @@ function App() {
           <Route
             path="/stock/:id/board/new"
             element={
-              <PrivateRoute redirectPath="/board">
+              <PrivateRoute>
                 <BoardCreate />
               </PrivateRoute>
             }
@@ -83,7 +82,7 @@ function App() {
           <Route
             path="/stock/:id/board/:boardId/update"
             element={
-              <PrivateRoute redirectPath="/board">
+              <PrivateRoute>
                 <BoardUpdate />
               </PrivateRoute>
             }
@@ -91,7 +90,7 @@ function App() {
           <Route
             path="/backtest"
             element={
-              <PrivateRoute redirectPath="/backtest">
+              <PrivateRoute>
                 <BackTestList />
               </PrivateRoute>
             }
@@ -99,7 +98,7 @@ function App() {
           <Route
             path="/backtest/create"
             element={
-              <PrivateRoute redirectPath="/backtest/create">
+              <PrivateRoute>
                 <BackTestCreate />
               </PrivateRoute>
             }
@@ -107,7 +106,7 @@ function App() {
           <Route
             path="/backtest/:id"
             element={
-              <PrivateRoute redirectPath="/backtest">
+              <PrivateRoute>
                 <BackTestDetail />
               </PrivateRoute>
             }
@@ -115,7 +114,7 @@ function App() {
           <Route
             path="/mypage"
             element={
-              <PrivateRoute redirectPath="/mypage">
+              <PrivateRoute>
                 <MyPage />
               </PrivateRoute>
             }
