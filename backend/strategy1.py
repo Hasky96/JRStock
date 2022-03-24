@@ -44,10 +44,17 @@ def ma5_20_strategy(account, code, start, end):
                 
     current_stock_price=get_current_stock_price()   # {'005930': 71000}
     result = calculate_total_account(account, current_stock_price)
-    market_profit = df_day_stocks.iloc[-1]['current_price'] / df_day_stocks.iloc[0]['current_price'] * 100
+    p1 = int(df_day_stocks.iloc[-1]['current_price'] )
+    p2 = int(df_day_stocks.iloc[0]['current_price'] )
+    print(f'기간 : {start} ~ {end}')
     print(f'결과 : {start_balance:,}원 => {result}')
-    print(f'종목시장수익률 : {market_profit:,.2f} %')
+    print(f'가격변동 : {p2:,}원 => {p1:,}원 ')
     
 #실행
-code = "005380"
-ma5_20_strategy(account, code, '1995-05-02', '2022-03-22')
+# code = "005380"
+code = "005930"
+# code = "035420"
+# code = "035720"
+
+# ma5_20_strategy(account, code, '1995-05-02', '2022-03-24')
+ma5_20_strategy(account, code, '2015-03-02', '2022-03-23')
