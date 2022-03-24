@@ -51,8 +51,8 @@ def ma5_20_strategy(account, code, start, end):
     print(f'가격변동 : {p2:,}원 => {p1:,}원 ')
     
 #실행
-# code = "005380"
-code = "005930"
+code = "005380"
+# code = "005930"
 # code = "035420"
 # code = "035720"
 
