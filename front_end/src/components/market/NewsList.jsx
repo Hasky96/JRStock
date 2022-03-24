@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 export default function NewsItem({ onChecked, checked, index, item }) {
   const navigate = useNavigate();
   const handleOnClick = () => {
-    window.open(`${item.url}`, "_blank");
+    window.open(`${item.link}`, "_blank");
   };
   return (
     <tr
@@ -11,8 +11,8 @@ export default function NewsItem({ onChecked, checked, index, item }) {
       onClick={() => handleOnClick()}
     >
       <td className="font-bold">{item.title}</td>
-      <td>{item.press}</td>
-      <td>{item.created_at}</td>
+      <td>{item.source}</td>
+      <td>{item.date}</td>
     </tr>
   );
 }
