@@ -67,7 +67,10 @@ export default function Chart({ data, period }) {
     syncToInterval(data);
 
     const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      chart.applyOptions({
+        width: chartContainerRef.current.clientWidth,
+        height: chartContainerRef.current.clientHeight,
+      });
     };
 
     window.addEventListener("resize", handleResize);

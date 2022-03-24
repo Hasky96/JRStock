@@ -7,21 +7,23 @@ function classNames(...classes) {
 export default function card({ info }) {
   return (
     <div className="border-2 rounded-xl m-2">
-      <div className="flex justify-between">
-        <div
-          className={classNames(
-            "m-5 text-2xl",
-            info.open > info.close ? "text-blue-600" : "text-red-500"
-          )}
-        >
-          <span className="mr-3">{info.close.toFixed(2)}</span>
-          <span>{`${info.close - info.open < 0 ? "▼" : "▲"} ${(
-            info.close - info.open
-          ).toFixed(3)} (${((info.close / info.open) * 100 - 100).toFixed(
-            3
-          )}%)`}</span>
+      <div>
+        <div>
+          <div
+            className={classNames(
+              "ml-5 mt-5 text-2xl",
+              info.open > info.close ? "text-blue-600" : "text-red-500"
+            )}
+          >
+            <span className="mr-3">{info.close.toFixed(2)}</span>
+            <span>{`${info.close - info.open < 0 ? "▼" : "▲"} ${(
+              info.close - info.open
+            ).toFixed(3)} (${((info.close / info.open) * 100 - 100).toFixed(
+              3
+            )}%)`}</span>
+          </div>
+          <span className="ml-5 text-gray-400">{`${info.date} 기준`}</span>
         </div>
-        <span className="m-5 text-xl">{`${info.date}`}</span>
       </div>
       <div className="grid grid-rows-2 m-5 gap-8">
         <div className="grid grid-rows-1 grid-cols-2">

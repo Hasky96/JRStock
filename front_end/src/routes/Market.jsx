@@ -218,11 +218,11 @@ export default function Market() {
           {data && (
             <div
               className={classNames(
-                "grid grid-cols-2 h-96",
+                "grid grid-cols-3",
                 kospiTab === "정보" ? "" : "hidden"
               )}
             >
-              <div className="grid grid-cols-1">
+              <div className="col-span-2 grid grid-cols-1">
                 <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
                   <div className="grid row-span-5">
                     {period.substring(0, 1) === "1" && (
