@@ -1,12 +1,19 @@
 import { apiInstance, loginApiInstance } from "./index.js";
 
 // 주식 종목 리스트 받아오기
-async function getStockItemList(page, size, sort, company_name, face_value) {
+async function getStockItemList({
+  page,
+  size,
+  sort,
+  company_name,
+  face_value,
+}) {
   const api = apiInstance();
   return await api.get(
     `stock/?` +
       (page ? `page=${page}&` : "") +
       (size ? `size=${size}&` : "") +
+      (sort ? `sort=${sort}&` : "") +
       (company_name ? `company_name=${company_name}&` : "")
   );
 }
