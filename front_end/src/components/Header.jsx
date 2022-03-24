@@ -22,22 +22,24 @@ export default function Header({ category }) {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const result = await userDetail().catch(() => {
-        console.log("비로그인 접속");
-        return null;
-      });
+      if (sessionStorage.getItem("access_token")) {
+        const result = await userDetail().catch(() => {
+          console.log("비로그인 접속");
+          return null;
+        });
 
-      if (result === null) return;
+        if (result === null) return;
 
-      const { id, email, name, profile_img, profile_img_url } = result;
+        const { id, email, name, profile_img, profile_img_url } = result;
 
-      setUser({
-        id,
-        email,
-        name,
-        profile_img,
-        profile_img_url,
-      });
+        setUser({
+          id,
+          email,
+          name,
+          profile_img,
+          profile_img_url,
+        });
+      }
     };
     fetchUserInfo();
   }, []);
