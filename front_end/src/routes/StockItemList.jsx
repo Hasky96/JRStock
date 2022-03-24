@@ -95,7 +95,7 @@ export default function StockItemList() {
                 id="total-stock"
                 name="total-stock"
                 type="checkbox"
-                className="h-4 w-4 text-indigo-300 focus:ring-indigo-900 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
                 onChange={onChecked.bind(
                   this,
                   stocks[i].financial_info.basic_info.code_number
@@ -304,13 +304,13 @@ export default function StockItemList() {
 
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>
-      <div className={"bg-white rounded-lg p-5 my-h-80 drop-shadow-lg"}>
+      <div className={"bg-white rounded-lg p-5 my-h-80 shadow-lg"}>
         <div className="flex flex-row justify-start my-5">
           {sessionStorage.access_token && (
             <div className="">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-indigo-900 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-900">
+                  <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 hover:border-primary shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary">
                     Actions
                     <ChevronDownIcon
                       className="-mr-1 ml-2 h-5 w-5"
@@ -373,7 +373,7 @@ export default function StockItemList() {
             </div>
           )}
           <button
-            className="h-38px w-20 ml-2 px-3 py-1 rounded-md text-white bg-indigo-900 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700"
+            className="h-38px w-20 ml-2 px-3 py-1 rounded-md text-white bg-primary hover:bg-active duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700"
             onClick={toggleModal}
           >
             필터
@@ -397,7 +397,7 @@ export default function StockItemList() {
                     id="total-stock"
                     name="total-stock"
                     type="checkbox"
-                    className="h-4 w-4 text-indigo-300 focus:ring-indigo-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
                     onChange={onCheckedAll}
                     checked={
                       checkedList.length === 0
@@ -642,50 +642,50 @@ export default function StockItemList() {
           onClickLast={onClickLast}
           onClickNumber={onClickNumber}
         ></Pagenation>
-      </div>
-      {/* 모달창 */}
-      {isShowModal && (
-        <div
-          className="bg-black bg-opacity-50 fixed inset-0 flex justify-center items-start z-50 overflow-auto py-20"
-          id="overlay"
-        >
-          <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800">
-            <div className="flex justify-between items-center">
-              <h4 className="text-lg font-bold">필터 설정</h4>
-              <ModalCancle
-                onClick={() => {
-                  toggleModal();
-                }}
+        {/* 모달창 */}
+        {isShowModal && (
+          <div
+            className="fixed inset-0 flex justify-center items-center z-50 py-20 bg-gray-500 bg-opacity-75 transition-opacity"
+            id="overlay"
+          >
+            <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800 max-h-[75vh] overflow-y-scroll">
+              <div className="flex justify-between items-center">
+                <h4 className="text-lg font-bold">필터 설정</h4>
+                <ModalCancle
+                  onClick={() => {
+                    toggleModal();
+                  }}
+                />
+              </div>
+              {/* 체크박스 공간 */}
+              <CheckBoxGrid
+                indicators={Array.from(indicatorInfo.keys())}
+                onChecked={setCheckedIndicators}
+                checkedIndicators={checkedIndicators}
+                indicatorInfo={indicatorInfo}
               />
-            </div>
-            {/* 체크박스 공간 */}
-            <CheckBoxGrid
-              indicators={Array.from(indicatorInfo.keys())}
-              onChecked={setCheckedIndicators}
-              checkedIndicators={checkedIndicators}
-              indicatorInfo={indicatorInfo}
-            />
-            {/* 선택된 리스트 공간 */}
-            <CheckedList
-              checkedIndicators={checkedIndicators}
-              indicatorInfo={indicatorInfo}
-              onChange={setCheckedIndicators}
-            />
-            {/* 버튼 공간 */}
-            <div className="mt-3 flex justify-end space-x-3">
-              {/* 필터 선택 완료 버튼 */}
-              <button
-                className="px-3 py-1 bg-indigo-900 hover:bg-indigo-700 text-gray-200 rounded"
-                onClick={() => {
-                  toggleModal();
-                }}
-              >
-                확인
-              </button>
+              {/* 선택된 리스트 공간 */}
+              <CheckedList
+                checkedIndicators={checkedIndicators}
+                indicatorInfo={indicatorInfo}
+                onChange={setCheckedIndicators}
+              />
+              {/* 버튼 공간 */}
+              <div className="mt-3 flex justify-end space-x-3">
+                {/* 필터 선택 완료 버튼 */}
+                <button
+                  className="px-3 py-1 bg-primary hover:bg-active duration-300 text-gray-200 rounded"
+                  onClick={() => {
+                    toggleModal();
+                  }}
+                >
+                  확인
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // primary: rgb(24, 33, 109)
+        // active: rgb(255, 130, 92)
+        // third: rgb(254, 118, 36)
         primary: "#18216d",
         active: "#ff825c",
         third: "#FE7624",

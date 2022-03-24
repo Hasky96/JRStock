@@ -200,7 +200,7 @@ export default function Market() {
           id="kospi"
           className={classNames(
             "text-2xl font-bold",
-            selectedChart === "kospi" ? "text-indigo-900" : "text-gray-300"
+            selectedChart === "kospi" ? "text-primary" : "text-gray-300"
           )}
           onClick={() => {
             setSelectedChart("kospi");
@@ -216,7 +216,7 @@ export default function Market() {
           id="kosdaq"
           className={classNames(
             "text-2xl font-bold",
-            selectedChart === "kosdaq" ? "text-indigo-900" : "text-gray-300"
+            selectedChart === "kosdaq" ? "text-primary" : "text-gray-300"
           )}
           onClick={() => {
             setSelectedChart("kosdaq");
@@ -244,15 +244,19 @@ export default function Market() {
                 <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
                   <div className="grid row-span-5">
                     {period.substring(0, 1) === "1" && (
-                      <LineChart data={data} period={period}></LineChart>
+                      <div className="relative w-full h-96">
+                        <LineChart data={data} period={period}></LineChart>
+                      </div>
                     )}
                     {period.substring(0, 1) !== "1" && (
-                      <CandleChart
-                        candleData={data.candleData}
-                        volumeData={data.volumeData}
-                        title={"코스피"}
-                        period={period}
-                      ></CandleChart>
+                      <div className="relative w-full h-96">
+                        <CandleChart
+                          candleData={data.candleData}
+                          volumeData={data.volumeData}
+                          title={"코스피"}
+                          period={period}
+                        ></CandleChart>
+                      </div>
                     )}
                   </div>
 
@@ -283,15 +287,19 @@ export default function Market() {
                 <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
                   <div className="grid row-span-5">
                     {period.substring(0, 1) === "1" && (
-                      <LineChart data={data} period={period}></LineChart>
+                      <div className="relative w-full h-96">
+                        <LineChart data={data} period={period}></LineChart>
+                      </div>
                     )}
                     {period.substring(0, 1) !== "1" && (
-                      <CandleChart
-                        candleData={data.candleData}
-                        volumeData={data.volumeData}
-                        title={"코스닥"}
-                        period={period}
-                      ></CandleChart>
+                      <div className="relative w-full h-96">
+                        <CandleChart
+                          candleData={data.candleData}
+                          volumeData={data.volumeData}
+                          title={"코스닥"}
+                          period={period}
+                        ></CandleChart>
+                      </div>
                     )}
                   </div>
 

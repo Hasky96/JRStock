@@ -2,7 +2,6 @@ import { useState } from "react";
 import ListItem from "../../BackTestList/ListItem";
 import ListTitle from "../../BackTestList/ListTitle";
 import { PortfolioChart } from "./PortfolioChart";
-import "./Portfolio.css";
 
 export default function Portfolio() {
   const dummyPortfolio = ["삼성전자", "SK하이닉스", "네이버"];
