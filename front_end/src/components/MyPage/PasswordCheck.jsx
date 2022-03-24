@@ -23,7 +23,7 @@ export default function PasswordCheck({ setIsAuthorized }) {
       password: accessPassword,
     };
 
-    await userPasswordCheck(data)
+    userPasswordCheck(data)
       .then((res) => {
         if (res.data.password_check) {
           setIsAuthorized(true);
@@ -37,15 +37,6 @@ export default function PasswordCheck({ setIsAuthorized }) {
         console.log(err);
         toast.error("비밀번호 인증 실패!");
       });
-
-    // if (password_check) {
-    //   setIsAuthorized(true);
-    //   console.log("here");
-    //   toast.success("비밀번호 인증 완료!");
-    // } else {
-    //   console.log("here2");
-    //   toast.error("잘못된 비밀번호입니다.");
-    // }
   };
 
   return (

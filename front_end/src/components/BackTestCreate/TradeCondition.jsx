@@ -13,7 +13,7 @@ export default function TradeCondition({
     "일목균형표",
   ];
 
-  const strategyDetailOptions = ["5일선", "20일선", "60일선", ,];
+  const strategyDetailOptions = ["5일선", "20일선", "60일선"];
 
   return (
     <div className="w-1/2 grid grid-cols-2 border-0 border-b-1 border-gray-200 shadow-lg rounded text-center p-3 gap-2">
