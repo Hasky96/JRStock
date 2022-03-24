@@ -31,7 +31,7 @@ def get_day_stock(code_number, start_date, end_date):
     return day_stock_list
 
 def get_current_stock_price(code_number=None):
-    """ 최신 주식 가격
+    """ DB 기준 최신 주식 가격
 
     Args:
         없는 경우 모든 주식
@@ -99,7 +99,7 @@ def buy(account, code, price, percent, date, option):
     earn_rate = round(earn_rate, 3) * 100
     name=get_stock_name_by_code(code)
     
-    print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
+    print(f'매수알림 : {date} {option}에 의해 {name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
 def sell(account, code, price, percent, date, option):
@@ -135,10 +135,17 @@ def sell(account, code, price, percent, date, option):
     earn_rate = (current_asset - account['start_price']) / account['start_price']
     earn_rate = round(earn_rate, 3) * 100
     name=get_stock_name_by_code(code)
-    print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
+    print(f'매도알림 : {date} {option}에 의해 {name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
 def get_stock_data(code_number, date):
+    """ 주식 종목 1개 정보 
+    Args:
+        code_number (String) : 주식 종목 1개 코드 '005930'
+        date (String) : 날짜 '2022-03-22'
+    Returns:
+        주식 종목 (Object)
+    """
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
     
     return day_stock_list[0]
@@ -149,6 +156,13 @@ def get_stock_name_by_code(code_number):
     return stock.company_name
 
 def get_stock_price(code_number, date):
+    """ 주식 종목 1개 가격 
+    Args:
+        code_number (String) : 주식 종목 1개 코드 '005930'
+        date (String) : 날짜 '2022-03-22'
+    Returns:
+        주식 종목 가격 (Integer)
+    """
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
     
     return day_stock_list[0].current_price

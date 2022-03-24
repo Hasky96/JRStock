@@ -1,8 +1,9 @@
-from bt_common_yw import *
+from bt_common import *
 
 current_stock_price=get_current_stock_price()   # {'005930': 71000}
 # day_stocks=get_day_stock('005380', '1995-05-02', '2022-03-22')
-day_stocks=get_day_stock('005380', '2015-05-02', '2022-03-22')
+# day_stocks=get_day_stock('005380', '2015-05-02', '2022-03-22')
+day_stocks=get_day_stock('035420', '2015-05-02', '2022-03-22')
 # day_stocks=get_day_stock('005930', '2022-01-02', '2022-03-01')
 # print(get_current_stock_price('005930'))
 
@@ -83,20 +84,36 @@ def RSI(stocks, period=14, column='current_price'):
 
     return stocks
 
+# OBV 지수
+def OBV(stocks):
+    obv=[]
+    obv.append(0)
+    for i in range(1, len(stocks.current_price)):
+        if stocks.current_price[i]>stocks.current_price[i-1]:
+            obv.append(obv[-1]+stocks.volume[i])
+        elif stocks.current_price[i]<stocks.current_price[i-1]:
+            obv.append(obv[-1]-stocks.volume[i])
+        else:
+            obv.append(obv[-1])
+    
+    stocks['OBV']=obv
+    stocks['OBV_EMA']=stocks['OBV'].ewm(com=20).mean()  # 지수평균이동값
+    return stocks
+
 
 # RSI지수가 high_index 이상이면 매도, low_index 이하면 매수
-def RSI_buy_sell(stocks, high_index=70, low_index=30, account={}, buy_percent=50, sell_percent=50):
+def RSI_buy_sell(stocks, high_index=90, low_index=10, account={}, buy_percent=50, sell_percent=50):
     print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
     for idx, row in stocks.iterrows():
         if row['RSI']>=high_index:
-            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
+            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적강도지수(RSI)")
         elif row['RSI']<=low_index:
-            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적 강도 지수")
+            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적강도지수(RSI)")
 
 
 # 단기이평선이 장기이평선을 상향돌파하면 매수, 하향돌파하면 매도
 # 추가 : 팔 가격이 산 가격보다 높아야되고 살 가격이 판 가격보다 낮아야함
-def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent=50, sell_percent=50):
+def SMA_buy_sell(stocks, short_period=20, long_period=120, account={}, buy_percent=50, sell_percent=50):
     print(f'단순이동평균선(SMA) 전략: 단기-{short_period}일 장기-{long_period}일')
     df_day_stocks['SMA_short']=SMA(df_day_stocks, short_period)
     df_day_stocks['SMA_long']=SMA(df_day_stocks, long_period)
@@ -116,13 +133,34 @@ def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent
             before_price=current_price
 
         if before_flag<current_flag and before_price<current_price:
-            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "단순이동평균선")
+            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "단순이동평균선(SMA)")
             before_price=max(before_price, current_price)
         elif before_flag>current_flag and before_price>current_price:
-            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "단순이동평균선")
+            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "단순이동평균선(SMA)")
             before_price=min(before_price, current_price)
         
         before_flag=current_flag
+
+
+# OBV < OBV_EMA 이면 팔고 반대면 산다
+# 추가 : 팔 가격이 산 가격보다 높아야되고 살 가격이 판 가격보다 낮아야함
+def OBV_buy_sell(stocks, account={}, buy_percent=50, sell_percent=50):
+    stocks=OBV(stocks)
+    flag=-1
+    before_price=0
+    current_price=0
+    for idx, row in stocks.iterrows():   
+        current_price=row['current_price']     
+
+        if row['OBV']<row['OBV_EMA'] and flag!=0 and before_price<current_price:
+            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "거래량균형(OBV)")
+            flag=0
+            before_price=max(before_price, current_price)
+        elif row['OBV']>row['OBV_EMA'] and flag!=1 and before_price>current_price:
+            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "거래량균형(OBV)")
+            before_price=min(before_price, current_price)
+            flag=1
+
 
 
 
@@ -136,7 +174,7 @@ ema_period=20
 
 # MA 
 sma_short_period=20
-sma_long_period=120
+sma_long_period=60
 
 df_day_stocks=MACD(df_day_stocks, macd_period_long, macd_period_short, macd_period_signal)
 df_day_stocks=RSI(df_day_stocks, rsi_period)
@@ -152,16 +190,17 @@ buy_percent=50
 sell_percent=50
 
 # print(account)
-RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
+# RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
 # SMA_buy_sell(df_day_stocks, sma_short_period, sma_long_period, account, buy_percent, sell_percent)
+OBV_buy_sell(df_day_stocks, account, buy_percent, sell_percent)
 print(account)
-print(calculate_total_account(account, current_stock_price))
+print(f'{calculate_total_account(account, current_stock_price):,}원')
 
 
 # 영워니 화이팅
 # 결과값 : 시작일, 종료일, 투자원금, 총손익, 최종자산, 최종수익률
 # 일평균수익률=총수익률/거래가능한 기간
-# 연평균수익률=1년씩 (최종가치-시초가치)/시초가치 년도별로 또는 연평균  - 영원 date split해서
+# 연평균수익률=1년씩 (최종가치-시초가치)/시초가치 년도별로 또는 연평균 -  date split해서
 
 # 시장수익률=알파 코스피의 (현재가격-시초가격)/시초가격     
 # 종목시장수익률=알파 그 종목의 (현재가격-시초가격)/시초가격
