@@ -1,58 +1,23 @@
 import { useEffect, useState } from "react";
 import NewsTitle from "./NewsTitle";
 import NewsList from "./NewsList";
-
-const kospiNewsData = [
-  {
-    title: "코스피 뉴스1",
-    press: "네이버",
-    created_at: "220314",
-    url: "https://naver.com",
-  },
-  {
-    title: "코스피 뉴스2",
-    press: "네이버",
-    created_at: "220314",
-    url: "https://naver.com",
-  },
-  {
-    title: "코스피 뉴스3",
-    press: "네이버",
-    created_at: "220314",
-    url: "https://naver.com",
-  },
-];
-
-const kosdaqNewsData = [
-  {
-    title: "코스닥 뉴스1",
-    press: "네이버",
-    created_at: "220314",
-    url: "https://naver.com",
-  },
-  {
-    title: "코스닥 뉴스2",
-    press: "네이버",
-    created_at: "220314",
-    url: "https://naver.com",
-  },
-  {
-    title: "코스닥 뉴스3",
-    press: "네이버",
-    created_at: "220314",
-    url: "https://naver.com",
-  },
-];
+import { getNews } from "../../api/stock";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function NewsTable({ kind }) {
-  const [newsData, setNewsData] = useState({});
+  const [newsData, setNewsData] = useState([]);
+
+  const init = async () => {
+    const res = await getNews(kind.toUpperCase());
+    setNewsData(res.data);
+  };
+
   useEffect(() => {
     // newsData 초기화
-    setNewsData(kind === "kospi" ? kospiNewsData : kosdaqNewsData);
+    init();
   }, []);
 
   const newsList = () => {
@@ -64,7 +29,7 @@ export default function NewsTable({ kind }) {
   };
 
   return (
-    <div className="h-96 mx-5 my-2">
+    <div className="h-full mx-5 my-2">
       <table className="table-auto w-full">
         <colgroup>
           <col span="1" style={{ width: 70 + "%" }} />
@@ -72,7 +37,19 @@ export default function NewsTable({ kind }) {
           <col span="1" style={{ width: 15 + "%" }} />
         </colgroup>
         <NewsTitle titles={["제목", "정보제공", "작성일"]} />
-        <tbody className="text-center">{newsData.length && newsList()}</tbody>
+        <tbody className="text-center">
+          {newsData.length === 0 ? (
+            <tr>
+              <td>
+                <div className="pt-6 text-gray-500">
+                  관련 뉴스를 찾지 못헀습니다..
+                </div>
+              </td>
+            </tr>
+          ) : (
+            newsList()
+          )}
+        </tbody>
       </table>
     </div>
   );
