@@ -300,7 +300,7 @@ export default function StockItemList() {
   const [checkedIndicators, setCheckedIndicators] = useState(new Map());
 
   // filter on/off
-  const [filterToggle, setFilterToggle] = useState(true);
+  const [filterToggle, setFilterToggle] = useState(false);
 
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>

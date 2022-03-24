@@ -22,8 +22,15 @@ export default function Header({ category }) {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const { id, email, name, profile_img, profile_img_url } =
-        await userDetail();
+      const result = await userDetail().catch(() => {
+        console.log("비로그인 접속");
+        return null;
+      });
+
+      if (result === null) return;
+
+      const { id, email, name, profile_img, profile_img_url } = result;
+
       setUser({
         id,
         email,
@@ -111,7 +118,7 @@ export default function Header({ category }) {
                 type="text"
                 name="price"
                 id="header-search-input"
-                autocomplete="off"
+                autoComplete="off"
                 className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
                 placeholder="Search..."
                 onKeyUp={async (e) => {
@@ -179,7 +186,6 @@ export default function Header({ category }) {
                   const el = document.getElementById("search-result");
                   el.classList.toggle("hidden");
                 }}
-                o
               />
               <div
                 className="absolute top-full w-full hidden"
@@ -204,10 +210,10 @@ export default function Header({ category }) {
                   }
                   alt="profile"
                 />
-                <div class="absolute -left-5 top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
-                  <ul class="text-left border rounded ">
+                <div className="absolute -left-5 top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
+                  <ul className="text-left border rounded ">
                     <li
-                      class="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300"
+                      className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300"
                       onClick={() => {
                         window.sessionStorage.removeItem("access_token");
                       }}
@@ -225,12 +231,12 @@ export default function Header({ category }) {
                   src={require("../assets/profile1.jpg")}
                   alt="profile"
                 />
-                <div class="absolute top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
-                  <ul class="text-left border rounded ">
-                    <li class="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
+                <div className="absolute top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
+                  <ul className="text-left border rounded ">
+                    <li className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
                       <Link to="/login">로그인</Link>
                     </li>
-                    <li class="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
+                    <li className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
                       <Link to="/signup">회원가입</Link>
                     </li>
                   </ul>
