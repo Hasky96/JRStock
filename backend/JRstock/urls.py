@@ -36,4 +36,5 @@ urlpatterns = [
     path('api/notice/', include('notice.urls')),
     path('api/stock/', include('stock.urls')),
     path('api/stock/', include('board.urls')),
+    path('api/backtest/', include('backtest.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

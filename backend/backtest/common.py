@@ -1,13 +1,7 @@
-from __future__ import absolute_import, unicode_literals
 import os
 import pandas as pd
 from datetime import datetime, timedelta
 from django.db.models import Max
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
-# pip install -r requirements.txt
-import django   
-django.setup()
 
 from stock.models import DayStock, FinancialInfo, BasicInfo
 
@@ -20,15 +14,34 @@ def get_day_stock(code_number, start_date, end_date):
         end_date (String): 종료 날짜
 
     Returns:
-        날짜별 주식 object가 남긴 리스트    [object1, object2, ...]
+        DataFrame : N rows * 12 columns
     """
 
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date__gte=start_date).filter(date__lte=end_date)
     
     # financial_info = FinancialInfo.objects.get(pk=code_number)  # 재무제표
-    day_stock_list = list(day_stock_list) 
+    day_stock_list = list(day_stock_list)
     
-    return day_stock_list
+    col_name = ['code_number','current_price','changes','chages_ratio','start_price','high_price', 'low_price', \
+    'volume','trade_price','market_cap','stock_amount','date']
+    stock_list=[]
+    for stock in day_stock_list:
+        temp=[]
+        temp.append(stock.code_number)
+        temp.append(float(stock.current_price))
+        temp.append(float(stock.changes))
+        temp.append(float(stock.chages_ratio))
+        temp.append(float(stock.start_price))
+        temp.append(float(stock.high_price))
+        temp.append(float(stock.low_price))
+        temp.append(int(stock.volume))
+        temp.append(int(stock.trade_price))
+        temp.append(int(stock.market_cap))
+        temp.append(int(stock.stock_amount))
+        temp.append(stock.date)
+        stock_list.append(temp)
+    
+    return pd.DataFrame(stock_list, columns=col_name) 
 
 def get_current_stock_price(code_number=None):
     """ 최신 주식 가격
@@ -143,7 +156,6 @@ def get_stock_data(code_number, date):
     
     return day_stock_list[0]
     
-
 def get_stock_name_by_code(code_number):
     stock=BasicInfo.objects.get(pk=code_number)
     return stock.company_name
@@ -173,33 +185,27 @@ def calculate_total_account(account, current_stock_price):
     # result=f'{total_account:,}원'
     return total_account
 
-
-def object_to_dataframe(stocks):
-    """ 주식 oject 리스트를 dataframe으로 변환
-
-    Args:
-        stocks (List): 날짜별 주식 object가 남긴 리스트
-
-    Returns:
-        DataFrame : N rows * 12 columns
-    """
-    col_name = ['code_number','current_price','changes','chages_ratio','start_price','high_price', 'low_price', \
-    'volume','trade_price','market_cap','stock_amount','date']
-    stock_list=[]
-    for stock in stocks:
-        temp=[]
-        temp.append(stock.code_number)
-        temp.append(float(stock.current_price))
-        temp.append(float(stock.changes))
-        temp.append(float(stock.chages_ratio))
-        temp.append(float(stock.start_price))
-        temp.append(float(stock.high_price))
-        temp.append(float(stock.low_price))
-        temp.append(int(stock.volume))
-        temp.append(int(stock.trade_price))
-        temp.append(int(stock.market_cap))
-        temp.append(int(stock.stock_amount))
-        temp.append(stock.date)
-        stock_list.append(temp)
+def get_kospi_price_by_date(date):
+    cnt = 0
+    kospi_price = None
+    while kospi_price == None:
+        cnt += 1
+        yesterday = datetime.strptime(date, '%Y-%m-%d') - timedelta(days=cnt)
+        yesterday = yesterday.strftime('%Y-%m-%d')
+        kospi_price = get_stock_price('kospi', yesterday)
     
-    return pd.DataFrame(stock_list, columns=col_name)
+    return kospi_price
+
+def init_result_data(account):
+    result_data = {
+        'year' : '0', # 연도 저장
+        'year_start_price' : 0, # 시작가격
+        'year_earn_rate' : 0.0, # 연평균 수익률
+        'year_cnt' : 0, # 총 연도 수
+        'max_earn' : account['balance'], # 최고 수익
+        'max_date' : None, # 최고 수익 날짜
+        'min_earn' : account['balance'], # 최저 수익
+        'min_earn_after_max' : 0,
+    }
+    
+    return result_data
