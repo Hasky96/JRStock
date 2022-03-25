@@ -222,103 +222,113 @@ export default function StockItemDetail() {
           </PageContainer>
         </div>
       )}
-      <div className={currentTab === "종합정보" ? "col-span-9" : "col-span-12"}>
-        <PageContainer
-          pr={currentTab === "종합정보" ? 2.5 : undefined}
-          pt={currentTab === "종합정보" ? 5 : 5}
-          minH={currentTab === "종합정보" ? 55 : 73}
-        >
-          {currentTab === "종합정보" && (
-            <Chart title={detail.basic_info.company_name} />
-          )}
-          {currentTab === "뉴스" && <News />}
-          {currentTab === "종목토론 게시판" && <BoardList />}
-        </PageContainer>
+      <div
+        className={
+          currentTab === "종합정보"
+            ? "xl:col-span-9 col-span-12"
+            : "col-span-12"
+        }
+      >
+        <div className="xl:p-0 pr-8">
+          <PageContainer
+            pr={currentTab === "종합정보" ? 2.5 : undefined}
+            pt={currentTab === "종합정보" ? 5 : 5}
+            minH={currentTab === "종합정보" ? 55 : 73}
+          >
+            {currentTab === "종합정보" && (
+              <Chart title={detail.basic_info.company_name} />
+            )}
+            {currentTab === "뉴스" && <News />}
+            {currentTab === "종목토론 게시판" && <BoardList />}
+          </PageContainer>
+        </div>
       </div>
 
       {currentTab === "종합정보" && (
-        <div className="col-span-3">
-          <PageContainer pl={2.5} pr={10} minH={55} pt={5}>
-            <div className="font-extrabold mb-2 text-lg">
-              {detail.basic_info.company_name}
-            </div>
-            <div className="flex justify-between font-bold">
-              <div>시가총액</div>
-              <div>{costMap(stock.market_cap)}원</div>
-            </div>
-            <div className="flex justify-between">
-              <div>상장주식수</div>
-              <div>{(+detail.number_of_listings).toLocaleString()}천주</div>
-            </div>
-            <div className="flex justify-between">
-              <div>액면가</div>
-              <div>{detail.face_value}원</div>
-            </div>
-            <hr className="my-2" />
-            <div className="flex justify-between">
-              <div>자본금</div>
-              <div>{(+detail.capital_stock).toLocaleString()}억원</div>
-            </div>
-            <div className="flex justify-between">
-              <div>신용비율</div>
-              <div>{Math.round(detail.credit_rate * 100) / 100}%</div>
-            </div>
-            <div className="flex justify-between">
-              <div>대용가</div>
-              <div>{(+detail.substitute_price).toLocaleString()}원</div>
-            </div>
-            <hr className="my-2" />
-            <div className="flex justify-between">
-              <div>PER | EPS</div>
-              <div>
-                {Math.round(detail.per * 100) / 100}배 |{" "}
-                {(+detail.eps).toLocaleString()}원
+        <div className="xl:col-span-3 col-span-12">
+          <div className="xl:p-0 pl-7">
+            <PageContainer pl={2.5} pr={10} minH={55} pt={5}>
+              <div className="font-extrabold mb-2 text-lg">
+                {detail.basic_info.company_name}
               </div>
-            </div>
-            <div className="flex justify-between">
-              <div>PBR | BPS</div>
-              <div>
-                {Math.round(detail.pbr * 100) / 100}배 |{" "}
-                {(+detail.bps).toLocaleString()}원
+              <div className="flex justify-between font-bold">
+                <div>시가총액</div>
+                <div>{costMap(stock.market_cap)}원</div>
               </div>
-            </div>
-            <div className="flex justify-between">
-              <div>ROE</div>
-              <div>{Math.round(detail.roe * 100) / 100}%</div>
-            </div>
-            <div className="flex justify-between">
-              <div>EV</div>
-              <div>{Math.round(detail.ev * 100) / 100}배</div>
-            </div>
-            <hr className="my-2" />
-            <div className="flex justify-between">
-              <div>매출액</div>
-              <div>{(+detail.sales_revenue).toLocaleString()}억원</div>
-            </div>
-            <div className="flex justify-between">
-              <div>영업이익</div>
-              <div>{(+detail.operating_income).toLocaleString()}억원</div>
-            </div>
-            <div className="flex justify-between">
-              <div>당기순이익</div>
-              <div>{(+detail.net_income).toLocaleString()}억원</div>
-            </div>
-            <hr className="my-2" />
-            <div className="flex justify-between font-bold">
-              <div>외인소진율</div>
-              <div>{Math.round(detail.foreigner_percent * 100) / 100}%</div>
-            </div>
-            <div className="flex justify-between">
-              <div>유통주식</div>
-              <div>{(+detail.shares_outstanding).toLocaleString()}천주</div>
-            </div>
-            <div className="flex justify-between">
-              <div>유통비율</div>
-              <div>
-                {Math.round(detail.shares_outstanding_rate * 100) / 100}%
+              <div className="flex justify-between">
+                <div>상장주식수</div>
+                <div>{(+detail.number_of_listings).toLocaleString()}천주</div>
               </div>
-            </div>
-          </PageContainer>
+              <div className="flex justify-between">
+                <div>액면가</div>
+                <div>{detail.face_value}원</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between">
+                <div>자본금</div>
+                <div>{(+detail.capital_stock).toLocaleString()}억원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>신용비율</div>
+                <div>{Math.round(detail.credit_rate * 100) / 100}%</div>
+              </div>
+              <div className="flex justify-between">
+                <div>대용가</div>
+                <div>{(+detail.substitute_price).toLocaleString()}원</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between">
+                <div>PER | EPS</div>
+                <div>
+                  {Math.round(detail.per * 100) / 100}배 |{" "}
+                  {(+detail.eps).toLocaleString()}원
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <div>PBR | BPS</div>
+                <div>
+                  {Math.round(detail.pbr * 100) / 100}배 |{" "}
+                  {(+detail.bps).toLocaleString()}원
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <div>ROE</div>
+                <div>{Math.round(detail.roe * 100) / 100}%</div>
+              </div>
+              <div className="flex justify-between">
+                <div>EV</div>
+                <div>{Math.round(detail.ev * 100) / 100}배</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between">
+                <div>매출액</div>
+                <div>{(+detail.sales_revenue).toLocaleString()}억원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>영업이익</div>
+                <div>{(+detail.operating_income).toLocaleString()}억원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>당기순이익</div>
+                <div>{(+detail.net_income).toLocaleString()}억원</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between font-bold">
+                <div>외인소진율</div>
+                <div>{Math.round(detail.foreigner_percent * 100) / 100}%</div>
+              </div>
+              <div className="flex justify-between">
+                <div>유통주식</div>
+                <div>{(+detail.shares_outstanding).toLocaleString()}천주</div>
+              </div>
+              <div className="flex justify-between">
+                <div>유통비율</div>
+                <div>
+                  {Math.round(detail.shares_outstanding_rate * 100) / 100}%
+                </div>
+              </div>
+            </PageContainer>
+          </div>
         </div>
       )}
     </div>

@@ -7,12 +7,12 @@ export default function NewsItem({ onChecked, checked, index, item }) {
   };
   return (
     <tr
-      className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer"
+      className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer xl:text-base text-sm"
       onClick={() => handleOnClick()}
     >
       <td className="font-bold">{item.title}</td>
       <td>{item.source}</td>
-      <td>{item.date}</td>
+      <td className="xl:text-base text-xs">{item.date}</td>
     </tr>
   );
 }

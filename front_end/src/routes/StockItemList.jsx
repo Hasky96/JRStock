@@ -17,19 +17,25 @@ export default function StockItemList() {
   const [checkedList, setcheckedList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
-  const pageSize = 10;
   const [stocks, setStocks] = useState([]);
   const [sortBy, setSortBy] = useState("-market_cap");
   const [search, setSearch] = useState("");
   const [timer, setTimer] = useState(null);
+  const [filterData, setFilterData] = useState({});
+  const pageSize = 10;
+
+  // 선택된 필터 지표
+  const [checkedIndicators, setCheckedIndicators] = useState(new Map());
 
   // 주식 종목 초기화
   const init = async () => {
+    console.log(filterData);
     const res = await getStockItemList({
       page: pageNo,
       size: pageSize,
       sort: sortBy,
       company_name: search,
+      filterData,
     });
     setStocks(res.data.results);
     setTotalCount(res.data.count);
@@ -37,7 +43,7 @@ export default function StockItemList() {
 
   useEffect(() => {
     init();
-  }, [sortBy, search]);
+  }, [sortBy, search, filterData]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
@@ -288,9 +294,9 @@ export default function StockItemList() {
 
   // 필터 지표 초기 설정
   const indicatorInfo = new Map([
-    ["PER", [0, 100]],
-    ["매출액", [-100, 100]],
-    ["PSR", [-100, 100]],
+    ["액면가", [0, 5000]],
+    ["자본금", [0, 43427]],
+    ["상장주식수", [0, 5969783]],
     ["PBR", [-100, 100]],
     ["순이익율", [-100, 100]],
     ["200일 이동평균", [-100, 100]],
@@ -310,15 +316,35 @@ export default function StockItemList() {
     setShowModal((cur) => !cur);
   };
 
-  // 선택된 필터 지표
-  const [checkedIndicators, setCheckedIndicators] = useState(new Map());
-
   // filter on/off
   const [filterToggle, setFilterToggle] = useState(false);
 
+  // 필터 데이터 가공
+  const inputFilter = () => {
+    let data = {};
+    if (checkedIndicators.get("액면가"))
+      data = {
+        ...data,
+        face_value:
+          checkedIndicators.get("액면가")[0] +
+          "_" +
+          checkedIndicators.get("액면가")[1],
+      };
+    if (checkedIndicators.get("자본금"))
+      data = {
+        ...data,
+        capital_stock:
+          checkedIndicators.get("자본금")[0] +
+          "_" +
+          checkedIndicators.get("자본금")[1],
+      };
+    setFilterData(data);
+    console.log(!Object.keys(data).length);
+  };
+
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>
-      <div className={"bg-white rounded-lg p-5 my-h-80 shadow-lg"}>
+      <div className={"bg-white rounded-lg p-5 shadow-lg"}>
         <div className="flex flex-row justify-start my-5">
           {sessionStorage.access_token && (
             <div className="">
@@ -429,8 +455,8 @@ export default function StockItemList() {
             </div>
           </div>
         </div>
-        <div className="border-collapse w-full text-center my-8">
-          <ul>
+        <div className="border-collapse overflow-x-scroll text-center my-8">
+          <ul className="min-w-[1200px]">
             <li className="grid grid-cols-12 h-12 bg-slate-100">
               <div className="col-span-1 my-auto grid grid-cols-2">
                 <p className="col-span-1">
@@ -718,6 +744,7 @@ export default function StockItemList() {
                   className="px-3 py-1 bg-primary hover:bg-active duration-300 text-gray-200 rounded"
                   onClick={() => {
                     toggleModal();
+                    inputFilter();
                   }}
                 >
                   확인
