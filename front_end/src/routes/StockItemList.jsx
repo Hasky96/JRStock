@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStockItemList, addInterest } from "../api/stock";
 import Pagenation from "../components/Pagenation";
-import ListHeader from "../components/ListHeader";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
@@ -18,65 +17,73 @@ export default function StockItemList() {
   const [checkedList, setcheckedList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
-  const pageSize = 10;
   const [stocks, setStocks] = useState([]);
   const [sortBy, setSortBy] = useState("-market_cap");
-  // const tag = {
-  //   현재가: "current_price",
-  //   "변동률(전일대비)": "chages_ratio",
-  //   거래량: "volume",
-  //   시가: "start_price",
-  //   고가: "high_price",
-  //   저가: "low_price",
-  //   시가총액: "market_cap",
-  // };
+  const [search, setSearch] = useState("");
+  const [timer, setTimer] = useState(null);
+  const [filterData, setFilterData] = useState({});
+  const pageSize = 10;
+
+  // 선택된 필터 지표
+  const [checkedIndicators, setCheckedIndicators] = useState(new Map());
+
+  // filter on/off
+  const [filterToggle, setFilterToggle] = useState(false);
+
+  const clickFilterToggle = (toggle) => {
+    setFilterToggle(toggle);
+    setPageNo(1);
+  };
 
   // 주식 종목 초기화
   const init = async () => {
-    const res = await getStockItemList({
-      page: 1,
-      size: pageSize,
-      sort: sortBy,
-    });
-    setStocks(res.data.results);
-    setTotalCount(res.data.count);
+    if (filterToggle) {
+      const res = await getStockItemList({
+        page: pageNo,
+        size: pageSize,
+        sort: sortBy,
+        company_name: search,
+        filterData,
+      });
+      setStocks(res.data.results);
+      setTotalCount(res.data.count);
+    } else {
+      const res = await getStockItemList({
+        page: pageNo,
+        size: pageSize,
+        sort: sortBy,
+        company_name: search,
+      });
+      setStocks(res.data.results);
+      setTotalCount(res.data.count);
+    }
   };
 
   useEffect(() => {
     init();
-  }, [sortBy]);
+  }, [sortBy, search, filterData, filterToggle, pageNo]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    const res = await getStockItemList({ page: 1, size: pageSize });
-    setStocks(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const res = await getStockItemList({ page: pageNo - 1, size: pageSize });
-    setStocks(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const res = await getStockItemList({ page: pageNo + 1, size: pageSize });
-    setStocks(res.data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const res = await getStockItemList({ page: lastPageNum, size: pageSize });
-    setStocks(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const res = await getStockItemList({ page: num, size: pageSize });
-    setStocks(res.data.results);
   };
 
   // 주식 데이터로 html 리스트를 만듬
@@ -237,18 +244,14 @@ export default function StockItemList() {
     navigate({ pathname: `${id}/detail` });
   };
 
-  const onClickFilter = (filter) => {
-    console.log(filter);
-    // 필터 state를 filter 로 변경
-    // 전반적인 notice item 검색 api에 filter 조건 추가
-    // pageNo 1로 초기화
-  };
-
+  // 검색
   const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      setPageNo(1);
+      setSearch(word);
+    }, 500);
+    setTimer(newTimer);
   };
 
   // 관심 종목 추가
@@ -274,20 +277,50 @@ export default function StockItemList() {
 
   // 필터 지표 초기 설정
   const indicatorInfo = new Map([
-    ["PER", [0, 100]],
-    ["매출액", [-100, 100]],
-    ["PSR", [-100, 100]],
-    ["PBR", [-100, 100]],
-    ["순이익율", [-100, 100]],
-    ["200일 이동평균", [-100, 100]],
-    ["50일 이동평균", [-100, 100]],
-    ["A", [0, 100]],
-    ["B", [-100, 100]],
-    ["C", [-100, 100]],
-    ["D", [-100, 100]],
-    ["E", [-100, 100]],
-    ["F", [-100, 100]],
+    ["액면가", [0, 5000]],
+    ["자본금", [0, 50000]],
+    ["상장주식수", [0, 6000000]],
+    ["신용비율", [0, 11]],
+    ["연중최고", [0, 600000]],
+    ["연중최저", [-500000, 10000]],
+    ["시가총액", [0, 5000000]],
+    ["외인소진율", [0, 100]],
+    ["대용가", [0, 1000000]],
+    ["PER", [0, 30000]],
+    ["EPS", [-300000, 200000]],
+    ["ROE", [0, 1000]],
+    ["PBR", [-1000, 20000]],
+    ["EV", [-8000, 5000]],
+    ["BPS", [-300000, 4000000]],
+    ["매출액", [0, 3000000]],
+    ["영업이익", [-30000, 600000]],
+    ["당기순이익", [-30000, 400000]],
+    ["유통주식", [0, 5000000]],
+    ["유통비율", [0, 100]],
   ]);
+
+  const tag = {
+    액면가: "face_value",
+    자본금: "capital_stock",
+    상장주식수: "number_of_listings",
+    신용비율: "credit_rate",
+    연중최고: "year_high_price",
+    연중최저: "year_low_price",
+    시가총액: "market_cap",
+    외인소진율: "foreigner_percent",
+    대용가: "substitute_price",
+    PER: "per",
+    EPS: "eps",
+    ROE: "roe",
+    PBR: "pbr",
+    EV: "ev",
+    BPS: "bps",
+    매출액: "sales_revenue",
+    영업이익: "operating_income",
+    당기순이익: "net_income",
+    유통주식: "shares_outstanding",
+    유통비율: "shares_outstanding_rate",
+  };
 
   // 모달 노출 여부
   const [isShowModal, setShowModal] = useState(false);
@@ -295,16 +328,173 @@ export default function StockItemList() {
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
-
-  // 선택된 필터 지표
-  const [checkedIndicators, setCheckedIndicators] = useState(new Map());
-
-  // filter on/off
-  const [filterToggle, setFilterToggle] = useState(false);
+  // 필터 데이터 가공
+  const inputFilter = () => {
+    setPageNo(1);
+    let data = {};
+    for (const select of checkedIndicators) {
+      if (checkedIndicators.get(select[0]))
+        data[tag[select[0]]] =
+          checkedIndicators.get(select[0])[0] +
+          "_" +
+          checkedIndicators.get(select[0])[1];
+    }
+    // if (checkedIndicators.get("자본금"))
+    //   data = {
+    //     ...data,
+    //     capital_stock:
+    //       checkedIndicators.get("자본금")[0] +
+    //       "_" +
+    //       checkedIndicators.get("자본금")[1],
+    //   };
+    // if (checkedIndicators.get("상장주식수"))
+    //   data = {
+    //     ...data,
+    //     number_of_listings:
+    //       checkedIndicators.get("상장주식수")[0] +
+    //       "_" +
+    //       checkedIndicators.get("상장주식수")[1],
+    //   };
+    // if (checkedIndicators.get("신용비율"))
+    //   data = {
+    //     ...data,
+    //     credit_rate:
+    //       checkedIndicators.get("신용비율")[0] +
+    //       "_" +
+    //       checkedIndicators.get("신용비율")[1],
+    //   };
+    // if (checkedIndicators.get("연중최고"))
+    //   data = {
+    //     ...data,
+    //     year_high_price:
+    //       checkedIndicators.get("연중최고")[0] +
+    //       "_" +
+    //       checkedIndicators.get("연중최고")[1],
+    //   };
+    // if (checkedIndicators.get("연중최저"))
+    //   data = {
+    //     ...data,
+    //     year_low_price:
+    //       checkedIndicators.get("연중최저")[0] +
+    //       "_" +
+    //       checkedIndicators.get("연중최저")[1],
+    //   };
+    // if (checkedIndicators.get("시가총액"))
+    //   data = {
+    //     ...data,
+    //     market_cap:
+    //       checkedIndicators.get("시가총액")[0] +
+    //       "_" +
+    //       checkedIndicators.get("시가총액")[1],
+    //   };
+    // if (checkedIndicators.get("외인소진율"))
+    //   data = {
+    //     ...data,
+    //     foreigner_percent:
+    //       checkedIndicators.get("외인소진율")[0] +
+    //       "_" +
+    //       checkedIndicators.get("외인소진율")[1],
+    //   };
+    // if (checkedIndicators.get("대용가"))
+    //   data = {
+    //     ...data,
+    //     substitute_price:
+    //       checkedIndicators.get("대용가")[0] +
+    //       "_" +
+    //       checkedIndicators.get("대용가")[1],
+    //   };
+    // if (checkedIndicators.get("PER"))
+    //   data = {
+    //     ...data,
+    //     per:
+    //       checkedIndicators.get("PER")[0] +
+    //       "_" +
+    //       checkedIndicators.get("PER")[1],
+    //   };
+    // if (checkedIndicators.get("EPS"))
+    //   data = {
+    //     ...data,
+    //     eps:
+    //       checkedIndicators.get("EPS")[0] +
+    //       "_" +
+    //       checkedIndicators.get("EPS")[1],
+    //   };
+    // if (checkedIndicators.get("ROE"))
+    //   data = {
+    //     ...data,
+    //     roe:
+    //       checkedIndicators.get("ROE")[0] +
+    //       "_" +
+    //       checkedIndicators.get("ROE")[1],
+    //   };
+    // if (checkedIndicators.get("PBR"))
+    //   data = {
+    //     ...data,
+    //     pbr:
+    //       checkedIndicators.get("PBR")[0] +
+    //       "_" +
+    //       checkedIndicators.get("PBR")[1],
+    //   };
+    // if (checkedIndicators.get("EV"))
+    //   data = {
+    //     ...data,
+    //     ev:
+    //       checkedIndicators.get("EV")[0] + "_" + checkedIndicators.get("EV")[1],
+    //   };
+    // if (checkedIndicators.get("BPS"))
+    //   data = {
+    //     ...data,
+    //     bps:
+    //       checkedIndicators.get("BPS")[0] +
+    //       "_" +
+    //       checkedIndicators.get("BPS")[1],
+    //   };
+    // if (checkedIndicators.get("매출액"))
+    //   data = {
+    //     ...data,
+    //     sales_revenue:
+    //       checkedIndicators.get("매출액")[0] +
+    //       "_" +
+    //       checkedIndicators.get("매출액")[1],
+    //   };
+    // if (checkedIndicators.get("영업이익"))
+    //   data = {
+    //     ...data,
+    //     operating_income:
+    //       checkedIndicators.get("영업이익")[0] +
+    //       "_" +
+    //       checkedIndicators.get("영업이익")[1],
+    //   };
+    // if (checkedIndicators.get("당기순이익"))
+    //   data = {
+    //     ...data,
+    //     net_income:
+    //       checkedIndicators.get("당기순이익")[0] +
+    //       "_" +
+    //       checkedIndicators.get("당기순이익")[1],
+    //   };
+    // if (checkedIndicators.get("유통주식"))
+    //   data = {
+    //     ...data,
+    //     shares_outstanding:
+    //       checkedIndicators.get("유통주식")[0] +
+    //       "_" +
+    //       checkedIndicators.get("유통주식")[1],
+    //   };
+    // if (checkedIndicators.get("유통비율"))
+    //   data = {
+    //     ...data,
+    //     shares_outstanding_rate:
+    //       checkedIndicators.get("유통비율")[0] +
+    //       "_" +
+    //       checkedIndicators.get("유통비율")[1],
+    //   };
+    setFilterData(data);
+  };
 
   return (
     <div className={"my-pt-28 my-pl-10 my-pr-10"}>
-      <div className={"bg-white rounded-lg p-5 my-h-80 shadow-lg"}>
+      <div className={"bg-white rounded-lg p-5 shadow-lg"}>
         <div className="flex flex-row justify-start my-5">
           {sessionStorage.access_token && (
             <div className="">
@@ -379,17 +569,44 @@ export default function StockItemList() {
             필터
           </button>
           {/* on/off 버튼 */}
-          <OnOffToggle toggle={filterToggle} setToggle={setFilterToggle} />
-          <div className="w-full">
-            <ListHeader
-              optionKind={["aaa", "bbb", "ccc"]}
-              onClickFilter={onClickFilter}
-              onSearch={onSearch}
-            />
+          <OnOffToggle toggle={filterToggle} setToggle={clickFilterToggle} />
+          <div className="w-full flex justify-end">
+            {/* 검색창  */}
+            <div className="w-1/3">
+              <div className="relative">
+                {/* 검색 아이콘 */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 absolute left-2 top-2.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#d1d5db"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                {/* 검색창 */}
+                <input
+                  type="text"
+                  name="price"
+                  id="price"
+                  className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                  placeholder="Search..."
+                  onChange={(e) => {
+                    e.preventDefault();
+                    onSearch(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
-        <div className="border-collapse w-full text-center my-8">
-          <ul>
+        <div className="border-collapse overflow-x-scroll text-center my-8">
+          <ul className="min-w-[1200px]">
             <li className="grid grid-cols-12 h-12 bg-slate-100">
               <div className="col-span-1 my-auto grid grid-cols-2">
                 <p className="col-span-1">
@@ -677,6 +894,7 @@ export default function StockItemList() {
                   className="px-3 py-1 bg-primary hover:bg-active duration-300 text-gray-200 rounded"
                   onClick={() => {
                     toggleModal();
+                    inputFilter();
                   }}
                 >
                   확인

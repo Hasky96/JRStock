@@ -222,7 +222,7 @@ export default function Market() {
                 kospiTab === "정보" ? "" : "hidden"
               )}
             >
-              <div className="col-span-2 grid grid-cols-1">
+              <div className="xl:col-span-2 col-span-3 grid grid-cols-1">
                 <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
                   <div className="grid row-span-5">
                     {period.substring(0, 1) === "1" && (
@@ -245,7 +245,7 @@ export default function Market() {
                   <div className="switcher row-span-1 pt-8">{btnList()}</div>
                 </div>
               </div>
-              <div className="grid grid-cols-1">
+              <div className="grid grid-cols-1 xl:col-span-1 col-span-3">
                 <Card info={kospiInfo} />
               </div>
             </div>
@@ -261,11 +261,11 @@ export default function Market() {
           {data && (
             <div
               className={classNames(
-                "grid grid-cols-2 h-96",
+                "grid grid-cols-3",
                 kosdaqTab === "정보" ? "" : "hidden"
               )}
             >
-              <div className="grid grid-cols-1">
+              <div className="xl:col-span-2 col-span-3 grid grid-cols-1">
                 <div className="grid border-2 rounded-xl m-2 p-3 grid-rows-6">
                   <div className="grid row-span-5">
                     {period.substring(0, 1) === "1" && (
@@ -288,7 +288,7 @@ export default function Market() {
                   <div className="switcher row-span-1 pt-8">{btnList()}</div>
                 </div>
               </div>
-              <div className="grid grid-cols-1">
+              <div className="grid grid-cols-1 xl:col-span-1 col-span-3">
                 <Card info={kosdaqInfo} />
               </div>
             </div>
