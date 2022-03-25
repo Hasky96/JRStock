@@ -21,6 +21,7 @@ export default function StockItemList() {
   const [stocks, setStocks] = useState([]);
   const [sortBy, setSortBy] = useState("-market_cap");
   const [search, setSearch] = useState("");
+  const [timer, setTimer] = useState(null);
 
   // 주식 종목 초기화
   const init = async () => {
@@ -28,6 +29,7 @@ export default function StockItemList() {
       page: pageNo,
       size: pageSize,
       sort: sortBy,
+      company_name: search,
     });
     setStocks(res.data.results);
     setTotalCount(res.data.count);
@@ -35,7 +37,7 @@ export default function StockItemList() {
 
   useEffect(() => {
     init();
-  }, [sortBy]);
+  }, [sortBy, search]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
@@ -44,6 +46,7 @@ export default function StockItemList() {
       page: 1,
       size: pageSize,
       sort: sortBy,
+      company_name: search,
     });
     setStocks(res.data.results);
   };
@@ -54,6 +57,7 @@ export default function StockItemList() {
       page: pageNo - 1,
       size: pageSize,
       sort: sortBy,
+      company_name: search,
     });
     setStocks(res.data.results);
   };
@@ -64,6 +68,7 @@ export default function StockItemList() {
       page: pageNo + 1,
       size: pageSize,
       sort: sortBy,
+      company_name: search,
     });
     setStocks(res.data.results);
   };
@@ -76,6 +81,7 @@ export default function StockItemList() {
       page: lastPageNum,
       size: pageSize,
       sort: sortBy,
+      company_name: search,
     });
     setStocks(res.data.results);
   };
@@ -86,6 +92,7 @@ export default function StockItemList() {
       page: num,
       size: pageSize,
       sort: sortBy,
+      company_name: search,
     });
     setStocks(res.data.results);
   };
@@ -248,12 +255,14 @@ export default function StockItemList() {
     navigate({ pathname: `${id}/detail` });
   };
 
+  // 검색
   const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
-    // setPageNo(1);
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      setPageNo(1);
+      setSearch(word);
+    }, 500);
+    setTimer(newTimer);
   };
 
   // 관심 종목 추가
