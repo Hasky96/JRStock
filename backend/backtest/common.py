@@ -43,32 +43,6 @@ def get_day_stock(code_number, start_date, end_date):
     
     return pd.DataFrame(stock_list, columns=col_name) 
 
-def get_current_stock_price(code_number=None):
-    """ 최신 주식 가격
-
-    Args:
-        없는 경우 모든 주식
-        code_number (String) : 주식 종목 1개 코드 '005930'
-    Returns:
-        최신 주식별 가격 (Dict) {'005930': 71000, '005380': 205000, ...}
-        주식 종목 1개 가격 (Integer) 71000
-    """
-
-
-    if (code_number!=None):     # 단일종목 가격
-        day_stock_list = DayStock.objects.filter(code_number=code_number).order_by('-date')
-        return day_stock_list[0].current_price
-
-    # 모든 종목 가격
-    # select * from day_stock where date=(select max(date) from day_stock); 
-    current_date=DayStock.objects.aggregate(Max('date'))['date__max']   # DB에 저장된 마지막 날짜 {'date__max': '2022-03-21'}
-    day_stock_list = DayStock.objects.filter(date=current_date)
-    current_stock_price={}
-    for row in list(day_stock_list):
-        current_stock_price[row.code_number]=float(row.current_price)
-    return current_stock_price
-
-
 def buy(account, code, price, percent, date, option):
     """주식구매 함수
 
@@ -104,6 +78,8 @@ def buy(account, code, price, percent, date, option):
         
     # 현재 자산 계산
     current_asset = int(account['balance'])
+    
+    # 한종목만 하면 이부분 변경해야함 =====
     for code_num in account['stocks'].keys():
         cur_price = get_stock_price(code_num, date)
         current_asset += (int(cur_price) * int(account['stocks'][code_num]['amount']))
@@ -196,9 +172,9 @@ def get_kospi_price_by_date(date):
     
     return kospi_price
 
-def init_result_data(account, start_date):
+def init_result_data(account):
     result_data = {
-        'year' : start_date, # 연도 저장
+        'year' : account['start_date'][:4], # 연도 저장
         'year_start_price' : account['balance'], # 시작가격
         'year_earn_rate' : 0.0, # 연평균 수익률
         'year_cnt' : 0, # 총 연도 수
@@ -206,9 +182,10 @@ def init_result_data(account, start_date):
         'max_date' : None, # 최고 수익 날짜
         'min_earn' : account['balance'], # 최저 수익
         'min_earn_after_max' : 0, # 최고 수익 이후 최저 수익
-        'start_kospi_price' : get_kospi_price_by_date(start_date), # 시작날짜 코스피 가격
+        'start_kospi_price' : get_kospi_price_by_date(account['start_date']), # 시작날짜 코스피 가격
+        'end_kospi_price' : get_kospi_price_by_date(account['end_date']), # 종료날자 코스피 가격
     }
-    
+    print(result_data)
     return result_data
 
 # 하루마다 계산할 것
@@ -233,15 +210,21 @@ def day_calculate(account, result_data, stock):
     day_earn = (result_data['current_asset'] - account['pre_price'])
     day_earn_rate = day_earn / account['pre_price']
     day_earn_rate = round(day_earn_rate * 100, 3)
+    account['pre_price'] = result_data['current_asset']
+    
+    # 연도가 바뀌었다면
+    if result_data['year'] != stock['date'][:4]:
+        result_data = year_calculate(account, result_data)
+        result_data['year'] = stock['date'][:4] # 연도 변경
+    
     # 이부분 DB에 넣어주기
     print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
     return result_data
 
-def year_calculate(account, result_data, stock):
+def year_calculate(account, result_data):
     print(result_data['year'] + '년 평균' + str((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price']))
     
     result_data['year_cnt'] += 1
-    result_data['year'] = stock['date'][:4]
     result_data['year_earn_rate'] = round((result_data['year_earn_rate'] + ((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price'])) / result_data['year_cnt'] * 100, 3)
     result_data['year_start_price'] = result_data['current_asset']
     print('연평균' + str(result_data['year_earn_rate']))
@@ -249,6 +232,9 @@ def year_calculate(account, result_data, stock):
     return result_data
 
 def end_calculate(account, result_data):
+    # 마지막 날을 기준으로 마지막 연도 평균 계산
+    result_data = year_calculate(account, result_data)
+    
     result_data['my_profit_loss'] = int(account['pre_price']) - int(account['start_price'])
     result_data['my_final_rate'] = round(result_data['my_profit_loss'] / int(account['start_price']) * 100, 3)
     result_data['market_rate'] = round((float(result_data['end_kospi_price']) - float(result_data['start_kospi_price'])) / float(result_data['start_kospi_price']) * 100, 3)

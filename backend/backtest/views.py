@@ -31,7 +31,9 @@ def test_start(request):
     account = {
         "balance":start_price,
         "start_price":start_price,
-        "pre_price":start_price, 
+        "pre_price":start_price,
+        "start_date":start_date,
+        "end_date":end_date, 
         "stocks":{
             # "005930":{
             #     "amount":100,
@@ -44,7 +46,7 @@ def test_start(request):
         high_index = request.data.get('high_index')
         low_index = request.data.get('low_index')
         rsi_period = request.data.get('rsi_period')
-        algorithm.RSI_buy_sell(day_stocks, int(rsi_period), int(high_index), int(low_index), account, int(buy_percent), int(sell_percent), start_date)
+        algorithm.RSI_buy_sell(day_stocks, int(rsi_period), int(high_index), int(low_index), account, int(buy_percent), int(sell_percent))
     
     
     

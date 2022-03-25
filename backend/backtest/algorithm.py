@@ -29,18 +29,14 @@ def RSI(stocks, period, column='current_price'):
     return stocks
         
 # RSI지수가 high_index(과매수 지점) 이상이면 매도, low_index 이하면 매수
-def RSI_buy_sell(stocks, rsi_period, high_index=70, low_index=30, account={}, buy_percent=50, sell_percent=50, start_date=''):
+def RSI_buy_sell(stocks, rsi_period, high_index=70, low_index=30, account={}, buy_percent=50, sell_percent=50):
     print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
     stocks = RSI(stocks, rsi_period)
 
     # =====필요한 결과값들 init
-    result_data = common.init_result_data(account, start_date=start_date)
+    result_data = common.init_result_data(account)
 
     for idx, row in stocks.iterrows():          
-        # 마지막날 코스피 가격 받아오기==== 이것도 init에서 처리될듯
-        if idx == len(stocks) - 1:
-            result_data['end_kospi_price'] = common.get_kospi_price_by_date(row['date'])
-        
         if row['RSI']>=high_index:
             account=common.sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
         elif row['RSI']<=low_index:
@@ -48,11 +44,7 @@ def RSI_buy_sell(stocks, rsi_period, high_index=70, low_index=30, account={}, bu
         
         # =====매일마다 계산
         result_data = common.day_calculate(account, result_data, row)
-        account['pre_price'] = result_data['current_asset']
         
-        # 연도가 끝나는 날과 종료시에 연평균 계산
-        if result_data['year'] != row['date'][:4] or idx == len(stocks) - 1:
-            result_data = common.year_calculate(account, result_data, row)
     
     # 최종 계산
     result_data = common.end_calculate(account, result_data)
