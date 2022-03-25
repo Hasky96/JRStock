@@ -4,10 +4,43 @@ import ListHeader from "../components/ListHeader";
 import PageContainer from "../components/PageContainer";
 import Pagenation from "../components/Pagenation";
 import { getItems } from "../api/notice";
+import Tooltip from "../components/commons/Tooltip";
+
+const contents = [
+  {
+    title: "제목1",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content1",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목2",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content2",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목3",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content3",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목4",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content4",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목5",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content5",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+];
 
 export default function Announcement() {
   const navigate = useNavigate();
-  const [checkedList, setcheckedList] = useState([]);
   const [noticeItems, setNoticeItems] = useState([]); // 공지사항 데이터
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
@@ -25,28 +58,6 @@ export default function Announcement() {
   useEffect(() => {
     init(pageNo, 10);
   }, []);
-
-  // 전체 체크 클릭 시
-  const onCheckedAll = (e) => {
-    if (e.target.checked) {
-      const checkedListArray = [];
-
-      noticeItems.forEach((notice) => checkedListArray.push(notice.id));
-
-      setcheckedList(checkedListArray);
-    } else {
-      setcheckedList([]);
-    }
-  };
-
-  // 개별 체크 클릭 시
-  const onChecked = (id, e) => {
-    if (e.target.checked) {
-      setcheckedList([...checkedList, id]);
-    } else {
-      setcheckedList(checkedList.filter((el) => el !== id));
-    }
-  };
 
   // 종목 클릭 시 해당 종목 디테일 페이지로
   const goDetailPage = (id) => {
@@ -93,28 +104,10 @@ export default function Announcement() {
       list.push(
         <li
           key={element.id}
-          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer border-b xl:text-base text-sm"
         >
-          <div className="col-span-1 my-auto grid grid-cols-2">
-            <p className="col-span-1">
-              <input
-                id="total-notice"
-                name="total-notice"
-                type="checkbox"
-                className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
-                onChange={onChecked.bind(this, element.id)}
-                checked={checkedList.includes(element.id) ? true : false}
-              />
-            </p>
-            <p
-              className="col-span-1"
-              onClick={goDetailPage.bind(this, element.id)}
-            >
-              {element.id}
-            </p>
-          </div>
           <p
-            className="col-span-5 my-auto"
+            className="col-span-6 my-auto"
             onClick={goDetailPage.bind(this, element.id)}
           >
             {element.title}
@@ -158,29 +151,10 @@ export default function Announcement() {
         onClickFilter={onClickFilter}
         onSearch={onSearch}
       />
-      <div className="border-collapse w-full text-center my-10">
+      <div className="border-collapse w-full text-center my-10 xl:text-base text-sm">
         <ul>
           <li className="grid grid-cols-12 h-12 bg-slate-100">
-            <div className="col-span-1 my-auto grid grid-cols-2">
-              <p className="col-span-1">
-                <input
-                  id="total-notice"
-                  name="total-notice"
-                  type="checkbox"
-                  className="h-4 w-4 text-amber-300 focus:ring-amber-900 border-gray-300 rounded"
-                  onChange={onCheckedAll}
-                  checked={
-                    checkedList.length === 0
-                      ? false
-                      : checkedList.length === noticeItems.length
-                      ? true
-                      : false
-                  }
-                />
-              </p>
-              <p className="col-span-1">No</p>
-            </div>
-            <p className="col-span-5 my-auto">제목</p>
+            <p className="col-span-6 my-auto">제목</p>
             <p className="col-span-3 my-auto">작성자</p>
             <p className="col-span-3 my-auto">등록일</p>
           </li>
@@ -197,6 +171,8 @@ export default function Announcement() {
         onClickLast={onClickLast}
         onClickNumber={onClickNumber}
       ></Pagenation>
+
+      <Tooltip title={"공지사항"} contents={contents}></Tooltip>
     </PageContainer>
   );
 }

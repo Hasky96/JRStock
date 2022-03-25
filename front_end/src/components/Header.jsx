@@ -19,6 +19,73 @@ export default function Header({ category }) {
   const navigate = useNavigate();
   const [selectedNum, setSelectedNum] = useState(0); // 현재 선택된 검색 리스트 아이템
   const [preword, setPreword] = useState("");
+  const [timer, setTimer] = useState();
+
+  const onKeyUp = async (e) => {
+    e.preventDefault();
+
+    // 선택된 아이템 이동
+    if (e.key === "ArrowUp" && data.results) {
+      if (selectedNum > 0) setSelectedNum((cur) => cur - 1);
+      return;
+    }
+
+    if (e.key === "ArrowDown" && data.results) {
+      if (selectedNum < data.results.length - 1)
+        setSelectedNum((cur) => cur + 1);
+      return;
+    }
+
+    // 엔터 입력시 검색
+    if (e.key === "Enter" && data.results) {
+      navigate(
+        `/stock/${data.results[selectedNum].financial_info.basic_info.code_number}/detail`
+      );
+      e.target.blur();
+      return;
+    }
+
+    // 불필요한 중복 검색 방지
+    if (preword === e.target.value) return;
+    setPreword(e.target.value);
+
+    // 새로운 데이터 읽어오기
+    clearTimeout(timer);
+    const newTimer = setTimeout(async () => {
+      // 빈 입력값은 data 초기화
+      if (e.target.value === "") {
+        setData({});
+        setSelectedNum(0);
+        return;
+      }
+      const result = await getStockItemList2({
+        page: "1",
+        size: "5",
+        company_name: e.target.value,
+      })
+        .then((res) => res.data)
+        .catch((err) => console.log(err));
+
+      // 읽어온 데이터 state 저장
+      if (result) {
+        setSelectedNum(0); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
+        setData(result);
+      }
+    }, 500);
+    setTimer(newTimer);
+  };
+
+  const onBlur = (e) => {
+    const el = document.getElementById("search-result");
+    // 리스트 아이템이 눌렸을 경우
+    if (!e.relatedTarget?.classList.contains("result-item"))
+      el.classList.toggle("hidden");
+  };
+
+  const onFocus = () => {
+    const el = document.getElementById("search-result");
+    el.classList.toggle("hidden");
+  };
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -123,71 +190,10 @@ export default function Header({ category }) {
                 autoComplete="off"
                 className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
                 placeholder="Search..."
-                onKeyUp={async (e) => {
-                  e.preventDefault();
-                  console.log(e.key);
-                  console.log(`(${e.target.value})`);
-
-                  // 선택된 아이템 이동
-                  if (e.key === "ArrowUp" && data.results) {
-                    if (selectedNum > 0) setSelectedNum((cur) => cur - 1);
-                    return;
-                  }
-
-                  if (e.key === "ArrowDown" && data.results) {
-                    if (selectedNum < data.results.length - 1)
-                      setSelectedNum((cur) => cur + 1);
-                    return;
-                  }
-
-                  // 엔터 입력시 검색
-                  if (e.key === "Enter" && data.results) {
-                    navigate(
-                      `/stock/${data.results[selectedNum].financial_info.basic_info.code_number}/detail`
-                    );
-                    e.target.blur();
-                    return;
-                  }
-
-                  // 불필요한 중복 검색 방지
-                  if (preword === e.target.value) return;
-                  setPreword(e.target.value);
-
-                  // 빈 입력값은 data 초기화
-                  if (e.target.value === "") {
-                    setData({});
-                    setSelectedNum(0);
-                    return;
-                  }
-
-                  // 새로운 데이터 읽어오기
-                  const result = await getStockItemList({
-                    page: "1",
-                    size: "5",
-                    company_name: e.target.value,
-                  })
-                    .then((res) => res.data)
-                    .catch((err) => console.log(err));
-
-                  // 읽어온 데이터 state 저장
-                  if (result) {
-                    setSelectedNum(0); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
-                    setData(result);
-                  }
-                }}
+                onKeyUp={onKeyUp}
                 // 검색창 포커스 사라졌을 때
-                onBlur={(e) => {
-                  const el = document.getElementById("search-result");
-                  console.log(e.relatedTarget);
-                  // 리스트 아이템이 눌렸을 경우
-                  if (e.relatedTarget?.classList.contains("result-item"))
-                    console.log("yes!!");
-                  else el.classList.toggle("hidden");
-                }}
-                onFocus={() => {
-                  const el = document.getElementById("search-result");
-                  el.classList.toggle("hidden");
-                }}
+                onBlur={onBlur}
+                onFocus={onFocus}
               />
               <div
                 className="absolute top-full w-full hidden"
