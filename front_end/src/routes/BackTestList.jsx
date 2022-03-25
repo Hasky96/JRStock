@@ -123,7 +123,7 @@ export default function BackTestList() {
       <div className="flex">
         <Link to="create">
           <button
-            className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg"
+            className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300"
             // onClick={() => handleCreateButtonClick()}
           >
             <Create />

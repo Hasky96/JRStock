@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { userDetail } from "../api/user";
-import { getStockItemList2 } from "../api/stock";
+import { getStockItemList } from "../api/stock";
 import { API_MEDIA_URL } from "../config";
 
 export default function Header({ category }) {

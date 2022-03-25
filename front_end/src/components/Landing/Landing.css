@@ -43,6 +43,8 @@
 .landing-block-container .svg-container {
   max-width: 500px;
   margin: auto;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .landing-block-container h1 {
@@ -62,6 +64,11 @@
   pointer-events: none;
 }
 
+.landing-block-container .memo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .landing-block-container .memo-wrapper:last-child {
   margin-left: 10px;
 }

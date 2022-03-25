@@ -83,6 +83,11 @@ export default function UserUpdate() {
     };
   };
 
+  const handleImageDelete = () => {
+    handleValueChange("profile_img_preview", "");
+    handleValueChange("profile_img", "");
+  };
+
   const handleSubmit = async () => {
     if (!validPassword.test(values.password)) {
       alert("비밀번호가 유효하지 않습니다!");
@@ -203,13 +208,13 @@ export default function UserUpdate() {
                 <>
                   {values.profile_img ? (
                     <img
-                      className="rounded-full w-36"
+                      className="rounded-full w-20"
                       src={API_MEDIA_URL + `${values.profile_img}`}
                       alt="profile_img"
                     />
                   ) : (
                     <img
-                      className="rounded-full w-36"
+                      className="rounded-full w-20"
                       src={values.profile_img_url}
                       alt="profile_img_url"
                     />
@@ -218,10 +223,17 @@ export default function UserUpdate() {
               )}
               <label
                 htmlFor="profile_img"
-                className="ml-3 w-30 h-10 rounded-lg shadow-lg p-2 text-primary border hover:bg-active hover:text-white duration-300 font-bold"
+                className="ml-3 w-30 h-10 rounded-lg shadow-lg p-2 text-primary border hover:bg-active hover:text-white duration-300 font-bold hover:cursor-pointer"
               >
                 이미지 변경
               </label>
+              <button
+                type="button"
+                onClick={() => handleImageDelete()}
+                className="ml-3 w-30 h-10 rounded-lg shadow-lg p-2 text-primary border hover:bg-active hover:text-white duration-300 font-bold"
+              >
+                삭제
+              </button>
               <input
                 id="profile_img"
                 name="profile_img"
