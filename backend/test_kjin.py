@@ -1,14 +1,18 @@
-from bt_common_yw import *
+from bt_common import *
+from datetime import datetime
 
-current_stock_price=get_current_stock_price()   # {'005930': 71000}
+start_date = '2019-12-02'
+end_date = '2020-03-20'
+current_stock_price=get_stock_price('005380', end_date)   # {'005930': 71000}
 # day_stocks=get_day_stock('005380', '1995-05-02', '2022-03-22')
-day_stocks=get_day_stock('005380', '2015-05-02', '2022-03-22')
+day_stocks=get_day_stock('005380', start_date, end_date)
 # day_stocks=get_day_stock('005930', '2022-01-02', '2022-03-01')
 # print(get_current_stock_price('005930'))
 
 account = {
     "balance":1000000,
-    "start_price":1000000, 
+    "start_price":1000000,
+    "pre_price":1000000, 
     "stocks":{
         # "005930":{
         #     "amount":100,
@@ -83,15 +87,92 @@ def RSI(stocks, period=14, column='current_price'):
 
     return stocks
 
-
+        # pre_price = None
+        # while pre_price != None:
+        #     yesterday = datetime.strptime(row['date'], '%Y-%m-%d') - timedelta(days=1)
+        #     yesterday = yesterday.strftime('%Y-%m-%d')
+        #     pre_price = get_stock_price(row['code_number'], yesterday)
+        
 # RSI지수가 high_index 이상이면 매도, low_index 이하면 매수
 def RSI_buy_sell(stocks, high_index=70, low_index=30, account={}, buy_percent=50, sell_percent=50):
     print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
+    year = '0' # 연도 저장
+    year_start_price = 0 # 시작가격
+    year_earn_rate = 0.0 # 연평균 수익률
+    year_cnt = 0 # 총 연도 수
+    max_earn = account['balance']; # 최고 수익
+    max_date = None # 최고 수익 날짜
+    min_earn = account['balance']; # 최저 수익
+    min_earn_after_max = 0
+    start_kospi_price = None # 시작 코스피 가격
+    cnt = 0
+    while start_kospi_price == None:
+        cnt += 1
+        yesterday = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=cnt)
+        yesterday = yesterday.strftime('%Y-%m-%d')
+        start_kospi_price = get_stock_price('kospi', yesterday)
+    
     for idx, row in stocks.iterrows():
+        # 시작날 연도랑 시작가격 받아오기
+        if idx == 0:
+            year = row['date'][:4]
+            year_start_price = account['balance']
+            
+        # 마지막날 코스피 가격 받아오기
+        if idx == len(stocks) - 1:
+            cnt = 0   
+            end_kospi_price = None
+            while end_kospi_price == None:
+                cnt += 1
+                yesterday = datetime.strptime(row['date'], '%Y-%m-%d') - timedelta(days=cnt)
+                yesterday = yesterday.strftime('%Y-%m-%d')
+                end_kospi_price = get_stock_price('kospi', yesterday)
+        
         if row['RSI']>=high_index:
             account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
         elif row['RSI']<=low_index:
             account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적 강도 지수")
+        
+        # 팔거나 구매 이후에 일수익률 계산    
+        current_asset = int(account['balance'])
+        for code_num in account['stocks'].keys():
+            cur_price = get_stock_price(code_num, row['date'])
+            current_asset += (int(cur_price) * int(account['stocks'][code_num]['amount']))
+        
+        if max_earn < current_asset:
+            max_earn = current_asset
+            max_date = datetime.strptime(row['date'], '%Y-%m-%d')
+            
+        if min_earn > current_asset:
+            min_earn = current_asset
+            min_date = datetime.strptime(row['date'], '%Y-%m-%d')
+            if max_date != None and max_date < min_date:
+                min_earn_after_max = current_asset
+                
+        min_earn = min(min_earn, current_asset)
+        day_earn = (current_asset - account['pre_price'])
+        day_earn_rate = day_earn / account['pre_price']
+        day_earn_rate = round(day_earn_rate * 100, 3)
+        
+        # print('일수익률' + str(day_earn_rate) + '|| 일손익' + str(day_earn) + '|| 현재 자산' + str(current_asset))
+        
+        # 연도가 끝나는 날과 종료시에 연평균 계산
+        account['pre_price'] = current_asset
+        if year != row['date'][:4] or idx == len(stocks) - 1:
+            year_cnt += 1
+            print(year + '년 평균' + str((current_asset - year_start_price) / year_start_price))
+            year = row['date'][:4]
+            year_earn_rate = (year_earn_rate + ((current_asset - year_start_price) / year_start_price)) / year_cnt
+            year_start_price = current_asset
+            print('연평균' + str(round(year_earn_rate * 100, 3)))
+    
+    my_profit_loss = int(account['pre_price']) - int(account['start_price'])
+    my_final_rate = round(my_profit_loss / int(account['start_price']) * 100, 3)
+    market_rate = round((float(end_kospi_price) - float(start_kospi_price)) / float(start_kospi_price) * 100, 3)
+    alpha = round(my_final_rate - market_rate, 3)
+    mdd = round((min_earn_after_max - max_earn) / max_earn * 100, 3)
+    print('내 손익' + str(my_profit_loss) + '내 수익률' + str(my_final_rate) + '  MDD' + str(mdd))
+    print('시장 수익률' + str(market_rate) + '시장초과수익률' + str(alpha) + '최고자산' + str(max_earn) + '최저자산' + str(min_earn))
 
 
 # 단기이평선이 장기이평선을 상향돌파하면 매수, 하향돌파하면 매도
@@ -104,7 +185,7 @@ def SMA_buy_sell(stocks, short_period=5, long_period=20, account={}, buy_percent
     current_flag=0
     before_price=0
     current_price=0
-    for idx, row in stocks.iterrows():
+    for idx, row in stocks.iterrows():        
         current_price=row['current_price']
         if row['SMA_long']<row['SMA_short']:
             current_flag=1
@@ -155,7 +236,7 @@ sell_percent=50
 RSI_buy_sell(df_day_stocks, rsi_high_index, rsi_low_index, account, buy_percent, sell_percent)
 # SMA_buy_sell(df_day_stocks, sma_short_period, sma_long_period, account, buy_percent, sell_percent)
 print(account)
-print(calculate_total_account(account, current_stock_price))
+print(calculate_total_account(account, current_stock_price)) # 최신날짜 기준결과
 
 
 # 영워니 화이팅
@@ -170,7 +251,7 @@ print(calculate_total_account(account, current_stock_price))
 # 최저 수익률, 최고 수익률 : 역대 최고/최저 / 초기자금
 # 연도별 자산운영 
 
-# 최대손실폭=??? - 하석
+# 최대손실폭=((최고점이후최저점/최고점) - 1) * 100
 
 
 
