@@ -23,18 +23,6 @@ account = {
 }
 
 
-# TEST
-# key='005930'
-# print(current_stock_price[key])
-# print(account)
-# account = buy(account, "005930", 71000, 50)
-# account = buy(account, "111111", 71000, 50)
-# print(calculate_total_account(account, current_stock_price))
-# account = sell(account, "111111", 98000, 100)
-# account = sell(account, "005930", 80000, 50)
-# print(account)
-
-
 df_day_stocks=object_to_dataframe(day_stocks)   # dataframe으로 변환
 # print(df_day_stocks)
 
@@ -48,17 +36,10 @@ def EMA(stocks, period=20, column='current_price'):
 
 # 이동 평균 수렴/발산을 계산하는 함수(MACD)
 def MACD(stocks, period_long=26, period_short=12, period_signal=9, column='current_price'):
-    # 단기 지수 이평선 계산
-    short_ema=EMA(stocks, period_short, column=column)
-    
-    # 장기 지수 이평선 계산
-    long_ema=EMA(stocks, period_long, column=column)
-
-    # 이동평균 수렴/발산 계산
-    stocks['MACD']=short_ema-long_ema
-
-    # 신호선 계산
-    stocks['single_line']=EMA(stocks, period_signal, column='MACD')
+    short_ema=EMA(stocks, period_short, column=column)  # 단기 지수 이평선 계산
+    long_ema=EMA(stocks, period_long, column=column)    # 장기 지수 이평선 계산
+    stocks['MACD']=short_ema-long_ema   # 이동평균 수렴/발산 계산
+    stocks['single_line']=EMA(stocks, period_signal, column='MACD') # 신호선 계산
 
     return stocks
 
@@ -200,19 +181,25 @@ print(account)
 print(f'{calculate_total_account(account, current_stock_price):,}원')
 
 
-# 영워니 화이팅
-# 결과값 : 시작일, 종료일, 투자원금, 총손익, 최종자산, 최종수익률
-# 일평균수익률=총수익률/거래가능한 기간
-# 연평균수익률=1년씩 (최종가치-시초가치)/시초가치 년도별로 또는 연평균 -  date split해서
+# RSI지수가 high_index(과매수 지점) 이상이면 매도, low_index 이하면 매수
+def RSI_buy_sell(stocks, rsi_period, high_index=70, low_index=30, account={}, buy_percent=50, sell_percent=50):
+    print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
+    stocks = RSI(stocks, rsi_period)
 
-# 시장수익률=알파 코스피의 (현재가격-시초가격)/시초가격     
-# 종목시장수익률=알파 그 종목의 (현재가격-시초가격)/시초가격
-# 시장초과수익률 = 내꺼수익률-시장수익률
-# 역대 최고, 최저 내자산
-# 최저 수익률, 최고 수익률 : 역대 최고/최저 / 초기자금
-# 연도별 자산운영 
+    # =====필요한 결과값들 init
+    result_data = init_result_data(account)
 
-# 최대손실폭=??? - 하석
-
+    for idx, row in stocks.iterrows():          
+        if row['RSI']>=high_index:
+            account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
+        elif row['RSI']<=low_index:
+            account=buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적 강도 지수")
+        
+        # =====매일마다 계산
+        result_data = day_calculate(account, result_data, row)
+        
+    
+    # 최종 계산
+    result_data = end_calculate(account, result_data)
 
 
