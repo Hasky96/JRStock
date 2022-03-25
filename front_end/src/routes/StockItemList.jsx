@@ -27,80 +27,63 @@ export default function StockItemList() {
   // 선택된 필터 지표
   const [checkedIndicators, setCheckedIndicators] = useState(new Map());
 
+  // filter on/off
+  const [filterToggle, setFilterToggle] = useState(false);
+
+  const clickFilterToggle = (toggle) => {
+    setFilterToggle(toggle);
+    setPageNo(1);
+  };
+
   // 주식 종목 초기화
   const init = async () => {
-    console.log(filterData);
-    const res = await getStockItemList({
-      page: pageNo,
-      size: pageSize,
-      sort: sortBy,
-      company_name: search,
-      filterData,
-    });
-    setStocks(res.data.results);
-    setTotalCount(res.data.count);
+    if (filterToggle) {
+      const res = await getStockItemList({
+        page: pageNo,
+        size: pageSize,
+        sort: sortBy,
+        company_name: search,
+        filterData,
+      });
+      setStocks(res.data.results);
+      setTotalCount(res.data.count);
+    } else {
+      const res = await getStockItemList({
+        page: pageNo,
+        size: pageSize,
+        sort: sortBy,
+        company_name: search,
+      });
+      setStocks(res.data.results);
+      setTotalCount(res.data.count);
+    }
   };
 
   useEffect(() => {
     init();
-  }, [sortBy, search, filterData]);
+  }, [sortBy, search, filterData, filterToggle, pageNo]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    const res = await getStockItemList({
-      page: 1,
-      size: pageSize,
-      sort: sortBy,
-      company_name: search,
-    });
-    setStocks(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const res = await getStockItemList({
-      page: pageNo - 1,
-      size: pageSize,
-      sort: sortBy,
-      company_name: search,
-    });
-    setStocks(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const res = await getStockItemList({
-      page: pageNo + 1,
-      size: pageSize,
-      sort: sortBy,
-      company_name: search,
-    });
-    setStocks(res.data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const res = await getStockItemList({
-      page: lastPageNum,
-      size: pageSize,
-      sort: sortBy,
-      company_name: search,
-    });
-    setStocks(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const res = await getStockItemList({
-      page: num,
-      size: pageSize,
-      sort: sortBy,
-      company_name: search,
-    });
-    setStocks(res.data.results);
   };
 
   // 주식 데이터로 html 리스트를 만듬
@@ -295,19 +278,49 @@ export default function StockItemList() {
   // 필터 지표 초기 설정
   const indicatorInfo = new Map([
     ["액면가", [0, 5000]],
-    ["자본금", [0, 43427]],
-    ["상장주식수", [0, 5969783]],
-    ["PBR", [-100, 100]],
-    ["순이익율", [-100, 100]],
-    ["200일 이동평균", [-100, 100]],
-    ["50일 이동평균", [-100, 100]],
-    ["A", [0, 100]],
-    ["B", [-100, 100]],
-    ["C", [-100, 100]],
-    ["D", [-100, 100]],
-    ["E", [-100, 100]],
-    ["F", [-100, 100]],
+    ["자본금", [0, 50000]],
+    ["상장주식수", [0, 6000000]],
+    ["신용비율", [0, 11]],
+    ["연중최고", [0, 600000]],
+    ["연중최저", [-500000, 10000]],
+    ["시가총액", [0, 5000000]],
+    ["외인소진율", [0, 100]],
+    ["대용가", [0, 1000000]],
+    ["PER", [0, 30000]],
+    ["EPS", [-300000, 200000]],
+    ["ROE", [0, 1000]],
+    ["PBR", [-1000, 20000]],
+    ["EV", [-8000, 5000]],
+    ["BPS", [-300000, 4000000]],
+    ["매출액", [0, 3000000]],
+    ["영업이익", [-30000, 600000]],
+    ["당기순이익", [-30000, 400000]],
+    ["유통주식", [0, 5000000]],
+    ["유통비율", [0, 100]],
   ]);
+
+  const tag = {
+    액면가: "face_value",
+    자본금: "capital_stock",
+    상장주식수: "number_of_listings",
+    신용비율: "credit_rate",
+    연중최고: "year_high_price",
+    연중최저: "year_low_price",
+    시가총액: "market_cap",
+    외인소진율: "foreigner_percent",
+    대용가: "substitute_price",
+    PER: "per",
+    EPS: "eps",
+    ROE: "roe",
+    PBR: "pbr",
+    EV: "ev",
+    BPS: "bps",
+    매출액: "sales_revenue",
+    영업이익: "operating_income",
+    당기순이익: "net_income",
+    유통주식: "shares_outstanding",
+    유통비율: "shares_outstanding_rate",
+  };
 
   // 모달 노출 여부
   const [isShowModal, setShowModal] = useState(false);
@@ -315,31 +328,168 @@ export default function StockItemList() {
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
-
-  // filter on/off
-  const [filterToggle, setFilterToggle] = useState(false);
-
   // 필터 데이터 가공
   const inputFilter = () => {
+    setPageNo(1);
     let data = {};
-    if (checkedIndicators.get("액면가"))
-      data = {
-        ...data,
-        face_value:
-          checkedIndicators.get("액면가")[0] +
+    for (const select of checkedIndicators) {
+      if (checkedIndicators.get(select[0]))
+        data[tag[select[0]]] =
+          checkedIndicators.get(select[0])[0] +
           "_" +
-          checkedIndicators.get("액면가")[1],
-      };
-    if (checkedIndicators.get("자본금"))
-      data = {
-        ...data,
-        capital_stock:
-          checkedIndicators.get("자본금")[0] +
-          "_" +
-          checkedIndicators.get("자본금")[1],
-      };
+          checkedIndicators.get(select[0])[1];
+    }
+    // if (checkedIndicators.get("자본금"))
+    //   data = {
+    //     ...data,
+    //     capital_stock:
+    //       checkedIndicators.get("자본금")[0] +
+    //       "_" +
+    //       checkedIndicators.get("자본금")[1],
+    //   };
+    // if (checkedIndicators.get("상장주식수"))
+    //   data = {
+    //     ...data,
+    //     number_of_listings:
+    //       checkedIndicators.get("상장주식수")[0] +
+    //       "_" +
+    //       checkedIndicators.get("상장주식수")[1],
+    //   };
+    // if (checkedIndicators.get("신용비율"))
+    //   data = {
+    //     ...data,
+    //     credit_rate:
+    //       checkedIndicators.get("신용비율")[0] +
+    //       "_" +
+    //       checkedIndicators.get("신용비율")[1],
+    //   };
+    // if (checkedIndicators.get("연중최고"))
+    //   data = {
+    //     ...data,
+    //     year_high_price:
+    //       checkedIndicators.get("연중최고")[0] +
+    //       "_" +
+    //       checkedIndicators.get("연중최고")[1],
+    //   };
+    // if (checkedIndicators.get("연중최저"))
+    //   data = {
+    //     ...data,
+    //     year_low_price:
+    //       checkedIndicators.get("연중최저")[0] +
+    //       "_" +
+    //       checkedIndicators.get("연중최저")[1],
+    //   };
+    // if (checkedIndicators.get("시가총액"))
+    //   data = {
+    //     ...data,
+    //     market_cap:
+    //       checkedIndicators.get("시가총액")[0] +
+    //       "_" +
+    //       checkedIndicators.get("시가총액")[1],
+    //   };
+    // if (checkedIndicators.get("외인소진율"))
+    //   data = {
+    //     ...data,
+    //     foreigner_percent:
+    //       checkedIndicators.get("외인소진율")[0] +
+    //       "_" +
+    //       checkedIndicators.get("외인소진율")[1],
+    //   };
+    // if (checkedIndicators.get("대용가"))
+    //   data = {
+    //     ...data,
+    //     substitute_price:
+    //       checkedIndicators.get("대용가")[0] +
+    //       "_" +
+    //       checkedIndicators.get("대용가")[1],
+    //   };
+    // if (checkedIndicators.get("PER"))
+    //   data = {
+    //     ...data,
+    //     per:
+    //       checkedIndicators.get("PER")[0] +
+    //       "_" +
+    //       checkedIndicators.get("PER")[1],
+    //   };
+    // if (checkedIndicators.get("EPS"))
+    //   data = {
+    //     ...data,
+    //     eps:
+    //       checkedIndicators.get("EPS")[0] +
+    //       "_" +
+    //       checkedIndicators.get("EPS")[1],
+    //   };
+    // if (checkedIndicators.get("ROE"))
+    //   data = {
+    //     ...data,
+    //     roe:
+    //       checkedIndicators.get("ROE")[0] +
+    //       "_" +
+    //       checkedIndicators.get("ROE")[1],
+    //   };
+    // if (checkedIndicators.get("PBR"))
+    //   data = {
+    //     ...data,
+    //     pbr:
+    //       checkedIndicators.get("PBR")[0] +
+    //       "_" +
+    //       checkedIndicators.get("PBR")[1],
+    //   };
+    // if (checkedIndicators.get("EV"))
+    //   data = {
+    //     ...data,
+    //     ev:
+    //       checkedIndicators.get("EV")[0] + "_" + checkedIndicators.get("EV")[1],
+    //   };
+    // if (checkedIndicators.get("BPS"))
+    //   data = {
+    //     ...data,
+    //     bps:
+    //       checkedIndicators.get("BPS")[0] +
+    //       "_" +
+    //       checkedIndicators.get("BPS")[1],
+    //   };
+    // if (checkedIndicators.get("매출액"))
+    //   data = {
+    //     ...data,
+    //     sales_revenue:
+    //       checkedIndicators.get("매출액")[0] +
+    //       "_" +
+    //       checkedIndicators.get("매출액")[1],
+    //   };
+    // if (checkedIndicators.get("영업이익"))
+    //   data = {
+    //     ...data,
+    //     operating_income:
+    //       checkedIndicators.get("영업이익")[0] +
+    //       "_" +
+    //       checkedIndicators.get("영업이익")[1],
+    //   };
+    // if (checkedIndicators.get("당기순이익"))
+    //   data = {
+    //     ...data,
+    //     net_income:
+    //       checkedIndicators.get("당기순이익")[0] +
+    //       "_" +
+    //       checkedIndicators.get("당기순이익")[1],
+    //   };
+    // if (checkedIndicators.get("유통주식"))
+    //   data = {
+    //     ...data,
+    //     shares_outstanding:
+    //       checkedIndicators.get("유통주식")[0] +
+    //       "_" +
+    //       checkedIndicators.get("유통주식")[1],
+    //   };
+    // if (checkedIndicators.get("유통비율"))
+    //   data = {
+    //     ...data,
+    //     shares_outstanding_rate:
+    //       checkedIndicators.get("유통비율")[0] +
+    //       "_" +
+    //       checkedIndicators.get("유통비율")[1],
+    //   };
     setFilterData(data);
-    console.log(!Object.keys(data).length);
   };
 
   return (
@@ -419,7 +569,7 @@ export default function StockItemList() {
             필터
           </button>
           {/* on/off 버튼 */}
-          <OnOffToggle toggle={filterToggle} setToggle={setFilterToggle} />
+          <OnOffToggle toggle={filterToggle} setToggle={clickFilterToggle} />
           <div className="w-full flex justify-end">
             {/* 검색창  */}
             <div className="w-1/3">
