@@ -58,7 +58,7 @@ export default function Header({ category }) {
         setSelectedNum(0);
         return;
       }
-      const result = await getStockItemList2({
+      const result = await getStockItemList({
         page: "1",
         size: "5",
         company_name: e.target.value,
