@@ -4,6 +4,40 @@ import ListHeader from "../components/ListHeader";
 import PageContainer from "../components/PageContainer";
 import Pagenation from "../components/Pagenation";
 import { getItems } from "../api/notice";
+import Tooltip from "../components/commons/Tooltip";
+
+const contents = [
+  {
+    title: "제목1",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content1",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목2",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content2",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목3",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content3",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목4",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content4",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+  {
+    title: "제목5",
+    src: "https://source.unsplash.com/random/400x400",
+    alt: "content5",
+    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+  },
+];
 
 export default function Announcement() {
   const navigate = useNavigate();
@@ -137,6 +171,8 @@ export default function Announcement() {
         onClickLast={onClickLast}
         onClickNumber={onClickNumber}
       ></Pagenation>
+
+      <Tooltip title={"공지사항"} contents={contents}></Tooltip>
     </PageContainer>
   );
 }
