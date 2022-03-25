@@ -22,6 +22,8 @@ size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
                         description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
 sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
+title = openapi.Parameter('title', openapi.IN_QUERY, default="제목",
+                        description="검색할 글 제목", type=openapi.TYPE_STRING)
 
 # ====================================================================== 통합 ======================================================================
 @swagger_auto_schema(
@@ -58,7 +60,7 @@ def post_create(request):
     operation_id='게시판 종목별 조회(아무나)',
     operation_description='게시판 종목별로 조회합니다',
     tags=['주식_게시판'],
-    manual_parameters=[page, size],
+    manual_parameters=[page, size, title],
     responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
@@ -76,6 +78,11 @@ def post_create(request):
 @permission_classes([AllowAny])
 def post_list(request, code_number):
     post_list = Post.objects.filter(basic_info=code_number)
+    
+    if request.GET.get('title'):
+        title = request.GET.get('title')
+        post_list = post_list.filter(title__contains=title)
+    
     paginator = PageNumberPagination()
     
     page_size = request.GET.get('size')
