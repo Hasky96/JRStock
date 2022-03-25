@@ -4,6 +4,7 @@ import TabBar from "../components/TabBar/TabBar";
 import styles from "../components/ranking/list.module.css";
 import RankItem from "../components/ranking/RankItem";
 import Pagenation from "../components/Pagenation";
+import PageContainer from "../components/PageContainer";
 import {
   dayData,
   weekData,
@@ -141,110 +142,108 @@ export default function Ranking() {
   };
 
   return (
-    <div className={"my-pt-28 my-pl-10 my-pr-10"}>
-      <div className={"bg-primary rounded-lg shadow-lg p-5 my-h-80"}>
-        <div className="flex justify-between  items-center">
-          {/* 제목 */}
-          <div className="flex m-5 gap-2">
-            <span
-              id="kospi"
-              className={classNames("text-2xl font-bold", "text-white")}
-            >
-              수익률 순위
-            </span>
-            <OnOffToggle toggle={toggle} setToggle={setToggle} />
-          </div>
-          {/* 검색창  */}
-          {
-            <div
-              className="flex h-9 w-1/2 invisible opacity-0 duration-500"
-              id="rank-search-bar"
-            >
-              <div className="flex w-full justify-end gap-4">
-                <label
-                  className="text-xl flex items-center text-white"
-                  htmlFor="rank-search"
+    <PageContainer>
+      <div className="flex justify-between  items-center">
+        {/* 제목 */}
+        <div className="flex m-5 gap-2">
+          <span
+            id="kospi"
+            className={classNames("text-2xl font-bold", "text-black")}
+          >
+            수익률 순위
+          </span>
+          <OnOffToggle toggle={toggle} setToggle={setToggle} />
+        </div>
+        {/* 검색창  */}
+        {
+          <div
+            className="flex h-9 w-1/2 invisible opacity-0 duration-500"
+            id="rank-search-bar"
+          >
+            <div className="flex w-full justify-end xl:gap-4 gap-1">
+              <label
+                className="xl:text-xl text-sm flex items-center text-black"
+                htmlFor="rank-search"
+              >
+                순위 검색
+              </label>
+              <div className="relative w-4/5">
+                {/* 검색 아이콘 */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 absolute left-2 top-2.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#d1d5db"
+                  strokeWidth={2}
                 >
-                  순위 검색
-                </label>
-                <div className="relative w-4/5">
-                  {/* 검색 아이콘 */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 absolute left-2 top-2.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="#d1d5db"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                  {/* 검색창 */}
-                  <input
-                    type="text"
-                    name="price"
-                    id="rank-search"
-                    className="hover:border-active focus:ring-active focus:border-active text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
-                    placeholder="Search..."
-                    onKeyUp={(e) => {
-                      e.preventDefault();
-                      setSearchWord(e.target.value);
-                      initToggleOn();
-                    }}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
-                </div>
+                </svg>
+                {/* 검색창 */}
+                <input
+                  type="text"
+                  name="price"
+                  id="rank-search"
+                  className="hover:border-active focus:ring-active focus:border-active text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                  placeholder="Search..."
+                  onKeyUp={(e) => {
+                    e.preventDefault();
+                    setSearchWord(e.target.value);
+                    initToggleOn();
+                  }}
+                />
               </div>
             </div>
-          }
-        </div>
-        {/* 탭바 */}
-        <div className="text-white">
-          <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
-        </div>
-        {/* 랭킹 테이블 */}
-        <div className="mt-5">
-          <table className={styles.table}>
-            <colgroup>
-              <col span="1" style={{ width: 8 + "%" }} />
-              <col span="1" style={{ width: 8 + "%" }} />
-              <col span="1" style={{ width: 15 + "%" }} />
-              <col span="1" style={{ width: 15 + "%" }} />
-              <col span="1" style={{ width: 15 + "%" }} />
-              <col span="1" style={{ width: 15 + "%" }} />
-              <col span="1" style={{ width: 15 + "%" }} />
-              <col span="1" style={{ width: 6 + "%" }} />
-            </colgroup>
-            <ListTitle
-              titles={[
-                "순위",
-                "프로필",
-                "이름",
-                "수익율",
-                "투자원금",
-                "총 손익",
-                "최종 자산",
-                "매매일수",
-              ]}
-            />
-            <tbody>{data && rankList()}</tbody>
-          </table>
-        </div>
-        {/* 페이지 네이션 */}
-        <Pagenation
-          selectedNum={pageNo}
-          totalCnt={totalCount}
-          pageSize={pageSize}
-          onClickFirst={onClickFirst}
-          onClickLeft={onClickLeft}
-          onClickRight={onClickRight}
-          onClickLast={onClickLast}
-          onClickNumber={onClickNumber}
-        ></Pagenation>
+          </div>
+        }
       </div>
-    </div>
+      {/* 탭바 */}
+      <div className="text-black">
+        <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
+      </div>
+      {/* 랭킹 테이블 */}
+      <div className="mt-5">
+        <table className={styles.table}>
+          <colgroup>
+            <col span="1" style={{ width: 8 + "%" }} />
+            <col span="1" style={{ width: 8 + "%" }} />
+            <col span="1" style={{ width: 15 + "%" }} />
+            <col span="1" style={{ width: 10 + "%" }} />
+            <col span="1" style={{ width: 15 + "%" }} />
+            <col span="1" style={{ width: 15 + "%" }} />
+            <col span="1" style={{ width: 15 + "%" }} />
+            <col span="1" style={{ width: 10 + "%" }} />
+          </colgroup>
+          <ListTitle
+            titles={[
+              "순위",
+              "프로필",
+              "이름",
+              "수익율",
+              "투자원금",
+              "총 손익",
+              "최종 자산",
+              "매매일수",
+            ]}
+          />
+          <tbody>{data && rankList()}</tbody>
+        </table>
+      </div>
+      {/* 페이지 네이션 */}
+      <Pagenation
+        selectedNum={pageNo}
+        totalCnt={totalCount}
+        pageSize={pageSize}
+        onClickFirst={onClickFirst}
+        onClickLeft={onClickLeft}
+        onClickRight={onClickRight}
+        onClickLast={onClickLast}
+        onClickNumber={onClickNumber}
+      ></Pagenation>
+    </PageContainer>
   );
 }
