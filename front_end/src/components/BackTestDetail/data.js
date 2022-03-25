@@ -1162,7 +1162,7 @@ const profitData = [
     value: "+1.7%",
   },
   {
-    key: "연이율(CAGR)",
+    key: "연평균 수익률(CAGR)",
     value: "+24.8%",
   },
   {

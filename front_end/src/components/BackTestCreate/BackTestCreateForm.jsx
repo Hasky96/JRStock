@@ -51,7 +51,7 @@ export default function BackTestCreateForm() {
         />
       </div>
       <div className="w-full flex justify-center mt-3">
-        <button className="w-32 mt-1 py-2 px-4 border border-transparent bg-indigo-600 text-white shadow-sm text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button className="w-32 mt-1 py-2 px-4 border border-transparent bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300">
           백테스트 시작
         </button>
       </div>
