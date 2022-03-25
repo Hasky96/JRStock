@@ -13,12 +13,14 @@ def ma5_20_strategy(account, code, start, end):
     start_balance = account['balance']
     day_stocks=get_day_stock(code, start, end)
     df_day_stocks=object_to_dataframe(day_stocks)   # dataframe으로 변환
+    print(df_day_stocks)
     # ma5, ma20 추가    
     df_day_stocks['ma_5'] = df_day_stocks["current_price"].rolling(window=5).mean()
     df_day_stocks['ma_20'] = df_day_stocks["current_price"].rolling(window=20).mean()
     df_day_stocks['candle'] = df_day_stocks["current_price"] > df_day_stocks["start_price"]
     # 로직
     print(df_day_stocks)
+    print(df_day_stocks.iloc[100:102])
     for i in range(19,len(df_day_stocks)):
         mdd_max = 0
         mdd_min = 987654321
@@ -46,6 +48,7 @@ def ma5_20_strategy(account, code, start, end):
     result = calculate_total_account(account, current_stock_price)
     p1 = int(df_day_stocks.iloc[-1]['current_price'] )
     p2 = int(df_day_stocks.iloc[0]['current_price'] )
+  
     print(f'기간 : {start} ~ {end}')
     print(f'결과 : {start_balance:,}원 => {result}')
     print(f'가격변동 : {p2:,}원 => {p1:,}원 ')
