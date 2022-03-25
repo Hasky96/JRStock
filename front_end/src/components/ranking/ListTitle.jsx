@@ -30,7 +30,7 @@ export default function ListTitle({ titles }) {
 
   return (
     <thead className={classNames("h-14")}>
-      <tr className={classNames("bg-opacity-10 bg-slate-100")}>
+      <tr className={classNames("bg-primary xl:text-base text-sm")}>
         {paintTitles}
       </tr>
     </thead>
