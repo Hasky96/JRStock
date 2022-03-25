@@ -1,6 +1,6 @@
 import { ReactComponent as Search } from "../../assets/search.svg";
 import { useState } from "react";
-import { getStockItemList2 } from "../../api/stock";
+import { getStockItemList } from "../../api/stock";
 import costMap from "../../util/costMap";
 import "./StockSelectModal.css";
 
@@ -14,7 +14,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    const result = await getStockItemList2({
+    const result = await getStockItemList({
       page: "1",
       size: "20",
       company_name: searchWord,

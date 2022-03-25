@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { userDetail } from "../api/user";
-import { getStockItemList2 } from "../api/stock";
+import { getStockItemList } from "../api/stock";
 import { API_MEDIA_URL } from "../config";
 
 export default function Header({ category }) {
@@ -161,7 +161,7 @@ export default function Header({ category }) {
                   }
 
                   // 새로운 데이터 읽어오기
-                  const result = await getStockItemList2({
+                  const result = await getStockItemList({
                     page: "1",
                     size: "5",
                     company_name: e.target.value,
