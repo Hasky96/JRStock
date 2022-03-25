@@ -7,6 +7,7 @@ import { registerUser, checkDuplication } from "./../api/user";
 import { ReactComponent as PasswordLook } from "./../assets/passwordLook.svg";
 import { ReactComponent as PasswordNoLook } from "./../assets/passwordNoLook.svg";
 import Loading from "../components/commons/Loading";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const [name, setName] = useState(null);
@@ -40,10 +41,13 @@ export default function Signup() {
             method="POST"
             onSubmit={async (e) => {
               e.preventDefault();
-              if (emailErr) alert("유효한 이메일을 입력하세요!");
-              else if (!duplicateCheck) alert("이메일 중복을 체크해주세요");
-              else if (!passwordValid) alert("비밀번호가 유효하지 않습니다!");
-              else if (passwordErr) alert("비밀번호가 서로 일치하지 않습니다!");
+              if (emailErr) toast.error("유효한 이메일을 입력하세요!");
+              else if (!duplicateCheck)
+                toast.error("이메일 중복을 체크해주세요");
+              else if (!passwordValid)
+                toast.error("비밀번호가 유효하지 않습니다!");
+              else if (passwordErr)
+                toast.error("비밀번호가 서로 일치하지 않습니다!");
               else {
                 const loading = document.querySelector("#loading");
 
@@ -122,7 +126,7 @@ export default function Signup() {
                     // 이메일 중복 확인 요청 보내기
 
                     if (email === null || emailErr) {
-                      alert("올바른 이메일 주소를 입력하세요.");
+                      toast.error("올바른 이메일 주소를 입력하세요.");
                       return;
                     }
 
@@ -135,7 +139,7 @@ export default function Signup() {
                     if (res === "True") setDuplicateCheck(true);
                     else {
                       setDuplicateCheck(false);
-                      alert("이미 가입된 이메일 입니다.");
+                      toast.error("이미 가입된 이메일 입니다.");
                     }
                   }}
                   className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
@@ -143,7 +147,7 @@ export default function Signup() {
                   이메일 중복 확인
                 </button>
                 {duplicateCheck && (
-                  <p className="text-primary">이용 가능한 이메일 입니다.</p>
+                  <p className="text-blue-600">이용 가능한 이메일 입니다.</p>
                 )}
               </div>
               {/* 비밀번호 input 부분 */}
