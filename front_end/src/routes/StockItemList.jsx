@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStockItemList, addInterest } from "../api/stock";
 import Pagenation from "../components/Pagenation";
-import ListHeader from "../components/ListHeader";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
@@ -21,20 +20,12 @@ export default function StockItemList() {
   const pageSize = 10;
   const [stocks, setStocks] = useState([]);
   const [sortBy, setSortBy] = useState("-market_cap");
-  // const tag = {
-  //   현재가: "current_price",
-  //   "변동률(전일대비)": "chages_ratio",
-  //   거래량: "volume",
-  //   시가: "start_price",
-  //   고가: "high_price",
-  //   저가: "low_price",
-  //   시가총액: "market_cap",
-  // };
+  const [search, setSearch] = useState("");
 
   // 주식 종목 초기화
   const init = async () => {
     const res = await getStockItemList({
-      page: 1,
+      page: pageNo,
       size: pageSize,
       sort: sortBy,
     });
@@ -49,19 +40,31 @@ export default function StockItemList() {
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    const res = await getStockItemList({ page: 1, size: pageSize });
+    const res = await getStockItemList({
+      page: 1,
+      size: pageSize,
+      sort: sortBy,
+    });
     setStocks(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const res = await getStockItemList({ page: pageNo - 1, size: pageSize });
+    const res = await getStockItemList({
+      page: pageNo - 1,
+      size: pageSize,
+      sort: sortBy,
+    });
     setStocks(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const res = await getStockItemList({ page: pageNo + 1, size: pageSize });
+    const res = await getStockItemList({
+      page: pageNo + 1,
+      size: pageSize,
+      sort: sortBy,
+    });
     setStocks(res.data.results);
   };
 
@@ -69,13 +72,21 @@ export default function StockItemList() {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const res = await getStockItemList({ page: lastPageNum, size: pageSize });
+    const res = await getStockItemList({
+      page: lastPageNum,
+      size: pageSize,
+      sort: sortBy,
+    });
     setStocks(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const res = await getStockItemList({ page: num, size: pageSize });
+    const res = await getStockItemList({
+      page: num,
+      size: pageSize,
+      sort: sortBy,
+    });
     setStocks(res.data.results);
   };
 
@@ -237,18 +248,12 @@ export default function StockItemList() {
     navigate({ pathname: `${id}/detail` });
   };
 
-  const onClickFilter = (filter) => {
-    console.log(filter);
-    // 필터 state를 filter 로 변경
-    // 전반적인 notice item 검색 api에 filter 조건 추가
-    // pageNo 1로 초기화
-  };
-
   const onSearch = (word) => {
     console.log(word);
     // 검색어 state을 word로 변경
     // 전반적으로 notice item 검색 api에 word 조건 추가
     // pageNo 1로 초기화
+    // setPageNo(1);
   };
 
   // 관심 종목 추가
@@ -380,12 +385,39 @@ export default function StockItemList() {
           </button>
           {/* on/off 버튼 */}
           <OnOffToggle toggle={filterToggle} setToggle={setFilterToggle} />
-          <div className="w-full">
-            <ListHeader
-              optionKind={["aaa", "bbb", "ccc"]}
-              onClickFilter={onClickFilter}
-              onSearch={onSearch}
-            />
+          <div className="w-full flex justify-end">
+            {/* 검색창  */}
+            <div className="w-1/3">
+              <div className="relative">
+                {/* 검색 아이콘 */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 absolute left-2 top-2.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#d1d5db"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                {/* 검색창 */}
+                <input
+                  type="text"
+                  name="price"
+                  id="price"
+                  className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                  placeholder="Search..."
+                  onChange={(e) => {
+                    e.preventDefault();
+                    onSearch(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div className="border-collapse w-full text-center my-8">

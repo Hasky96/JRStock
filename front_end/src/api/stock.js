@@ -75,20 +75,6 @@ async function getBoardList(code, page, size) {
   );
 }
 
-// 주식 종목 검색 리스트 받아오기
-async function getStockItemListSearched(
-  page,
-  size,
-  sort,
-  company_name,
-  face_value
-) {
-  const api = apiInstance();
-  return await api.get(
-    `stock/?page=${page}&size=${size}&company_name=${company_name}`
-  );
-}
-
 // 토론 게시글 작성
 async function createBoard(title, content, code_number) {
   const authApi = loginApiInstance();
