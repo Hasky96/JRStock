@@ -72,7 +72,6 @@ export default function Ranking() {
 
   // 탭이 바뀌면 초기 데이터 다시 설정
   useEffect(() => {
-    console.log(toggle);
     if (toggle) {
       initToggleOn();
     } else {
