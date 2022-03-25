@@ -31,7 +31,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
 company_name = openapi.Parameter('company_name', openapi.IN_QUERY, default="삼성",
                         description="검색할 회사 이름", type=openapi.TYPE_STRING)
-face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
+face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="-1000_5000",
                         description="액면가 0이상 5000이하", type=openapi.TYPE_STRING)
 
 # ====================================================================== 통합 ======================================================================
@@ -96,103 +96,103 @@ def basic_info_list(request):
     # 필터링
     if request.GET.get('face_value'):
         value = request.GET.get('face_value')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__face_value__gte=value[0], financial_info__face_value__lte=value[1])
         
     if request.GET.get('capital_stock'):
         value = request.GET.get('capital_stock')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__capital_stock__gte=value[0], financial_info__capital_stock__lte=value[1])
         
     if request.GET.get('number_of_listings'):
         value = request.GET.get('number_of_listings')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__number_of_listings__gte=value[0], financial_info__number_of_listings__lte=value[1])
         
     if request.GET.get('credit_rate'):
         value = request.GET.get('credit_rate')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__credit_rate__gte=value[0], financial_info__credit_rate__lte=value[1])
         
     if request.GET.get('year_high_price'):
         value = request.GET.get('year_high_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__year_high_price__gte=value[0], financial_info__year_high_price__lte=value[1])
         
     if request.GET.get('year_low_price'):
         value = request.GET.get('year_low_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__year_low_price__gte=value[0], financial_info__year_low_price__lte=value[1])    
     
     if request.GET.get('market_cap'):
         value = request.GET.get('market_cap')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__market_cap__gte=value[0], financial_info__market_cap__lte=value[1])    
         
     if request.GET.get('foreigner_percent'):
         value = request.GET.get('foreigner_percent')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__foreigner_percent__gte=value[0], financial_info__foreigner_percent__lte=value[1])    
         
     if request.GET.get('substitute_price'):
         value = request.GET.get('substitute_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__substitute_price__gte=value[0], financial_info__substitute_price__lte=value[1])    
         
     if request.GET.get('per'):
         value = request.GET.get('per')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__per__gte=value[0], financial_info__per__lte=value[1])    
         
     if request.GET.get('eps'):
         value = request.GET.get('eps')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__eps__gte=value[0], financial_info__eps__lte=value[1])                    
     
     if request.GET.get('roe'):
         value = request.GET.get('roe')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__roe__gte=value[0], financial_info__roe__lte=value[1])  
         
     if request.GET.get('pbr'):
         value = request.GET.get('pbr')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__pbr__gte=value[0], financial_info__pbr__lte=value[1])  
         
     if request.GET.get('ev'):
         value = request.GET.get('ev')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__ev__gte=value[0], financial_info__ev__lte=value[1])  
         
     if request.GET.get('bps'):
         value = request.GET.get('bps')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__bps__gte=value[0], financial_info__bps__lte=value[1])  
         
     if request.GET.get('sales_revenue'):
         value = request.GET.get('sales_revenue')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__sales_revenue__gte=value[0], financial_info__sales_revenue__lte=value[1])                  
     
     
     if request.GET.get('operating_income'):
         value = request.GET.get('operating_income')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__operating_income__gte=value[0], financial_info__operating_income__lte=value[1])                  
         
     if request.GET.get('net_income'):
         value = request.GET.get('net_income')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__net_income__gte=value[0], financial_info__net_income__lte=value[1])                  
         
     if request.GET.get('shares_outstanding'):
         value = request.GET.get('shares_outstanding')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__shares_outstanding__gte=value[0], financial_info__shares_outstanding__lte=value[1])                  
         
     if request.GET.get('shares_outstanding_rate'):
         value = request.GET.get('shares_outstanding_rate')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__shares_outstanding_rate__gte=value[0], financial_info__shares_outstanding_rate__lte=value[1])                                  
     # 필터링
     # columns = ['face_value', 'capital_stock', 'number_of_listings', 'credit_rate', 'year_high_price', 'year_low_price', 
@@ -489,103 +489,103 @@ def interest_stock_list(request):
     # 필터링
     if request.GET.get('face_value'):
         value = request.GET.get('face_value')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__face_value__gte=value[0], financial_info__face_value__lte=value[1])
         
     if request.GET.get('capital_stock'):
         value = request.GET.get('capital_stock')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__capital_stock__gte=value[0], financial_info__capital_stock__lte=value[1])
         
     if request.GET.get('number_of_listings'):
         value = request.GET.get('number_of_listings')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__number_of_listings__gte=value[0], financial_info__number_of_listings__lte=value[1])
         
     if request.GET.get('credit_rate'):
         value = request.GET.get('credit_rate')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__credit_rate__gte=value[0], financial_info__credit_rate__lte=value[1])
         
     if request.GET.get('year_high_price'):
         value = request.GET.get('year_high_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__year_high_price__gte=value[0], financial_info__year_high_price__lte=value[1])
         
     if request.GET.get('year_low_price'):
         value = request.GET.get('year_low_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__year_low_price__gte=value[0], financial_info__year_low_price__lte=value[1])    
     
     if request.GET.get('market_cap'):
         value = request.GET.get('market_cap')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__market_cap__gte=value[0], financial_info__market_cap__lte=value[1])    
         
     if request.GET.get('foreigner_percent'):
         value = request.GET.get('foreigner_percent')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__foreigner_percent__gte=value[0], financial_info__foreigner_percent__lte=value[1])    
         
     if request.GET.get('substitute_price'):
         value = request.GET.get('substitute_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__substitute_price__gte=value[0], financial_info__substitute_price__lte=value[1])    
         
     if request.GET.get('per'):
         value = request.GET.get('per')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__per__gte=value[0], financial_info__per__lte=value[1])    
         
     if request.GET.get('eps'):
         value = request.GET.get('eps')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__eps__gte=value[0], financial_info__eps__lte=value[1])                    
     
     if request.GET.get('roe'):
         value = request.GET.get('roe')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__roe__gte=value[0], financial_info__roe__lte=value[1])  
         
     if request.GET.get('pbr'):
         value = request.GET.get('pbr')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__pbr__gte=value[0], financial_info__pbr__lte=value[1])  
         
     if request.GET.get('ev'):
         value = request.GET.get('ev')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__ev__gte=value[0], financial_info__ev__lte=value[1])  
         
     if request.GET.get('bps'):
         value = request.GET.get('bps')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__bps__gte=value[0], financial_info__bps__lte=value[1])  
         
     if request.GET.get('sales_revenue'):
         value = request.GET.get('sales_revenue')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__sales_revenue__gte=value[0], financial_info__sales_revenue__lte=value[1])                  
     
     
     if request.GET.get('operating_income'):
         value = request.GET.get('operating_income')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__operating_income__gte=value[0], financial_info__operating_income__lte=value[1])                  
         
     if request.GET.get('net_income'):
         value = request.GET.get('net_income')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__net_income__gte=value[0], financial_info__net_income__lte=value[1])                  
         
     if request.GET.get('shares_outstanding'):
         value = request.GET.get('shares_outstanding')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__shares_outstanding__gte=value[0], financial_info__shares_outstanding__lte=value[1])                  
         
     if request.GET.get('shares_outstanding_rate'):
         value = request.GET.get('shares_outstanding_rate')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__shares_outstanding_rate__gte=value[0], financial_info__shares_outstanding_rate__lte=value[1])                                  
     
     paginator = PageNumberPagination()
@@ -648,6 +648,26 @@ def interset_stock_delete(request):
 @permission_classes([AllowAny])
 def get_recent_news(reqeust, code_number):
     news_list = []
+    
+    if (code_number == 'KOSPI' or code_number == 'KOSDAQ'):
+        url = 'https://finance.naver.com/sise/sise_index.naver?code=' + code_number
+        source_code = requests.get(url).text
+        html = BeautifulSoup(source_code, "lxml")
+        
+        news_href = html.select('#contentarea_left > div:nth-child(4) > ul > li > span > a')
+        news_info1 = html.select('#contentarea_left > div:nth-child(4) > ul > li > p > .paper')
+        news_info2 = html.select('#contentarea_left > div:nth-child(4) > ul > li > p > .date')
+        
+        for i in range(len(news_href)):
+            date = news_info2[i].text
+            title = news_href[i].text
+            source = news_info1[i].text
+            link = "https://finance.naver.com"+news_href[i]['href']
+            
+            result = {'date' : date, 'title' : title, 'source' : source, 'link' : link}
+            news_list.append(result)
+            
+        return Response(news_list, status=status.HTTP_200_OK)
     
     url = 'https://finance.naver.com/item/news_news.nhn?code=' + str(code_number) + '&page=1' 
     source_code = requests.get(url).text
