@@ -6,17 +6,28 @@ import "./BackTestCreateForm.css";
 export default function BackTestCreateForm() {
   const [values, setValues] = useState({
     title: "",
-    start_at: "",
-    end_at: "",
+    start_date: "",
+    end_date: "",
     company_name: "",
     company_code: "",
     commission: "",
     stock: "",
     goal: "",
-    buy_strategy: "",
-    buy_strategy_detail: "",
-    sell_strategy: "",
-    sell_strategy_detail: "",
+    standard: "",
+    buy_strategy: [
+      {
+        id: "0",
+        strategy: "101",
+        parameters: "",
+      },
+    ],
+    sell_strategy: [
+      {
+        id: "0",
+        strategy: "101",
+        parameters: "",
+      },
+    ],
   });
 
   const handleInputChange = (e) => {
@@ -31,6 +42,10 @@ export default function BackTestCreateForm() {
     }));
   };
 
+  const types = {
+    buy: "매수",
+    sell: "매도",
+  };
   return (
     <div className="bactestcreateform-container mx-auto flex flex-col justify-center items-center">
       <BasicCondition
@@ -38,16 +53,18 @@ export default function BackTestCreateForm() {
         handleInputChange={handleInputChange}
         handleStateChange={handleStateChange}
       />
-      <div className="w-full flex justify-center mt-3 gap-2">
+      <div className="w-full flex flex-col xl:flex-row justify-center mt-3 gap-2">
         <TradeCondition
-          type="매수"
-          handleInputChange={handleInputChange}
-          handleStateChange={handleStateChange}
+          type="buy"
+          name="매수"
+          values={values}
+          setValues={setValues}
         />
         <TradeCondition
-          type="매도"
-          handleInputChange={handleInputChange}
-          handleStateChange={handleStateChange}
+          type="sell"
+          name="매도"
+          values={values}
+          setValues={setValues}
         />
       </div>
       <div className="w-full flex justify-center mt-3">

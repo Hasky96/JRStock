@@ -24,7 +24,7 @@
   bottom: 0px;
   left: 0px;
   pointer-events: none;
-  border-bottom: 1px solid #4c58ad;
+  border-bottom: 1px solid #0e185f;
 }
 
 .inputLabel::after {
@@ -34,7 +34,7 @@
   width: 100%;
   bottom: -1px;
   left: 0px;
-  border-bottom: 3px solid #0e185f;
+  border-bottom: 3px solid #ff825c;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
 }

@@ -42,7 +42,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
         <button
           key={index}
           type="button"
-          className="w-full grid grid-cols-3 my-2 h-8 justify-between items-center text-center hover:bg-indigo-100 border-b rounded p-1"
+          className="w-full grid grid-cols-3 h-8 pt-1 text-sm text-center hover:bg-indigo-100 border-b rounded"
           onClick={() =>
             handleStockSelect(
               financial_info.basic_info.company_name,
@@ -50,7 +50,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
             )
           }
         >
-          <div className="col-span-1 text-left whitespace-nowrap">
+          <div className="col-span-1 text-base text-left whitespace-nowrap">
             {financial_info.basic_info.company_name}
           </div>
           <div className="col-span-1">
@@ -102,7 +102,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
                       name="company_name"
                       type="text"
                       onChange={(e) => handleSearchChange(e)}
-                      className="w-full h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
+                      className="w-full h-8 shadow-sm focus:ring-primary focus:border-primary mt-1 sm:text-sm border bg-white border-gray-300 rounded-md"
                     />
                     <button type="submit" className="absolute right-1 top-2">
                       <Search />
@@ -118,17 +118,10 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
             </div>
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            {/* <button
-              type="button"
-              onClick={() => toggleModal()}
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              선택
-            </button> */}
             <button
               type="button"
               onClick={() => handleCancelButton()}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white hover:bg-red-100 text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:border-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-gray-900 bg-white hover:bg-active hover:text-white duration-300 text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:border-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               취소
             </button>

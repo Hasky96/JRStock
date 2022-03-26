@@ -7,14 +7,20 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function FormSelect({ name, options, handleStateChange }) {
-  const [selected, setSelected] = useState(options[0]);
+export default function FormSelect({
+  name,
+  options,
+  setValues,
+  handleStrategyChange,
+  handleStateChange,
+}) {
+  const [selected, setSelected] = useState(options[Object.keys(options)[0]]);
 
   const handleSelectClick = (option) => {
     handleStateChange(name, option);
   };
 
-  const paintOptions = options.map((option, idx) => (
+  const paintOptions = Object.values(options).map((option, idx) => (
     <div key={idx} onClick={() => handleSelectClick(option)}>
       <Listbox.Option
         className={({ active }) =>
