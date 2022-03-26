@@ -60,5 +60,31 @@ def reset_email(pw, to):
     return message  
     
 @shared_task
+def contact_email(name, email, message):
+    message_data = """\
+    <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #212121; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
+        <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
+            <span style="font-size: 15px; margin: 0 0 10px 3px;">JRstock</span><br />
+            <span style="color: #212121;">" %s(%s) "</span> 님에게서<br /> 건의사항이 도착하였습니다. </h1>
+        <p style="font-size: 16px; line-height: 26px; margin-top: 50px; padding: 0 5px;">
+            <b style="color: #212121;">건의내용 : " %s "</b><br /></p>
+    </div>
+    """ % (name, email, message)
+    
+    mail_title = f"{name}({email})님에게서 JRstock 건의사항 도착"
+    
+    smtp = smtplib.SMTP('smtp.gmail.com', 587)
+    smtp.starttls()
+    smtp.login(DEFAULT_FROM_EMAIL, EMAIL_HOST_PASSWORD)
+    msg = MIMEMultipart()
+    msg['Subject'] = mail_title
+    msg.attach(MIMEText(message_data, 'html'))
+    smtp.sendmail(email, DEFAULT_FROM_EMAIL, msg.as_string())
+    smtp.quit()
+    
+    message = f'Received suggestions email from [{name}({email}]'
+    return message 
+
+@shared_task
 def add(a, b):
     return a + b
