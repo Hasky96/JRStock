@@ -35,7 +35,7 @@ from django.utils.encoding import force_bytes, force_text
 import string
 import random
 from django.core.mail import EmailMessage
-from .tasks import reset_email, email_authentication
+from .tasks import reset_email, email_authentication, contact_email
 
 
 from .parser import get_serializer
@@ -410,7 +410,6 @@ def password_reset(request):
     user = get_object_or_404(User, email=email)
     if not user.name == name:
         return Response({"message": "이메일과 이름이 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
-   
     
     new_pw_len = 12 # 새 비밀번호 길이
     pw_candidate = string.ascii_letters + string.digits + string.punctuation 
@@ -425,4 +424,29 @@ def password_reset(request):
     reset_email.delay(new_pw, email)
     
     return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='건의사항 전송',
+    operation_description='관리자에게 건의할 사항을 메일로 전송',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description="건의하는 사람의 이름"),
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description="건의하는 사람의 메일 주소"),
+            'message': openapi.Schema(type=openapi.TYPE_STRING, description="건의할 내용"),
+        }
+    ),
+    tags=['건의사항'],
+    responses={status.HTTP_200_OK: ""}
+)    
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_contact_mail(request):
+    name = request.data.get('name')
+    email = request.data.get('email')
+    message = request.data.get('message')
     
+    contact_email.delay(name, email, message)
+    
+    return Response(status=status.HTTP_200_OK) 
