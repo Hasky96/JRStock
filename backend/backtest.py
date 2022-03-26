@@ -34,17 +34,10 @@ import sys
 # 204 : macd_dead_cross (short_period, long_period, signal, weight)
 # 205 : macd_straight (short_period, long_period, signal, weight)
 # 206 : macd_reverse (short_period, long_period, signal, weight)
-# 307 : rsi_high (short_period, long_period, index, weight)     # rsi>index, 과매수 됐다고 평가 -> 매도
-# 308 : rsi_low  (short_period, long_period, index, weight)     # rsi<index, 과매도 됐다고 평가 -> 매수
+# 307 : rsi_high (period, index, weight)     # rsi>index, 과매수 됐다고 평가 -> 매도
+# 308 : rsi_low  (period, index, weight)     # rsi<index, 과매도 됐다고 평가 -> 매수
 # 407 : obv_high  (period, weight)                              # obv>ovb_ema, 매수
 # 408 : obv_low  (period, weight)                               # obv<ovb_ema, 매도
-
-# Initial Settings
-account = {
-    "balance":1000000,
-    "stocks":{
-    }
-}
 
 strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
@@ -60,7 +53,7 @@ strategy_indicator_dict={
     407: 'OBV', 408: 'OBV'
 }
 
-def call_strategy_by_code(strategy_code, strategy_params, df):
+def call_strategy_by_code(strategy_code, strategy_params, df, index):
     """ 코드로 전략 실행하는 함수 : 동적으로 함수 호출, 호출할 함수 이름과 일치해야함
 
     Args:
@@ -71,7 +64,7 @@ def call_strategy_by_code(strategy_code, strategy_params, df):
     Returns:
         int: 매매조건이 맞으면 가중치만큼, 안맞으면 0
     """
-    return getattr(sys.modules[__name__], strategy_name_dict[strategy_code])(strategy_params, df)
+    return getattr(sys.modules[__name__], strategy_name_dict[strategy_code])(strategy_params, df, index)
 
 def add_indicator_by_code(strategy_code, strategy_params, df):
     """ 코드로 지표 추가하는 함수 : 동적으로 함수 호출
@@ -108,7 +101,7 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
     sell_standard = sell_condition[-1]
 
     # =====필요한 결과값들 init
-    # result_data = init_result_data(account)
+    result_data = init_result_data(account)
     
     # 조건확인하여 필요한 Column 갱신
     buy_option=""
@@ -120,28 +113,26 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
     for cond in buy_condition[0:-2]:  # 매도
         sell_option+=strategy_name_dict[cond[0]]+" "
         df=add_indicator_by_code(cond[0], cond[1:], df)
-    
-   
 
+
+    flag=True     # 매수 먼저
     # 백테스트 시작
-    for i in range(len(df)):
-        
-        # 매수, 매도
+    for i in range(0, len(df)):
         total_weight=0
-        flag=True     # 매수 먼저
         if flag:  # 매수
             for cond in buy_condition[0:-2]:    # 마지막 파라미터 2개 제외, 전략들만
-                total_weight+=call_strategy_by_name(cond[0], cond[1:], df[i-1:i+1])
+                total_weight+=call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
             if total_weight>=buy_condition[-2]:      # 기준선 이상이면 매수
-               account = buy(account, code_number, df[i]['current_price'], buy_condition[-1], df[i]["date"], buy_option)  
+                account = buy(account, code_number, df.loc[i]['current_price'], buy_condition[-1], df.loc[i]["date"], buy_option)  
+                flag=False    # 매수, 매도 번갈아가며
 
         else:       # 매도
             for cond in sell_condition[0:-2]:
-                total_weight+=call_strategy_by_name(cond[0], cond[1:], df[i-1:i+1])
+                total_weight+=call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
             if total_weight>=sell_condition[-2]:      # 기준선 이상이면 매도
-               account = buy(account, code_number, df[i]['current_price'], sell_condition[-1], df[i]["date"], sell_option)  
-        flag=not flag   # 매수, 매도 번갈아가며
-        
+                account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option)  
+                flag=True
+
         # =====매일마다 계산
         # result_data = day_calculate(account, result_data, df[i])
 
@@ -151,10 +142,32 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
     # print(result_data)
 
 
-code_number='005930'
-start_date='1995-05-02'
+# Initial Settings
+start_price = int(1000000)
+code_number='005380'
+start_date='2016-12-13' # 코스피 시작 날짜가 '1996-12-13' 이전이면 디비 오류남 ㅠ
 end_date='2022-03-23' 
-buy_condition=[ [101, 5, 5, 30], [307, 20, 30, 10, 40], 60, 100 ]
-sell_condition=[ [102, 5, 5, 30], [308, 20, 30, 10, 40], 60, 100 ]
-backtest(account, code_number, start_date, end_date, buy_condition, sell_condition)
 
+account = {
+    "balance":start_price,
+    "start_price":start_price,
+    "pre_price":start_price,
+    "start_date":start_date,
+    "end_date":end_date, 
+    "stocks":{
+        # "005930":{
+        #     "amount":100,
+        #     "avg_price":70000
+        #     },
+    }
+}
+
+
+buy_condition=[ [105, 20, 120, 30], [407, 20, 40], [205, 12, 26, 9, 20], 90, 100 ]
+sell_condition=[ [206, 12, 26, 9, 30], 30, 100 ]
+# buy_condition=[ [105, 20, 120, 30], [407, 20, 40], 60, 80 ]
+# sell_condition=[ [106, 20, 120, 30], [408, 20, 40], 60, 80 ]
+backtest(account, code_number, start_date, end_date, buy_condition, sell_condition)
+print(account)
+current_stock_price=get_current_stock_price()
+print(f'{calculate_total_account(account, current_stock_price):,}원')
