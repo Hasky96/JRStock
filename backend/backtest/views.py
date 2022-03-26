@@ -18,7 +18,7 @@ from . import algorithm
 @authentication_classes([JWTAuthentication])
 def test_start(request):
     code_number = request.data.get('code_number')
-    option = request.data.get('option')
+    options = request.data.get('options') # 사용할 조건(buy_rsi) (sell_rsi)
     start_date = request.data.get('start_date')
     end_date = request.data.get('end_date')
     start_price = request.data.get('start_price')
@@ -42,7 +42,15 @@ def test_start(request):
         }
     }
     
-    if option == 'RSI':
+    # for option in options:
+    
+    # for idx, row in day_stocks.iterrows():          
+    #     if row['RSI']>=high_index:
+    #         account=common.sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
+    #     elif row['RSI']<=low_index:
+    #         account=common.buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적 강도 지수")
+    
+    if options == 'RSI':
         high_index = request.data.get('high_index')
         low_index = request.data.get('low_index')
         rsi_period = request.data.get('rsi_period')
