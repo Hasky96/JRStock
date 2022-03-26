@@ -171,8 +171,21 @@ export default function Announcement() {
         onClickLast={onClickLast}
         onClickNumber={onClickNumber}
       ></Pagenation>
-
-      <Tooltip title={"공지사항"} contents={contents}></Tooltip>
+      <div className="relative float-right">
+        <Tooltip
+          title={"공지사항"}
+          contents={contents}
+          pos={"-left-9"}
+          right={false}
+        ></Tooltip>
+        <span>공지사항</span>
+        <Tooltip
+          title={"공지사항"}
+          contents={contents}
+          pos={"left-16"}
+          right={true}
+        ></Tooltip>
+      </div>
     </PageContainer>
   );
 }
