@@ -34,11 +34,11 @@ def RSI_buy_sell(stocks, rsi_period, high_index=70, low_index=30, account={}, bu
     stocks = RSI(stocks, rsi_period)
 
     # =====필요한 결과값들 init
-    result_data = common.init_result_data(account)
+    result_data = common.init_result_data(account, len(stocks))
 
     for idx, row in stocks.iterrows():          
         if row['RSI']>=high_index:
-            account=common.sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수")
+            account=common.sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적 강도 지수", result_data)
         elif row['RSI']<=low_index:
             account=common.buy(account, row['code_number'], row['current_price'], buy_percent, row['date'], "상대적 강도 지수")
         

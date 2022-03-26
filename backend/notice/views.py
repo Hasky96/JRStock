@@ -44,6 +44,8 @@ page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
 size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
                         description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
+title = openapi.Parameter('title', openapi.IN_QUERY, default="제목",
+                        description="검색할 공지사항 제목", type=openapi.TYPE_STRING)
 @swagger_auto_schema(
     method='get',
     operation_id='공지사항 전체 조회(아무나)',
@@ -68,7 +70,10 @@ size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
 def notice_list(request):
     notice_list = Notice.objects.all()
     paginator = PageNumberPagination()
-
+    
+    if request.GET.get('title'):
+        title = request.GET.get('title')
+        notice_list = notice_list.filter(title__contains=title)
     # 페이지 사이즈를 주면 해당 사이즈로 지정
     # 값이 없으면 기본 사이즈로 설정(settings.py안에)
     page_size = request.GET.get('size') # request.GET['size']를 써도 되지만 size가 없다면 에러를 발생시킴
