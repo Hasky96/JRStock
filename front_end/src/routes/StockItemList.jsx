@@ -322,6 +322,20 @@ export default function StockItemList() {
     유통비율: "shares_outstanding_rate",
   };
 
+  const unitInfo = new Map([
+    ["자본금", "백만"],
+    ["신용비율", "%"],
+    ["연중최고", "백만"],
+    ["연중최저", "백만"],
+    ["시가총액", "백만"],
+    ["외인소진율", "%"],
+    ["대용가", "백만"],
+    ["매출액", "백만"],
+    ["영업이익", "백만"],
+    ["당기순이익", "백만"],
+    ["유통비율", "%"],
+  ]);
+
   // 모달 노출 여부
   const [isShowModal, setShowModal] = useState(false);
 
@@ -885,6 +899,7 @@ export default function StockItemList() {
               <CheckedList
                 checkedIndicators={checkedIndicators}
                 indicatorInfo={indicatorInfo}
+                unitInfo={unitInfo}
                 onChange={setCheckedIndicators}
               />
               {/* 버튼 공간 */}
