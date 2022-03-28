@@ -29,7 +29,7 @@ export default function NoticeDetail() {
         </div>
         <div className="my-5 text-xl">{item?.content}</div>
         <button
-          className="block m-auto rounded-xl border-2 w-32 h-12 bg-yellow-100 text-xl font-bold text-orange-500 border-yellow-500 bottom-5"
+          className="block m-auto rounded-xl border-2 w-32 h-12 bg-primary hover:bg-active text-xl font-bold text-white duration-300 bottom-5"
           onClick={(e) => {
             e.preventDefault();
             navigate({ pathname: `/notice` });

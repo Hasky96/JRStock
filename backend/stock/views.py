@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
-from numpy import where
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -8,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer
+from .serializers import BasicInfoSerializer, DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer, InterestSerializer, MonthStockSerializer, WeekStockSerializer
 
-from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest, MonthStock, WeekStock
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -18,6 +20,8 @@ from .parser import get_serializer
 
 import requests
 from bs4 import BeautifulSoup
+import re
+
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -27,7 +31,7 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
 company_name = openapi.Parameter('company_name', openapi.IN_QUERY, default="삼성",
                         description="검색할 회사 이름", type=openapi.TYPE_STRING)
-face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
+face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="-1000_5000",
                         description="액면가 0이상 5000이하", type=openapi.TYPE_STRING)
 
 # ====================================================================== 통합 ======================================================================
@@ -53,7 +57,32 @@ face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="0-5000",
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def basic_info_list(request):
-    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date='2022-03-10')
+    # 어제 날짜에 해당하는 데이터 가져오기
+    yesterday = datetime.now() - timedelta(days=1)
+    
+    # 0 월요일, 6 일요일
+    # 어제가 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if yesterday.weekday() == 6:
+        yesterday = yesterday - timedelta(days=2)
+    if yesterday.weekday() == 5:
+        yesterday = yesterday - timedelta(days=1)
+    
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    
+    stock_list = DayStockInfo.objects.select_related('financial_info').filter(date=yesterday)
+    
+    # 코스피 코스닥 제외
+    stock_list = stock_list.exclude(financial_info__basic_info__code_number='kospi')
+    stock_list = stock_list.exclude(financial_info__basic_info__code_number='kosdaq')
+    
+    sort = request.GET.get('sort')
+    
+    if not sort == None:
+        if sort[:1] == '-':
+            sort = sort[1:]
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('-order_column', sort)
+        else:
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('order_column', sort)
     
     # 검색 기능
     if request.GET.get('company_name'):
@@ -67,103 +96,103 @@ def basic_info_list(request):
     # 필터링
     if request.GET.get('face_value'):
         value = request.GET.get('face_value')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__face_value__gte=value[0], financial_info__face_value__lte=value[1])
         
     if request.GET.get('capital_stock'):
         value = request.GET.get('capital_stock')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__capital_stock__gte=value[0], financial_info__capital_stock__lte=value[1])
         
     if request.GET.get('number_of_listings'):
         value = request.GET.get('number_of_listings')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__number_of_listings__gte=value[0], financial_info__number_of_listings__lte=value[1])
         
     if request.GET.get('credit_rate'):
         value = request.GET.get('credit_rate')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__credit_rate__gte=value[0], financial_info__credit_rate__lte=value[1])
         
     if request.GET.get('year_high_price'):
         value = request.GET.get('year_high_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__year_high_price__gte=value[0], financial_info__year_high_price__lte=value[1])
         
     if request.GET.get('year_low_price'):
         value = request.GET.get('year_low_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__year_low_price__gte=value[0], financial_info__year_low_price__lte=value[1])    
     
     if request.GET.get('market_cap'):
         value = request.GET.get('market_cap')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__market_cap__gte=value[0], financial_info__market_cap__lte=value[1])    
         
     if request.GET.get('foreigner_percent'):
         value = request.GET.get('foreigner_percent')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__foreigner_percent__gte=value[0], financial_info__foreigner_percent__lte=value[1])    
         
     if request.GET.get('substitute_price'):
         value = request.GET.get('substitute_price')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__substitute_price__gte=value[0], financial_info__substitute_price__lte=value[1])    
         
     if request.GET.get('per'):
         value = request.GET.get('per')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__per__gte=value[0], financial_info__per__lte=value[1])    
         
     if request.GET.get('eps'):
         value = request.GET.get('eps')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__eps__gte=value[0], financial_info__eps__lte=value[1])                    
     
     if request.GET.get('roe'):
         value = request.GET.get('roe')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__roe__gte=value[0], financial_info__roe__lte=value[1])  
         
     if request.GET.get('pbr'):
         value = request.GET.get('pbr')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__pbr__gte=value[0], financial_info__pbr__lte=value[1])  
         
     if request.GET.get('ev'):
         value = request.GET.get('ev')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__ev__gte=value[0], financial_info__ev__lte=value[1])  
         
     if request.GET.get('bps'):
         value = request.GET.get('bps')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__bps__gte=value[0], financial_info__bps__lte=value[1])  
         
     if request.GET.get('sales_revenue'):
         value = request.GET.get('sales_revenue')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__sales_revenue__gte=value[0], financial_info__sales_revenue__lte=value[1])                  
     
     
     if request.GET.get('operating_income'):
         value = request.GET.get('operating_income')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__operating_income__gte=value[0], financial_info__operating_income__lte=value[1])                  
         
     if request.GET.get('net_income'):
         value = request.GET.get('net_income')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__net_income__gte=value[0], financial_info__net_income__lte=value[1])                  
         
     if request.GET.get('shares_outstanding'):
         value = request.GET.get('shares_outstanding')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__shares_outstanding__gte=value[0], financial_info__shares_outstanding__lte=value[1])                  
         
     if request.GET.get('shares_outstanding_rate'):
         value = request.GET.get('shares_outstanding_rate')
-        value = value.split('-')
+        value = value.split('_')
         stock_list = stock_list.filter(financial_info__shares_outstanding_rate__gte=value[0], financial_info__shares_outstanding_rate__lte=value[1])                                  
     # 필터링
     # columns = ['face_value', 'capital_stock', 'number_of_listings', 'credit_rate', 'year_high_price', 'year_low_price', 
@@ -185,8 +214,8 @@ def basic_info_list(request):
         paginator.page_size = page_size
 
     result = paginator.paginate_queryset(stock_list, request)
-    serializers = DayStockInfoSerializer(result, many=True)
-    return paginator.get_paginated_response(serializers.data)    
+    serializer = DayStockInfoSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)    
 
 @swagger_auto_schema(
     method='get',
@@ -216,6 +245,66 @@ def day_stock_list(request, code_number):
     day_stock_list = DayStock.objects.filter(code_number=code_number)
     serializer = DayStockSerializer(day_stock_list, many=True)
     
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 주봉 데이터 전체 조회(아무나)',
+    operation_description='주봉 데이터 전체 정보를 가져옵니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: DayStockSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def week_stock_list(reqeust, code_number):
+    week_stock_list = WeekStock.objects.filter(code_number=code_number)
+    serializer = WeekStockSerializer(week_stock_list, many=True)
+    
+    # ========== 전체 날짜에서 월요일만 뽑아내는 방법 ==========
+    # day_stock_list = DayStock.objects.filter(code_number=code_number)
+    # day_stock_list = list(day_stock_list)
+    
+    # for day_stock in day_stock_list[:]:
+    #     datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
+    #     if datetime_date.weekday() != 0: # 월요일이 아닐 때
+    #         day_stock_list.remove(day_stock)
+    # serializer = DayStockSerializer(day_stock_list, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 월봉 데이터 전체 조회(아무나)',
+    operation_description='월봉 데이터 전체 정보를 가져옵니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: DayStockSerializer},
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def month_stock_list(reqeust, code_number):
+    month_stock_list = MonthStock.objects.filter(code_number=code_number)
+    serializer = MonthStockSerializer(month_stock_list, many=True)
+    
+    # ========== 전체 날짜에서 매월 첫째날 뽑아내는 방법 ==========
+    # day_stock_list = DayStock.objects.filter(code_number=code_number)
+    # day_stock_list = list(day_stock_list)
+    
+    # prev_month = None
+    
+    # for day_stock in day_stock_list[:]:
+    #     datetime_date = datetime.strptime(day_stock.date, '%Y-%m-%d')
+    #     if prev_month == None:
+    #         prev_month = datetime_date.month
+    #         continue
+        
+    #     if prev_month != datetime_date.month:
+    #         prev_month = datetime_date.month
+    #         continue
+        
+    #     day_stock_list.remove(day_stock)
+    
+    # serializer = DayStockSerializer(day_stock_list, many=True)
+
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @swagger_auto_schema(
@@ -289,101 +378,320 @@ def live_data(request, code_number):
                         }, status=status.HTTP_200_OK)
         
     return Response({"message" : "Connection Error"}, status=status.HTTP_404_NOT_FOUND)
-# ====================================================================== 코스피 ======================================================================
 
-
-
-# @swagger_auto_schema(
-#     method='get',
-#     operation_id='코스피 주식 종목 전체 조회(아무나)',
-#     operation_description='코스피 주식 종목 전체를 조회 합니다',
-#     tags=['주식_코스피'],
-#     manual_parameters=[page, size, sort, company_name, face_value],
-#     responses={status.HTTP_200_OK: openapi.Response(
-#         description="200 OK",
-#         schema=openapi.Schema(
-#             type=openapi.TYPE_OBJECT,
-#             properties={
-#                 'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
-#                 'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
-#                 'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
-#                 'results' : get_serializer("info", "종목 정보"),
-#             }
-#         )
-#     )}
-# )
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def info_kospi_list(request):
-#     sort = request.GET.get('sort')
+@swagger_auto_schema(
+    method='post',
+    operation_id='관심종목 등록(유저)',
+    operation_description='종목코드를 이용해 관심종목을 등록합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="종목 코드"),
+        }
+    ),
+    tags=['주식_관심종목'],
+    responses={status.HTTP_201_CREATED: openapi.Response(
+        description="HTTP_201_CREATED",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'duplicate': openapi.Schema(type=openapi.TYPE_INTEGER, default=True, description="중복되어 등록되지 않은 종목 수"),
+            }
+        )
+    )}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def interest_stock_create(request):
+    # 체크박스를 리스트 형식으로 받아와서 저장
+    code_numbers = request.data.get('code_number')
     
-#     # 정렬을 원한다면
-#     if not sort == None:
-#         if sort.startswith('-'):
-#             sort = sort[1:]
-#             kospi_list = FinancialKospi.objects.all().order_by(f"-info_kospi__{sort}")
-#         else:
-#             kospi_list = FinancialKospi.objects.all().order_by(f"info_kospi__{sort}")
-#     else:
-#         kospi_list = FinancialKospi.objects.all()
+    duplicate_list = []
+    
+    # 중복확인
+    for code_number in code_numbers:
+        interest = Interest.objects.filter(basic_info_id=code_number)
         
+        if interest.count() == 0:
+            serializer = InterestSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user, basic_info_id=code_number)
+        else:
+            duplicate_list.append(code_number)            
     
-#     # 검색 기능
-#     if request.GET.get('company_name'):
-#         value = request.GET.get('company_name')
-#         kospi_list = kospi_list.filter(info_kospi__company_name__contains=value)
+    return Response({'duplicate': len(duplicate_list)},status=status.HTTP_201_CREATED)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='주식 관심 종목 조회(유저)',
+    operation_description='주식 관심 종목 전체를 조회 합니다(기본정보 + 재무제표 + 최근 주가)',
+    tags=['주식_관심종목'],
+    manual_parameters=[page, size, sort, company_name, face_value],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 종목 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("info", "종목 정보"),
+            }
+        )
+    )}
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def interest_stock_list(request):    
+    # 해당하는 유저의 관심종목 전체를 불러옴
+    interest_list = Interest.objects.filter(user=request.user)
+    
+    # 비어있는 쿼리셋 만들기
+    stock_list = DayStockInfo.objects.none()
+    
+    # 어제 날짜에 해당하는 데이터 가져오기
+    yesterday = datetime.now() - timedelta(days=1)
+    
+    # 0 월요일, 6 일요일
+    # 어제가 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if yesterday.weekday() == 6:
+        yesterday = yesterday - timedelta(days=2)
+    if yesterday.weekday() == 5:
+        yesterday = yesterday - timedelta(days=1)
+    
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    
+    # 관심종목의 상세 정보를 불러와서 합침
+    for interest in interest_list:
+        stock = DayStockInfo.objects.filter(financial_info_id=interest.basic_info_id, date=yesterday)
+        stock_list = stock_list | stock
         
-#     if request.GET.get('code_number'):
-#         value = request.GET.get('code_number')
-#         kospi_list = kospi_list.filter(info_kospi__code_number__contains=value)
+    sort = request.GET.get('sort')
     
-#     # 필터링
-#     columns = ['face_value', 'capital_stock', 'number_of_listings', 'credit_rate', 'year_high_price', 'year_low_price', 
-#                     'market_cap', 'foreigner_percent', 'substitute_price', 'per', 'eps', 'roe', 'pbr', 'ev', 'bps', 'sales_revenue',
-#                     'operating_income', 'net_income', 'shares_outstanding', 'shares_outstanding_rate']
-#     for column in columns:
-#         if request.GET.get(column):
-#             value = request.GET.get(column)
-#             value = value.split('-')
-#             query = f"{column} BETWEEN {value[0]} AND {value[1]}"
-#             kospi_list = kospi_list.extra(where={query})
+    if not sort == None:
+        if sort[:1] == '-':
+            sort = sort[1:]
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('-order_column', sort)
+        else:
+            stock_list = stock_list.annotate(order_column=Cast(sort, IntegerField())).order_by('order_column', sort)
+
+    # 검색 기능
+    if request.GET.get('company_name'):
+        value = request.GET.get('company_name')
+        stock_list = stock_list.filter(financial_info__basic_info__company_name__contains=value)
+        
+    if request.GET.get('code_number'):
+        value = request.GET.get('code_number')
+        stock_list = stock_list.filter(financial_info__basic_info__code_number__contains=value)
+    
+    # 필터링
+    if request.GET.get('face_value'):
+        value = request.GET.get('face_value')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__face_value__gte=value[0], financial_info__face_value__lte=value[1])
+        
+    if request.GET.get('capital_stock'):
+        value = request.GET.get('capital_stock')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__capital_stock__gte=value[0], financial_info__capital_stock__lte=value[1])
+        
+    if request.GET.get('number_of_listings'):
+        value = request.GET.get('number_of_listings')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__number_of_listings__gte=value[0], financial_info__number_of_listings__lte=value[1])
+        
+    if request.GET.get('credit_rate'):
+        value = request.GET.get('credit_rate')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__credit_rate__gte=value[0], financial_info__credit_rate__lte=value[1])
+        
+    if request.GET.get('year_high_price'):
+        value = request.GET.get('year_high_price')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__year_high_price__gte=value[0], financial_info__year_high_price__lte=value[1])
+        
+    if request.GET.get('year_low_price'):
+        value = request.GET.get('year_low_price')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__year_low_price__gte=value[0], financial_info__year_low_price__lte=value[1])    
+    
+    if request.GET.get('market_cap'):
+        value = request.GET.get('market_cap')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__market_cap__gte=value[0], financial_info__market_cap__lte=value[1])    
+        
+    if request.GET.get('foreigner_percent'):
+        value = request.GET.get('foreigner_percent')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__foreigner_percent__gte=value[0], financial_info__foreigner_percent__lte=value[1])    
+        
+    if request.GET.get('substitute_price'):
+        value = request.GET.get('substitute_price')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__substitute_price__gte=value[0], financial_info__substitute_price__lte=value[1])    
+        
+    if request.GET.get('per'):
+        value = request.GET.get('per')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__per__gte=value[0], financial_info__per__lte=value[1])    
+        
+    if request.GET.get('eps'):
+        value = request.GET.get('eps')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__eps__gte=value[0], financial_info__eps__lte=value[1])                    
+    
+    if request.GET.get('roe'):
+        value = request.GET.get('roe')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__roe__gte=value[0], financial_info__roe__lte=value[1])  
+        
+    if request.GET.get('pbr'):
+        value = request.GET.get('pbr')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__pbr__gte=value[0], financial_info__pbr__lte=value[1])  
+        
+    if request.GET.get('ev'):
+        value = request.GET.get('ev')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__ev__gte=value[0], financial_info__ev__lte=value[1])  
+        
+    if request.GET.get('bps'):
+        value = request.GET.get('bps')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__bps__gte=value[0], financial_info__bps__lte=value[1])  
+        
+    if request.GET.get('sales_revenue'):
+        value = request.GET.get('sales_revenue')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__sales_revenue__gte=value[0], financial_info__sales_revenue__lte=value[1])                  
+    
+    
+    if request.GET.get('operating_income'):
+        value = request.GET.get('operating_income')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__operating_income__gte=value[0], financial_info__operating_income__lte=value[1])                  
+        
+    if request.GET.get('net_income'):
+        value = request.GET.get('net_income')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__net_income__gte=value[0], financial_info__net_income__lte=value[1])                  
+        
+    if request.GET.get('shares_outstanding'):
+        value = request.GET.get('shares_outstanding')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__shares_outstanding__gte=value[0], financial_info__shares_outstanding__lte=value[1])                  
+        
+    if request.GET.get('shares_outstanding_rate'):
+        value = request.GET.get('shares_outstanding_rate')
+        value = value.split('_')
+        stock_list = stock_list.filter(financial_info__shares_outstanding_rate__gte=value[0], financial_info__shares_outstanding_rate__lte=value[1])                                  
+    
+    paginator = PageNumberPagination()
+
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+
+    result = paginator.paginate_queryset(stock_list, request)
+    serializer = DayStockInfoSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)        
+
+@swagger_auto_schema(
+    method='post',
+    operation_id='관심종목 제거(유저)',
+    operation_description='종목코드를 이용해 관심종목을 제거합니다',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'code_number': openapi.Schema(type=openapi.TYPE_STRING, description="종목 코드"),
+        }
+    ),
+    tags=['주식_관심종목'],
+    responses={status.HTTP_200_OK: ""}
+)    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def interset_stock_delete(request):
+    # 체크박스를 리스트 형식으로 받아와서 저장
+    code_numbers = request.data.get('code_number')
+    
+    # DB에 있는 값이면 제거 아니면 오류
+    for code_number in code_numbers:
+        interest = Interest.objects.filter(basic_info_id=code_number, user=request.user)
+        if interest.count() == 1:
+            interest.delete()
+    
+    return Response(status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='종목별 최신 뉴스 조회(아무나)',
+    operation_description='요청한 종목의 최신 뉴스를 조회합니다',
+    tags=['주식_뉴스'],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'date': openapi.Schema(type=openapi.TYPE_STRING, description="날짜"),
+                'title': openapi.Schema(type=openapi.TYPE_STRING, description="뉴스 제목"),
+                'source': openapi.Schema(type=openapi.TYPE_STRING, description="뉴스 출처"),
+                'link': openapi.Schema(type=openapi.TYPE_STRING, description="뉴스 기사 주소"),
+            }
+        )
+    )}
+)    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_recent_news(reqeust, code_number):
+    news_list = []
+    
+    if (code_number == 'KOSPI' or code_number == 'KOSDAQ'):
+        url = 'https://finance.naver.com/sise/sise_index.naver?code=' + code_number
+        source_code = requests.get(url).text
+        html = BeautifulSoup(source_code, "lxml")
+        
+        news_href = html.select('#contentarea_left > div:nth-child(4) > ul > li > span > a')
+        news_info1 = html.select('#contentarea_left > div:nth-child(4) > ul > li > p > .paper')
+        news_info2 = html.select('#contentarea_left > div:nth-child(4) > ul > li > p > .date')
+        
+        for i in range(len(news_href)):
+            date = news_info2[i].text
+            title = news_href[i].text
+            source = news_info1[i].text
+            link = "https://finance.naver.com"+news_href[i]['href']
             
-#     paginator = PageNumberPagination()
-
-#     page_size = request.GET.get('size')
-#     if not page_size == None:
-#         paginator.page_size = page_size
-
-#     result = paginator.paginate_queryset(kospi_list, request)
-#     serializers = KospiCustomSerializer(result, many=True)
-#     return paginator.get_paginated_response(serializers.data)
-
-# @swagger_auto_schema(
-#     method='get',
-#     operation_id='코스피 주식 상세 조회(아무나)',
-#     operation_description='코스피 주식 상세 조회 합니다',
-#     tags=['주식_코스피'],
-#     responses={status.HTTP_200_OK: InfoKospiSerializer},
-# )
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def info_kospi_detail(request, code_number):
-#     info_kospi = get_object_or_404(InfoKospi, pk=code_number)
-#     serializer = InfoKospiSerializer(info_kospi)
+            result = {'date' : date, 'title' : title, 'source' : source, 'link' : link}
+            news_list.append(result)
+            
+        return Response(news_list, status=status.HTTP_200_OK)
     
-#     return Response(serializer.data, status=status.HTTP_200_OK)
+    url = 'https://finance.naver.com/item/news_news.nhn?code=' + str(code_number) + '&page=1' 
+    source_code = requests.get(url).text
+    html = BeautifulSoup(source_code, "lxml")
 
-# @swagger_auto_schema(
-#     method='get',
-#     operation_id='코스피 주식 재무제표 상세 조회(아무나)',
-#     operation_description='코스피 주식 재무제표를 상세 조회 합니다',
-#     tags=['주식_코스피'],
-#     responses={status.HTTP_200_OK: FinancialKospiSerializer},
-# )
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def financial_kospi_detail(request, code_number):
-#     financial_kospi = get_object_or_404(FinancialKospi, pk=code_number)
-#     serializer = FinancialKospiSerializer(financial_kospi)
+    title_data = html.select('.title')
+    dates = html.select('.date')
+    sources = html.select('.info')
     
-#     return Response(serializer.data, status=status.HTTP_200_OK)
+    for idx in range(0, len(title_data)):        
+        # 제목
+        title = title_data[idx].get_text() 
+        title = re.sub('\n','',title)
+        
+        # 링크
+        link = 'https://finance.naver.com' + title_data[idx].find('a')['href']
+        
+        # 날짜
+        date = dates[idx].get_text()
+        
+        # 출처
+        source = sources[idx].get_text()
+        
+        result = {'date' : date, 'title' : title, 'source' : source, 'link' : link}
+        news_list.append(result)
+
+    return Response(news_list, status=status.HTTP_200_OK)

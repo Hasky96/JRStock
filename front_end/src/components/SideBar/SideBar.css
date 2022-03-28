@@ -1,7 +1,7 @@
 .link-text {
   display: none;
   margin-left: 0.5rem;
-  color: #ffc42a;
+  color: #18216d;
 }
 
 .navbar {
@@ -9,7 +9,7 @@
   height: 100vh;
   position: fixed;
   transition: width 200ms ease;
-  z-index: 10000;
+  z-index: 40;
 }
 
 .logo {
@@ -41,6 +41,7 @@
 
 .navbar:hover .link-text {
   display: block;
+  white-space: nowrap;
 }
 
 .nav-item {

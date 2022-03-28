@@ -17,7 +17,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="ssafy.6th.project@gmail.com"),
         license=openapi.License(name="Apache 2.0", url="https://www.apache.org/licenses/LICENSE-2.0.html"),
     ),
-    url="http://j6s001.p.ssafy.io/",
+    url="https://j6s001.p.ssafy.io/",
     public=True,
     permission_classes=[AllowAny],
 )
@@ -36,4 +36,5 @@ urlpatterns = [
     path('api/notice/', include('notice.urls')),
     path('api/stock/', include('stock.urls')),
     path('api/stock/', include('board.urls')),
+    path('api/backtest/', include('backtest.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

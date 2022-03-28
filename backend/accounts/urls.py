@@ -19,4 +19,6 @@ urlpatterns = [
     path('login/', include(login_patterns)),
     path('email-confirm/<str:uidb64>/<str:token>', views.email_confirm, name='email_confirm'),
     path('email-check/<str:email>', views.email_check, name='email_check'),
+    
+    path('contact/', views.send_contact_mail, name='send_contact_mail'),
 ]

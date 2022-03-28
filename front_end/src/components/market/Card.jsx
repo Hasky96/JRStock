@@ -1,3 +1,5 @@
+import costMap from "../../util/costMap";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -5,18 +7,23 @@ function classNames(...classes) {
 export default function card({ info }) {
   return (
     <div className="border-2 rounded-xl m-2">
-      <div
-        className={classNames(
-          "m-5 text-2xl mb-10",
-          info.open > info.close ? "text-red-500" : "text-green-500"
-        )}
-      >
-        <span className="mr-3">{info.open.toFixed(2)}</span>
-        <span>{`${info.close - info.open < 0 ? "▼" : "▲"} ${(
-          info.close - info.open
-        ).toFixed(3)} (${((info.close / info.open) * 100 - 100).toFixed(
-          3
-        )}%)`}</span>
+      <div>
+        <div>
+          <div
+            className={classNames(
+              "ml-5 mt-5 text-2xl",
+              info.open > info.close ? "text-blue-600" : "text-red-500"
+            )}
+          >
+            <span className="mr-3">{info.close.toFixed(2)}</span>
+            <span>{`${info.close - info.open < 0 ? "▼" : "▲"} ${(
+              info.close - info.open
+            ).toFixed(3)} (${((info.close / info.open) * 100 - 100).toFixed(
+              3
+            )}%)`}</span>
+          </div>
+          <span className="ml-5 text-gray-400">{`${info.date} 기준`}</span>
+        </div>
       </div>
       <div className="grid grid-rows-2 m-5 gap-8">
         <div className="grid grid-rows-1 grid-cols-2">
@@ -26,9 +33,7 @@ export default function card({ info }) {
           </div>
           <div className="grid grid-cols-1">
             <div className="font-bold">거래 대금</div>
-            <div>{`${parseInt(
-              info.volume * info.open
-            ).toLocaleString()} 원`}</div>
+            <div>{`${costMap(info.tradePrice)}`}</div>
           </div>
         </div>
         <div className="grid grid-rows-1 grid-cols-2">

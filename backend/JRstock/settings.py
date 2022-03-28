@@ -42,14 +42,18 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     
+    'django_celery_beat',
+    'django_celery_results',
+    
     'accounts',
     'notice',
     'stock',
     'board',
+    'backtest',
 ]
 
 # BASE_URL = 'http://localhost:8000/'
-BASE_URL = 'http://j6s001.p.ssafy.io/'
+BASE_URL = 'https://j6s001.p.ssafy.io/'
 
 SITE_ID = 1
 
@@ -67,8 +71,17 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000', 'http://j6s001.p.ssafy.io']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000', 'https://j6s001.p.ssafy.io']
 CORS_ALLOW_CREDENTIALS = True
+
+# CELERY 세팅
+CELERY_ALWAYS_EAGER = True
+CELERY_BROKER_URL = 'redis://j6s001.p.ssafy.io:6379'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Seoul'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

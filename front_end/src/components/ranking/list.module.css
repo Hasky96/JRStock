@@ -1,0 +1,34 @@
+.first {
+  text-align: center;
+  font-weight: 400;
+  border-radius: 10px 0 0 10px;
+  color: #fff;
+}
+
+.last {
+  text-align: center;
+  font-weight: 400;
+  border-radius: 0 10px 10px 0;
+  color: #fff;
+}
+
+.normal {
+  text-align: center;
+  font-weight: 400;
+  color: #fff;
+}
+
+.table {
+  table-layout: auto;
+  width: 100%;
+  text-align: left;
+  border-radius: 10px;
+}
+
+.tmp {
+  background-image: linear-gradient(
+    to right,
+    rgba(24, 33, 109, 1),
+    rgba(24, 33, 109, 0.5)
+  );
+}

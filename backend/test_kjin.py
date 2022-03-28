@@ -1,6 +1,8 @@
 from bt_common import *
 
-current_stock_price=get_current_stock_price()   # {'005930': 71000}
+start_date = '2019-12-02'
+end_date = '2020-03-20'
+current_stock_price=get_stock_price('005380', end_date)   # {'005930': 71000}
 # day_stocks=get_day_stock('005380', '1995-05-02', '2022-03-22')
 # day_stocks=get_day_stock('005380', '2015-05-02', '2022-03-22')
 day_stocks=get_day_stock('035420', '2015-05-02', '2022-03-22')
@@ -9,7 +11,8 @@ day_stocks=get_day_stock('035420', '2015-05-02', '2022-03-22')
 
 account = {
     "balance":1000000,
-    "start_price":1000000, 
+    "start_price":1000000,
+    "pre_price":1000000, 
     "stocks":{
         # "005930":{
         #     "amount":100,
@@ -85,7 +88,38 @@ def OBV(stocks):
 # RSI지수가 high_index 이상이면 매도, low_index 이하면 매수
 def RSI_buy_sell(stocks, high_index=90, low_index=10, account={}, buy_percent=50, sell_percent=50):
     print(f'상대적 강도 지수(RSI) 전략: 하한선-{low_index} 상한선-{high_index}')
+    year = '0' # 연도 저장
+    year_start_price = 0 # 시작가격
+    year_earn_rate = 0.0 # 연평균 수익률
+    year_cnt = 0 # 총 연도 수
+    max_earn = account['balance']; # 최고 수익
+    max_date = None # 최고 수익 날짜
+    min_earn = account['balance']; # 최저 수익
+    min_earn_after_max = 0
+    start_kospi_price = None # 시작 코스피 가격
+    cnt = 0
+    while start_kospi_price == None:
+        cnt += 1
+        yesterday = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=cnt)
+        yesterday = yesterday.strftime('%Y-%m-%d')
+        start_kospi_price = get_stock_price('kospi', yesterday)
+    
     for idx, row in stocks.iterrows():
+        # 시작날 연도랑 시작가격 받아오기
+        if idx == 0:
+            year = row['date'][:4]
+            year_start_price = account['balance']
+            
+        # 마지막날 코스피 가격 받아오기
+        if idx == len(stocks) - 1:
+            cnt = 0   
+            end_kospi_price = None
+            while end_kospi_price == None:
+                cnt += 1
+                yesterday = datetime.strptime(row['date'], '%Y-%m-%d') - timedelta(days=cnt)
+                yesterday = yesterday.strftime('%Y-%m-%d')
+                end_kospi_price = get_stock_price('kospi', yesterday)
+        
         if row['RSI']>=high_index:
             account=sell(account, row['code_number'], row['current_price'], sell_percent, row['date'], "상대적강도지수(RSI)")
         elif row['RSI']<=low_index:
@@ -102,7 +136,7 @@ def SMA_buy_sell(stocks, short_period=20, long_period=120, account={}, buy_perce
     current_flag=0
     before_price=0
     current_price=0
-    for idx, row in stocks.iterrows():
+    for idx, row in stocks.iterrows():        
         current_price=row['current_price']
         if row['SMA_long']<row['SMA_short']:
             current_flag=1

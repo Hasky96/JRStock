@@ -32,7 +32,7 @@ export default function Pagenation({
   const firstBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-yellow-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
       onClick={(e) => {
         e.preventDefault();
         onClickFirst();
@@ -47,7 +47,7 @@ export default function Pagenation({
   const leftBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-yellow-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
       onClick={(e) => {
         e.preventDefault();
         if (selectedNum > 1) {
@@ -64,7 +64,7 @@ export default function Pagenation({
   const rightBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-yellow-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
       onClick={(e) => {
         e.preventDefault();
         if (selectedNum < lastPageNum) {
@@ -81,7 +81,7 @@ export default function Pagenation({
   const LastBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-yellow-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
       onClick={(e) => {
         e.preventDefault();
         onClickLast();
@@ -100,10 +100,10 @@ export default function Pagenation({
     let cnt = 0;
     // 선택된 버튼 className
     const selectedItemClassName =
-      "z-10 bg-yellow-50 border-yellow-500 text-yellow-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
+      "z-10 bg-indigo-50 border-primary text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
     // 선택 안된 버튼 className
     const notSelectedItemClassName =
-      "bg-white border-gray-300 text-gray-500 hover:bg-yellow-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
+      "bg-white border-gray-300 text-gray-900 hover:bg-indigo-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
     // 숫자 버튼 리스트에 담기
     while (cnt < 5 && pageNum <= lastPageNum) {
       list.push(
@@ -129,12 +129,12 @@ export default function Pagenation({
     return list;
   };
   return (
-    <div className="bg-white px-4 py-3 flex items-center justify-between border-gray-200 sm:px-6">
+    <div className="bg-opacity-0 px-4 py-3 flex items-center justify-between border-gray-200 sm:px-6">
       {/* 작은 화면용 버튼 */}
       <div className="flex-1 flex justify-between sm:hidden">
         <a
           href="#"
-          className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-yellow-50"
+          className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-indigo-50"
           onClick={(e) => {
             e.preventDefault();
             if (selectedNum > 1) {
@@ -146,7 +146,7 @@ export default function Pagenation({
         </a>
         <a
           href="#"
-          className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-yellow-50"
+          className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-indigo-50"
           onClick={(e) => {
             e.preventDefault();
             if (selectedNum < lastPageNum) {
@@ -165,7 +165,7 @@ export default function Pagenation({
           >
             {firstBtn}
             {leftBtn}
-            {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
+            {/* Current: "z-10 bg-indigo-50 border-primary text-indigo-600", Default: "bg-white border-gray-300 text-gray-900 hover:bg-gray-50" */}
             {numBtnList()}
             {rightBtn}
             {LastBtn}

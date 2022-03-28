@@ -4,9 +4,10 @@ import { ReactComponent as DashboardIconActive } from "../../assets/dashboardIco
 import { ReactComponent as StockList } from "../../assets/stockList.svg";
 import { ReactComponent as BackTest } from "../../assets/backTest.svg";
 import { ReactComponent as MyPage } from "../../assets/myPage.svg";
-import { ReactComponent as Rocket } from "../../assets/sidebarRocket.svg";
+import { ReactComponent as Rocket } from "../../assets/rocket.svg";
 import "./SideBar.css";
 import { ReactComponent as Notice } from "../../assets/notice.svg";
+import { ReactComponent as Ranking } from "../../assets/ranking.svg";
 
 export default function SideBar() {
   const location = useLocation();
@@ -36,6 +37,11 @@ export default function SideBar() {
       icon: <Notice />,
       linkPath: "/notice",
       linkText: "공지사항",
+    },
+    {
+      icon: <Ranking />,
+      linkPath: "/ranking",
+      linkText: "랭킹",
     },
   ];
 

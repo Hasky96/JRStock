@@ -37,20 +37,20 @@ export default function PasswordReset() {
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-img">
         <div className="max-w-lg w-full border-2 p-12 rounded-md bg-white">
           <div>
-            <h2 className="text-3xl font-extrabold text-yellow-900 text-center">
+            <h2 className="text-3xl font-extrabold text-primary text-center">
               JRstock
             </h2>
           </div>
           <div>
-            <h2 className="text-xl mt-8 font-extrabold text-yellow-900">
+            <h2 className="text-xl mt-8 font-extrabold text-primary">
               비밀번호 찾기
             </h2>
           </div>
           <div>
-            <p className="text-yellow-900">
+            <p className="text-primary">
               가입 시 등록한 이메일과 이름을 입력해주세요.
             </p>
-            <p className="text-yellow-900">
+            <p className="text-primary">
               이메일을 통해 재설정된 비밀번호가 발송됩니다.
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function PasswordReset() {
                   type="text"
                   autoComplete="name"
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="Name"
                   onChange={inputName}
                 />
@@ -85,7 +85,7 @@ export default function PasswordReset() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="Email address"
                   onChange={inputEmail}
                 />
@@ -96,7 +96,7 @@ export default function PasswordReset() {
               <div className="col-span-3 pr-2">
                 <button
                   type="submit"
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-900"
                 >
                   <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
                   비밀번호 재발급 받기
@@ -104,7 +104,7 @@ export default function PasswordReset() {
               </div>
 
               <div
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 hover:cursor-pointer"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-900 hover:cursor-pointer"
                 onClick={function () {
                   navigate({ pathname: "/login" });
                 }}
@@ -117,7 +117,7 @@ export default function PasswordReset() {
 
           <div className="flex justify-center mt-8">
             <p>아직 계정이 없으신가요?&nbsp;</p>
-            <Link to="/signup" className="text-blue-600 hover:text-blue-500">
+            <Link to="/signup" className="text-blue-600 hover:text-blue-900">
               회원가입
             </Link>
           </div>

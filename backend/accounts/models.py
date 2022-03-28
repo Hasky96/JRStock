@@ -35,6 +35,7 @@ class UserManager(BaseUserManager):
         )
         user.profile_img_url = userinfo['picture']
         user.is_active = True
+        user.is_google = True
         user.save()
 
         return user
@@ -51,6 +52,7 @@ class User(AbstractBaseUser):
     profile_img_url = models.CharField(max_length=100, default=f"{BASE_URL}media/default_profile.jpg") # 장고 외부 url 프로필 이미지용
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    is_google = models.BooleanField(default=False)
 
     objects = UserManager()
 

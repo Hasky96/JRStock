@@ -17,7 +17,7 @@ ListHeader.propTypes = {
  * onSearch: 검색을 했을 때 작동시킬 함수
  */
 export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
-  const [selected, setSelected] = useState("Options");
+  const [selected, setSelected] = useState(optionKind[0]);
   const optionList = [];
   optionKind.forEach((element, idx) => {
     optionList.push(
@@ -46,7 +46,7 @@ export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
       {/* filter 부분 */}
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="inline-flex justify-center w-full rounded-md border hover:border-yellow-300 focus:border-yellow-300 border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-yellow-500">
+          <Menu.Button className="inline-flex justify-center w-full rounded-md border hover:border-primary focus:border-primary border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-primary">
             <FilterIcon className="h-5 w-5 -ml-1 mr-2 p-0" aria-hidden="true" />
             {selected}
             <ChevronDownIcon
@@ -93,7 +93,7 @@ export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
             type="text"
             name="price"
             id="price"
-            className="hover:border-yellow-300 focus:ring-yellow-300 focus:border-yellow-300 text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+            className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
             placeholder="Search..."
             onChange={(e) => {
               e.preventDefault();

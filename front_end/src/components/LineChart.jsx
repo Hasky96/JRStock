@@ -48,9 +48,9 @@ export default function Chart({ data }) {
         areaSeries = null;
       }
       areaSeries = chart.addAreaSeries({
-        topColor: "rgba(255, 196, 42, 0.56)",
-        bottomColor: "rgba(255, 196, 42, 0.04)",
-        lineColor: "rgba(255, 196, 42, 1)",
+        topColor: "rgba(24, 33, 109, 0.56)",
+        bottomColor: "rgba(24, 33, 109, 0.04)",
+        lineColor: "rgba(24, 33, 109, 1)",
         lineWidth: 2,
       });
       areaSeries.setData(data);
@@ -58,12 +58,20 @@ export default function Chart({ data }) {
 
     syncToInterval(data);
 
+    const handleResize = () => {
+      console.log("@ resized here");
+      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    };
+
+    window.addEventListener("resize", handleResize);
     // 종료시 차트 제거
     return () => {
+      window.removeEventListener("resize", handleResize);
+
       chart.remove();
     };
   }, [data]);
 
   // 컴포넌트 반환
-  return <div ref={chartContainerRef} />;
+  return <div className="w-full" ref={chartContainerRef} />;
 }

@@ -1,162 +1,334 @@
 import PageContainer from "../components/PageContainer";
 import { useParams } from "react-router-dom";
 import TabBar from "../components/TabBar/TabBar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Chart from "../components/StockItemDetail/Chart";
 import News from "../components/StockItemDetail/News";
-import Board from "../components/StockItemDetail/Board";
+import BoardList from "../components/StockItemDetail/BoardList";
+import { getDetail, getDayStock, getLive } from "../api/stock";
+import costMap from "../util/costMap";
+import { toast } from "react-toastify";
 
 export default function StockItemDetail() {
-  // const { id } = useParams();
-  // console.log(id);
+  const { stockTab, id } = useParams();
+  const [detail, setDetail] = useState({ basic_info: "" });
+  const [stock, setStock] = useState({ market_cap: "" });
+  const [live, setLive] = useState({ current_price: "" });
+  const [isError, setIsError] = useState(false);
+  const [isLive, setIsLive] = useState(false);
 
-  const [currentTab, setCurrentTab] = useState("종합정보");
-  const tabInfo = ["종합정보", "뉴스", "종목토론 게시판"];
-
-  // console.log(currentTab);
-
-  const stock = {
-    id: 1351,
-    chart: "charinfo",
-    name: "삼성전자",
-    currentPrice: "72400",
-    volatility: 200,
-    volatilityRate: "+0.28%",
-    yesterdayPrice: "72200",
-    volume: "17640567",
-    marketPrice: "72400",
-    highPrice: "72400",
-    lowPrice: "72400",
-    marketCapitalization: "430421300000000",
-    transactionPrice: "70000",
-    highPrice52: "90000",
-    lowPrice52: "60000",
+  const setting = {
+    detail: "종합정보",
+    news: "뉴스",
+    board: "종목토론 게시판",
   };
 
-  const statement = {
-    PER: "41.14배",
-    EPS: "2540원",
-    estimationPER: "53.80배",
-    estimationEPS: "1933원",
-    PBR: "5.15배",
-    BPS: "20276원",
-    dividendRate: "0.05%",
-    foreignLimit: "446112896",
-    foreignOwn: "126976103",
-    foreignRunout: "28.46%"
-  }
+  const [currentTab, setCurrentTab] = useState(setting[stockTab]);
+  const tabInfo = ["종합정보", "뉴스", "종목토론 게시판"];
+
+  const init = async () => {
+    const resDetail = await getDetail(id);
+    setDetail(resDetail.data);
+    const resStock = await getDayStock(id);
+    setStock(resStock.data[resStock.data.length - 1]);
+
+    try {
+      const resLive = await getLive(id);
+      setLive(resLive.data);
+      setIsLive(true);
+    } catch (e) {
+      console.log(e);
+      setIsError(true);
+      toast.error("실시간 데이터가 없습니다!");
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, [id]);
+
+  useEffect(() => {
+    setCurrentTab(setting[stockTab]);
+  }, [stockTab]);
 
   return (
     <div className="grid grid-cols-12">
-      <div className={currentTab === "종합정보" ? "col-span-9" : "col-span-12"}>
-        <PageContainer
-          pr={currentTab === "종합정보" ? 2.5 : undefined}
-          minH={currentTab === "종합정보" ? 60 : undefined}
-        >
-          <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
-          {currentTab === "종합정보" && <Chart />}
-          {currentTab === "뉴스" && <News />}
-          {currentTab === "종목토론 게시판" && <Board />}
-        </PageContainer>
+      <div className="mt-28 ml-11 pt-0.5">
+        <TabBar
+          setCurrentTab={setCurrentTab}
+          tabInfo={tabInfo}
+          baseURL={`/stock/${id}`}
+          currentTab={currentTab}
+        />
       </div>
       {currentTab === "종합정보" && (
-        <div className="col-span-3">
-          <PageContainer pl={2.5} pr={10} minH={60}>
-            <div className="font-bold mb-2">{stock.name}</div>
-            <div className="flex justify-between">
-              <div>PER</div>
-              <div>{statement.PER}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>EPS</div>
-              <div>{statement.EPS}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>추정 PER</div>
-              <div>{statement.estimationPER}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>추정 EPS</div>
-              <div>{statement.estimationEPS}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>PBR</div>
-              <div>{statement.PBR}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>BPS</div>
-              <div>{statement.BPS}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>배당수익률</div>
-              <div>{statement.dividendRate}</div>
-            </div>
-            <hr className="my-2"/>
-            <div className="flex justify-between">
-              <div>외국인한도주식수</div>
-              <div>{statement.foreignLimit}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>외국인보유주식수</div>
-              <div>{statement.foreignOwn}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>외국인소진율</div>
-              <div>{statement.foreignRunout}</div>
+        <div className="col-span-12 pt-px">
+          <PageContainer minH={15} pt={5}>
+            <div className="grid grid-cols-11">
+              <div className="col-span-2">
+                <div>현재가</div>
+                <div
+                  className={
+                    "text-5xl " +
+                    (live.changes &&
+                      (parseInt(live.changes) > 0
+                        ? "text-red-500"
+                        : parseInt(live.changes) < 0
+                        ? "text-blue-600"
+                        : "text-gray-600"))
+                  }
+                >
+                  {live.current_price}
+                </div>
+                {live.changes && (
+                  <div className="flex mt-2">
+                    <div className="mr-3">전일대비</div>
+                    <div
+                      className={
+                        "flex " +
+                        (live.changes &&
+                          (parseInt(live.changes) > 0
+                            ? "text-red-500"
+                            : parseInt(live.changes) < 0
+                            ? "text-blue-600"
+                            : "text-gray-600"))
+                      }
+                    >
+                      <div>
+                        {live.changes &&
+                          (parseInt(live.changes) > 0
+                            ? "▲ " + live.changes.substr(1)
+                            : parseInt(live.changes) < 0
+                            ? "▼ " + live.changes.substr(1)
+                            : "- " + live.changes)}
+                      </div>
+                      <div className="text-gray-700">&nbsp;|&nbsp;</div>
+                      <div>
+                        {live.changes &&
+                          (parseInt(live.changes) > 0
+                            ? "▲ " + live.changes_ratio.substr(1)
+                            : parseInt(live.changes) < 0
+                            ? "▼ " + live.changes_ratio.substr(1)
+                            : "- " + live.changes_ratio)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {isError ? (
+                  <div className="text-gray-400">
+                    실시간 데이터가 없습니다..
+                  </div>
+                ) : (
+                  <div className="text-gray-400">
+                    {live.time} {isLive && "기준"}
+                  </div>
+                )}
+              </div>
+              <div className="col-start-4 col-end-6 font-bold">
+                <div className="flex justify-between mb-2">
+                  <div>전일</div>
+                  <div>{isError ? "-" : live.prev}</div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>상한가</div>
+                  <div>{isError ? "-" : live.upper_limit}</div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>고가</div>
+                  <div
+                    className={
+                      live.prev &&
+                      parseInt(live.prev.replace(/,/g, "")) <
+                        parseInt(live.high.replace(/,/g, ""))
+                        ? "text-red-500"
+                        : live.prev &&
+                          parseInt(live.prev.replace(/,/g, "")) >
+                            parseInt(live.high.replace(/,/g, ""))
+                        ? "text-blue-600"
+                        : "text-gray-600"
+                    }
+                  >
+                    {isError ? "-" : live.high}
+                  </div>
+                </div>
+              </div>
+              <div className="col-start-7 col-end-9 font-bold">
+                <div className="flex justify-between mb-2">
+                  <div>시가</div>
+                  <div
+                    className={
+                      live.prev &&
+                      parseInt(live.prev.replace(/,/g, "")) <
+                        parseInt(live.open.replace(/,/g, ""))
+                        ? "text-red-500"
+                        : live.prev &&
+                          parseInt(live.prev.replace(/,/g, "")) >
+                            parseInt(live.open.replace(/,/g, ""))
+                        ? "text-blue-600"
+                        : "text-gray-600"
+                    }
+                  >
+                    {isError ? "-" : live.open}
+                  </div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>하한가</div>
+                  <div>{isError ? "-" : live.lower_limit}</div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>저가</div>
+                  <div
+                    className={
+                      live.prev &&
+                      parseInt(live.prev.replace(/,/g, "")) <
+                        parseInt(live.low.replace(/,/g, ""))
+                        ? "text-red-500"
+                        : live.prev &&
+                          parseInt(live.prev.replace(/,/g, "")) >
+                            parseInt(live.low.replace(/,/g, ""))
+                        ? "text-blue-600"
+                        : "text-gray-600"
+                    }
+                  >
+                    {isError ? "-" : live.low}
+                  </div>
+                </div>
+              </div>
+              <div className="col-start-10 col-end-12 font-bold">
+                <div className="flex justify-between mb-2">
+                  <div>연중최고</div>
+                  <div>
+                    {detail.year_high_price &&
+                      (+detail.year_high_price).toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>연중최저</div>
+                  <div>
+                    {detail.year_low_price &&
+                      (+detail.year_low_price).toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>거래량</div>
+                  <div>{isError ? "-" : live.volume}</div>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <div>거래대금</div>
+                  <div>{isError ? "-" : live.volume_price}</div>
+                </div>
+              </div>
             </div>
           </PageContainer>
         </div>
       )}
-      {currentTab === "종합정보" && (
-        <div className="col-span-12">
-          <PageContainer pt={5} minH={20}>
-            <div className="grid grid-cols-11">
-              <div className="col-span-3 flex justify-between">
-                <div>현재가</div>
-                <div>{stock.currentPrice}</div>
-              </div>
-              <div className="col-start-5 col-end-8 flex justify-between">
-                <div>전일대비</div>
-                <div>{stock.volatility}</div>
-              </div>
-              <div className="col-start-9 col-end-12 flex justify-between">
-                <div>등락률</div>
-                <div>{stock.volatilityRate}</div>
-              </div>
-              <div className="col-span-3 flex justify-between">
-                <div>전일</div>
-                <div>{stock.yesterdayPrice}</div>
-              </div>
-              <div className="col-start-5 col-end-8 flex justify-between">
-                <div>고가</div>
-                <div>{stock.highPrice}</div>
-              </div>
-              <div className="col-start-9 col-end-12 flex justify-between">
-                <div>거래량</div>
-                <div>{stock.volume}</div>
-              </div>
-              <div className="col-span-3 flex justify-between">
-                <div>시가</div>
-                <div>{stock.marketPrice}</div>
-              </div>
-              <div className="col-start-5 col-end-8 flex justify-between">
-                <div>저가</div>
-                <div>{stock.lowPrice}</div>
-              </div>
-              <div className="col-start-9 col-end-12 flex justify-between">
-                <div>거래대금</div>
-                <div>{stock.transactionPrice}</div>
-              </div>
-              <div className="col-span-3 flex justify-between">
-                <div>52주 최고</div>
-                <div>{stock.highPrice52}</div>
-              </div>
-              <div className="col-start-5 col-end-8 flex justify-between">
-                <div>52주 최저</div>
-                <div>{stock.lowPrice52}</div>
-              </div>
-            </div>
+      <div
+        className={
+          currentTab === "종합정보"
+            ? "xl:col-span-9 col-span-12"
+            : "col-span-12"
+        }
+      >
+        <div className="xl:p-0 pr-8">
+          <PageContainer
+            pr={currentTab === "종합정보" ? 2.5 : undefined}
+            pt={currentTab === "종합정보" ? 5 : 5}
+            minH={currentTab === "종합정보" ? 55 : 73}
+          >
+            {currentTab === "종합정보" && (
+              <Chart title={detail.basic_info.company_name} />
+            )}
+            {currentTab === "뉴스" && <News />}
+            {currentTab === "종목토론 게시판" && <BoardList />}
           </PageContainer>
+        </div>
+      </div>
+
+      {currentTab === "종합정보" && (
+        <div className="xl:col-span-3 col-span-12">
+          <div className="xl:p-0 pl-7">
+            <PageContainer pl={2.5} pr={10} minH={55} pt={5}>
+              <div className="font-extrabold mb-2 text-lg">
+                {detail.basic_info.company_name}
+              </div>
+              <div className="flex justify-between font-bold">
+                <div>시가총액</div>
+                <div>{costMap(stock.market_cap)}원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>상장주식수</div>
+                <div>{(+detail.number_of_listings).toLocaleString()}천주</div>
+              </div>
+              <div className="flex justify-between">
+                <div>액면가</div>
+                <div>{detail.face_value}원</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between">
+                <div>자본금</div>
+                <div>{(+detail.capital_stock).toLocaleString()}억원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>신용비율</div>
+                <div>{Math.round(detail.credit_rate * 100) / 100}%</div>
+              </div>
+              <div className="flex justify-between">
+                <div>대용가</div>
+                <div>{(+detail.substitute_price).toLocaleString()}원</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between">
+                <div>PER | EPS</div>
+                <div>
+                  {Math.round(detail.per * 100) / 100}배 |{" "}
+                  {(+detail.eps).toLocaleString()}원
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <div>PBR | BPS</div>
+                <div>
+                  {Math.round(detail.pbr * 100) / 100}배 |{" "}
+                  {(+detail.bps).toLocaleString()}원
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <div>ROE</div>
+                <div>{Math.round(detail.roe * 100) / 100}%</div>
+              </div>
+              <div className="flex justify-between">
+                <div>EV</div>
+                <div>{Math.round(detail.ev * 100) / 100}배</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between">
+                <div>매출액</div>
+                <div>{(+detail.sales_revenue).toLocaleString()}억원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>영업이익</div>
+                <div>{(+detail.operating_income).toLocaleString()}억원</div>
+              </div>
+              <div className="flex justify-between">
+                <div>당기순이익</div>
+                <div>{(+detail.net_income).toLocaleString()}억원</div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between font-bold">
+                <div>외인소진율</div>
+                <div>{Math.round(detail.foreigner_percent * 100) / 100}%</div>
+              </div>
+              <div className="flex justify-between">
+                <div>유통주식</div>
+                <div>{(+detail.shares_outstanding).toLocaleString()}천주</div>
+              </div>
+              <div className="flex justify-between">
+                <div>유통비율</div>
+                <div>
+                  {Math.round(detail.shares_outstanding_rate * 100) / 100}%
+                </div>
+              </div>
+            </PageContainer>
+          </div>
         </div>
       )}
     </div>

@@ -25,7 +25,7 @@ def get_day_stock(code_number, start_date, end_date):
 
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date__gte=start_date).filter(date__lte=end_date)
     
-    financial_info = FinancialInfo.objects.get(pk=code_number)  # 재무제표
+    # financial_info = FinancialInfo.objects.get(pk=code_number)  # 재무제표
     day_stock_list = list(day_stock_list) 
     
     return day_stock_list
@@ -96,7 +96,7 @@ def buy(account, code, price, percent, date, option):
         current_asset += (int(cur_price) * int(account['stocks'][code_num]['amount']))
     
     earn_rate = (current_asset - account['start_price']) / account['start_price']
-    earn_rate = round(earn_rate, 3) * 100
+    earn_rate = round(earn_rate * 100, 3)
     name=get_stock_name_by_code(code)
     
     print(f'매수알림 : {date} {option}에 의해 {name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
@@ -133,7 +133,7 @@ def sell(account, code, price, percent, date, option):
         current_asset += (int(cur_price) * int(account['stocks'][code_num]['amount']))
     
     earn_rate = (current_asset - account['start_price']) / account['start_price']
-    earn_rate = round(earn_rate, 3) * 100
+    earn_rate = round(earn_rate * 100, 3)
     name=get_stock_name_by_code(code)
     print(f'매도알림 : {date} {option}에 의해 {name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
@@ -164,7 +164,8 @@ def get_stock_price(code_number, date):
         주식 종목 가격 (Integer)
     """
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
-    
+    if day_stock_list.count() == 0:
+        return None
     return day_stock_list[0].current_price
     
 
@@ -181,7 +182,7 @@ def calculate_total_account(account, current_stock_price):
 
     total_account=account['balance']
     for key in account['stocks'].keys():
-        total_account+=current_stock_price[key]*account['stocks'][key]['amount']
+        total_account+=int(current_stock_price)*account['stocks'][key]['amount']
     total_account=int(total_account)
     # result=f'{total_account:,}원'
     return total_account

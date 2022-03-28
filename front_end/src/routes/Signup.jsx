@@ -7,6 +7,7 @@ import { registerUser, checkDuplication } from "./../api/user";
 import { ReactComponent as PasswordLook } from "./../assets/passwordLook.svg";
 import { ReactComponent as PasswordNoLook } from "./../assets/passwordNoLook.svg";
 import Loading from "../components/commons/Loading";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const [name, setName] = useState(null);
@@ -29,7 +30,7 @@ export default function Signup() {
         >
           {/* title */}
           <div>
-            <h2 className="text-3xl font-extrabold text-yellow-900 text-center">
+            <h2 className="text-3xl font-extrabold text-primary text-center">
               JRstock
             </h2>
           </div>
@@ -40,10 +41,13 @@ export default function Signup() {
             method="POST"
             onSubmit={async (e) => {
               e.preventDefault();
-              if (emailErr) alert("유효한 이메일을 입력하세요!");
-              else if (!duplicateCheck) alert("이메일 중복을 체크해주세요");
-              else if (!passwordValid) alert("비밀번호가 유효하지 않습니다!");
-              else if (passwordErr) alert("비밀번호가 서로 일치하지 않습니다!");
+              if (emailErr) toast.error("유효한 이메일을 입력하세요!");
+              else if (!duplicateCheck)
+                toast.error("이메일 중복을 체크해주세요");
+              else if (!passwordValid)
+                toast.error("비밀번호가 유효하지 않습니다!");
+              else if (passwordErr)
+                toast.error("비밀번호가 서로 일치하지 않습니다!");
               else {
                 const loading = document.querySelector("#loading");
 
@@ -83,7 +87,7 @@ export default function Signup() {
                     setName(e.target.value);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="Name"
                 />
               </div>
@@ -107,11 +111,11 @@ export default function Signup() {
                     setDuplicateCheck(false);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="Email address"
                 />
                 {emailErr && (
-                  <p className="text-red-500">
+                  <p className="text-red-900">
                     이메일 정보가 유효하지 않습니다.
                   </p>
                 )}
@@ -122,7 +126,7 @@ export default function Signup() {
                     // 이메일 중복 확인 요청 보내기
 
                     if (email === null || emailErr) {
-                      alert("올바른 이메일 주소를 입력하세요.");
+                      toast.error("올바른 이메일 주소를 입력하세요.");
                       return;
                     }
 
@@ -135,15 +139,15 @@ export default function Signup() {
                     if (res === "True") setDuplicateCheck(true);
                     else {
                       setDuplicateCheck(false);
-                      alert("이미 가입된 이메일 입니다.");
+                      toast.error("이미 가입된 이메일 입니다.");
                     }
                   }}
-                  className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                  className="mt-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
                   이메일 중복 확인
                 </button>
                 {duplicateCheck && (
-                  <p className="text-yellow-500">이용 가능한 이메일 입니다.</p>
+                  <p className="text-blue-600">이용 가능한 이메일 입니다.</p>
                 )}
               </div>
               {/* 비밀번호 input 부분 */}
@@ -167,7 +171,7 @@ export default function Signup() {
                     setPassword(e.target.value);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
                 />
                 {lookPassword ? (
@@ -208,7 +212,7 @@ export default function Signup() {
                     setPassword2(e.target.value);
                   }}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-yellow-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                   placeholder="문자, 숫자, 특수문자 각 하나이상 포함 (8~16자)"
                 />
                 {passwordErr && (
@@ -220,7 +224,7 @@ export default function Signup() {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
                 회원가입
