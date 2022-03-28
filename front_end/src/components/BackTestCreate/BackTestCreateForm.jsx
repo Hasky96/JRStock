@@ -12,6 +12,7 @@ export default function BackTestCreateForm() {
     sell_standard: 50,
     sell_ratio: 100,
   };
+
   const [isStockSelected, setIsStockSelected] = useState(false);
   const [values, setValues] = useState({
     ...valueDefault,

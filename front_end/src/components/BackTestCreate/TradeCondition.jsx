@@ -129,7 +129,6 @@ export default function TradeCondition({
       paintSelect.push(
         <div key={i} className="col-span-4">
           <div className="relative grid grid-cols-2 text-left pt-0">
-            {/* <div className="absolute left-0 top-2">{i + 1}.</div> */}
             {i === 0 ? "" : paintDeleteButton(i)}
 
             <div className="col-span-1 px-5">
@@ -224,22 +223,4 @@ export default function TradeCondition({
       </div>
     </div>
   );
-}
-
-{
-  /* <label htmlFor="buy_strategy">전략</label>
-<div className="flex items-center">
-  <select
-    id="buy_strategy"
-    name="buy_strategy"
-    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    autoComplete="off"
-    onChange={(e) => handleInputChange(e)}
-  >
-    <option>이동평균선</option>
-    <option>일목균형표</option>
-    <option>볼린저밴드</option>
-    <option>4</option>
-  </select>
-</div> */
 }

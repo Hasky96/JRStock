@@ -8,8 +8,6 @@ export default function BasicCondition({
   values,
 }) {
   const [isShowModal, setShowModal] = useState(false);
-  // const [profitRatio, setProfitRatio] = useState(0);
-  // const [assetErrorMessage, setAssetErrorMessage] = useState("");
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
@@ -19,17 +17,11 @@ export default function BasicCondition({
     toggleModal();
   };
 
-  // useEffect(() => {
-  //   setProfitRatio(calProfit(values.asset, values.goal_asset));
-  // }, [values]);
-
   const calProfit = (asset, goal) => {
     if (parseInt(asset) && parseInt(goal)) {
-      // setAssetErrorMessage("");
       return parseInt(goal / asset) * 100;
     }
 
-    // setAssetErrorMessage("연금술은 안돼요!");
     return 0;
   };
 
@@ -138,38 +130,4 @@ export default function BasicCondition({
       </div>
     </>
   );
-}
-
-{
-  /* <div className="-ml-12 xl:ml-0 col-span-6 xl:col-span-4 text-left">
-          <label htmlFor="goal_asset">목표 자산 (만원)</label>
-          <div className="flex items-center">
-            <input
-              id="goal_asset"
-              name="goal_asset"
-              type="number"
-              required
-              autoComplete="off"
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-        </div>
-
-        <div className="relative col-span-6 xl:col-span-2 text-left text-gray-500">
-          <p className="absolute left-32 top-2 text-xs">{assetErrorMessage}</p>
-          <label htmlFor="goal_profit">목표 수익률 (%)</label>
-          <div className="flex items-center">
-            <input
-              id="goal_profit"
-              name="goal_profit"
-              type="number"
-              value={profitRatio}
-              disabled
-              autoComplete="off"
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-        </div> */
 }
