@@ -27,4 +27,13 @@ async function deleteNotice(noticeId) {
   await authApi.delete(`notice/delete/${noticeId}`);
 }
 
-export { getItems, getItem, createNotice, deleteNotice };
+// 공지사항 수정
+async function updateNotice(title, content, id) {
+  const authApi = loginApiInstance();
+  await authApi.put(`notice/update/${id}`, {
+    title,
+    content,
+  });
+}
+
+export { getItems, getItem, createNotice, deleteNotice, updateNotice };
