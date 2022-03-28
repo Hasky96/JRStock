@@ -43,6 +43,18 @@ export default function StockItemDetail() {
     }
   };
 
+  const updateLive = async () => {
+    try {
+      const resLive = await getLive(id);
+      setLive(resLive.data);
+      setIsLive(true);
+      setIsError(false);
+    } catch (e) {
+      setIsLive(false);
+      setIsError(true);
+    }
+  };
+
   useEffect(() => {
     init();
   }, [id]);
@@ -50,6 +62,16 @@ export default function StockItemDetail() {
   useEffect(() => {
     setCurrentTab(setting[stockTab]);
   }, [stockTab]);
+
+  // 10초마다 실시간 데이터 요청
+  const TENSEC_MS = 10000;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateLive();
+    }, TENSEC_MS);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="grid grid-cols-12">
@@ -67,20 +89,22 @@ export default function StockItemDetail() {
             <div className="grid grid-cols-11">
               <div className="col-span-2">
                 <div>현재가</div>
-                <div
-                  className={
-                    "text-5xl " +
-                    (live.changes &&
-                      (parseInt(live.changes) > 0
-                        ? "text-red-500"
-                        : parseInt(live.changes) < 0
-                        ? "text-blue-600"
-                        : "text-gray-600"))
-                  }
-                >
-                  {live.current_price}
-                </div>
-                {live.changes && (
+                {isLive && (
+                  <div
+                    className={
+                      "text-5xl " +
+                      (live.changes &&
+                        (parseInt(live.changes) > 0
+                          ? "text-red-500"
+                          : parseInt(live.changes) < 0
+                          ? "text-blue-600"
+                          : "text-gray-600"))
+                    }
+                  >
+                    {live.current_price}
+                  </div>
+                )}
+                {isLive && (
                   <div className="flex mt-2">
                     <div className="mr-3">전일대비</div>
                     <div

@@ -15,6 +15,8 @@ import OnOffToggle from "../components/OnOffToggle";
 export default function StockItemList() {
   const navigate = useNavigate();
   const [checkedList, setcheckedList] = useState([]);
+  const [isAllChecked, setIsAllChecked] = useState(false);
+  const [currentList, setCurrentList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const [stocks, setStocks] = useState([]);
@@ -37,26 +39,40 @@ export default function StockItemList() {
 
   // 주식 종목 초기화
   const init = async () => {
+    let res;
     if (filterToggle) {
-      const res = await getStockItemList({
+      res = await getStockItemList({
         page: pageNo,
         size: pageSize,
         sort: sortBy,
         company_name: search,
         filterData,
       });
-      setStocks(res.data.results);
-      setTotalCount(res.data.count);
     } else {
-      const res = await getStockItemList({
+      res = await getStockItemList({
         page: pageNo,
         size: pageSize,
         sort: sortBy,
         company_name: search,
       });
-      setStocks(res.data.results);
-      setTotalCount(res.data.count);
     }
+    setStocks(res.data.results);
+    setTotalCount(res.data.count);
+    setCurrentList([]);
+    let temp = [];
+    let isChecked = true;
+    for (let i = 0; i < res.data.results.length; i++) {
+      temp.push(res.data.results[i].financial_info.basic_info.code_number);
+      if (
+        !checkedList.includes(
+          res.data.results[i].financial_info.basic_info.code_number
+        )
+      ) {
+        isChecked = false;
+      }
+    }
+    setIsAllChecked(isChecked);
+    setCurrentList(temp);
   };
 
   useEffect(() => {
@@ -218,15 +234,23 @@ export default function StockItemList() {
   // 전체 체크 클릭 시
   const onCheckedAll = (e) => {
     if (e.target.checked) {
-      const checkedListArray = [];
+      const temp = [];
 
-      stocks.forEach((stock) =>
-        checkedListArray.push(stock.financial_info.basic_info.code_number)
-      );
-
-      setcheckedList(checkedListArray);
+      stocks.forEach((stock) => {
+        if (
+          !checkedList.includes(stock.financial_info.basic_info.code_number)
+        ) {
+          temp.push(stock.financial_info.basic_info.code_number);
+        }
+      });
+      setcheckedList([...checkedList, ...temp]);
+      setIsAllChecked(true);
     } else {
-      setcheckedList([]);
+      const temp = checkedList.filter(
+        (stockId) => !currentList.includes(stockId)
+      );
+      setcheckedList(temp);
+      setIsAllChecked(false);
     }
   };
 
@@ -234,8 +258,16 @@ export default function StockItemList() {
   const onChecked = (id, e) => {
     if (e.target.checked) {
       setcheckedList([...checkedList, id]);
+      let isChecked = true;
+      currentList.forEach((stockId) => {
+        if (!checkedList.includes(stockId) && id !== stockId) {
+          isChecked = false;
+        }
+      });
+      setIsAllChecked(isChecked);
     } else {
       setcheckedList(checkedList.filter((el) => el !== id));
+      setIsAllChecked(false);
     }
   };
 
@@ -258,7 +290,19 @@ export default function StockItemList() {
   const addBookMark = async () => {
     if (checkedList.length) {
       const res = await addInterest(checkedList);
-      alert("관심종목에 추가되었습니다.");
+      if (res.data.duplicate) {
+        alert(
+          `이미 추가된 ${res.data.duplicate}개를 제외한 ${
+            checkedList.length - res.data.duplicate
+          }개의 항목이 관심종목에 추가되었습니다.`
+        );
+      } else {
+        alert(
+          `선택하신 ${checkedList.length}개의 항목이 관심종목에 추가되었습니다.`
+        );
+      }
+      setcheckedList([]);
+      setIsAllChecked(false);
     } else {
       alert("하나 이상의 종목을 선택해주세요.");
     }
@@ -353,156 +397,6 @@ export default function StockItemList() {
           "_" +
           checkedIndicators.get(select[0])[1];
     }
-    // if (checkedIndicators.get("자본금"))
-    //   data = {
-    //     ...data,
-    //     capital_stock:
-    //       checkedIndicators.get("자본금")[0] +
-    //       "_" +
-    //       checkedIndicators.get("자본금")[1],
-    //   };
-    // if (checkedIndicators.get("상장주식수"))
-    //   data = {
-    //     ...data,
-    //     number_of_listings:
-    //       checkedIndicators.get("상장주식수")[0] +
-    //       "_" +
-    //       checkedIndicators.get("상장주식수")[1],
-    //   };
-    // if (checkedIndicators.get("신용비율"))
-    //   data = {
-    //     ...data,
-    //     credit_rate:
-    //       checkedIndicators.get("신용비율")[0] +
-    //       "_" +
-    //       checkedIndicators.get("신용비율")[1],
-    //   };
-    // if (checkedIndicators.get("연중최고"))
-    //   data = {
-    //     ...data,
-    //     year_high_price:
-    //       checkedIndicators.get("연중최고")[0] +
-    //       "_" +
-    //       checkedIndicators.get("연중최고")[1],
-    //   };
-    // if (checkedIndicators.get("연중최저"))
-    //   data = {
-    //     ...data,
-    //     year_low_price:
-    //       checkedIndicators.get("연중최저")[0] +
-    //       "_" +
-    //       checkedIndicators.get("연중최저")[1],
-    //   };
-    // if (checkedIndicators.get("시가총액"))
-    //   data = {
-    //     ...data,
-    //     market_cap:
-    //       checkedIndicators.get("시가총액")[0] +
-    //       "_" +
-    //       checkedIndicators.get("시가총액")[1],
-    //   };
-    // if (checkedIndicators.get("외인소진율"))
-    //   data = {
-    //     ...data,
-    //     foreigner_percent:
-    //       checkedIndicators.get("외인소진율")[0] +
-    //       "_" +
-    //       checkedIndicators.get("외인소진율")[1],
-    //   };
-    // if (checkedIndicators.get("대용가"))
-    //   data = {
-    //     ...data,
-    //     substitute_price:
-    //       checkedIndicators.get("대용가")[0] +
-    //       "_" +
-    //       checkedIndicators.get("대용가")[1],
-    //   };
-    // if (checkedIndicators.get("PER"))
-    //   data = {
-    //     ...data,
-    //     per:
-    //       checkedIndicators.get("PER")[0] +
-    //       "_" +
-    //       checkedIndicators.get("PER")[1],
-    //   };
-    // if (checkedIndicators.get("EPS"))
-    //   data = {
-    //     ...data,
-    //     eps:
-    //       checkedIndicators.get("EPS")[0] +
-    //       "_" +
-    //       checkedIndicators.get("EPS")[1],
-    //   };
-    // if (checkedIndicators.get("ROE"))
-    //   data = {
-    //     ...data,
-    //     roe:
-    //       checkedIndicators.get("ROE")[0] +
-    //       "_" +
-    //       checkedIndicators.get("ROE")[1],
-    //   };
-    // if (checkedIndicators.get("PBR"))
-    //   data = {
-    //     ...data,
-    //     pbr:
-    //       checkedIndicators.get("PBR")[0] +
-    //       "_" +
-    //       checkedIndicators.get("PBR")[1],
-    //   };
-    // if (checkedIndicators.get("EV"))
-    //   data = {
-    //     ...data,
-    //     ev:
-    //       checkedIndicators.get("EV")[0] + "_" + checkedIndicators.get("EV")[1],
-    //   };
-    // if (checkedIndicators.get("BPS"))
-    //   data = {
-    //     ...data,
-    //     bps:
-    //       checkedIndicators.get("BPS")[0] +
-    //       "_" +
-    //       checkedIndicators.get("BPS")[1],
-    //   };
-    // if (checkedIndicators.get("매출액"))
-    //   data = {
-    //     ...data,
-    //     sales_revenue:
-    //       checkedIndicators.get("매출액")[0] +
-    //       "_" +
-    //       checkedIndicators.get("매출액")[1],
-    //   };
-    // if (checkedIndicators.get("영업이익"))
-    //   data = {
-    //     ...data,
-    //     operating_income:
-    //       checkedIndicators.get("영업이익")[0] +
-    //       "_" +
-    //       checkedIndicators.get("영업이익")[1],
-    //   };
-    // if (checkedIndicators.get("당기순이익"))
-    //   data = {
-    //     ...data,
-    //     net_income:
-    //       checkedIndicators.get("당기순이익")[0] +
-    //       "_" +
-    //       checkedIndicators.get("당기순이익")[1],
-    //   };
-    // if (checkedIndicators.get("유통주식"))
-    //   data = {
-    //     ...data,
-    //     shares_outstanding:
-    //       checkedIndicators.get("유통주식")[0] +
-    //       "_" +
-    //       checkedIndicators.get("유통주식")[1],
-    //   };
-    // if (checkedIndicators.get("유통비율"))
-    //   data = {
-    //     ...data,
-    //     shares_outstanding_rate:
-    //       checkedIndicators.get("유통비율")[0] +
-    //       "_" +
-    //       checkedIndicators.get("유통비율")[1],
-    //   };
     setFilterData(data);
   };
 
@@ -630,13 +524,7 @@ export default function StockItemList() {
                     type="checkbox"
                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
                     onChange={onCheckedAll}
-                    checked={
-                      checkedList.length === 0
-                        ? false
-                        : checkedList.length === stocks.length
-                        ? true
-                        : false
-                    }
+                    checked={isAllChecked ? true : false}
                   />
                 </p>
                 <p className="col-span-1">No</p>

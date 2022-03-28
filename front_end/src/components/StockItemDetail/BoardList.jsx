@@ -2,58 +2,63 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ListHeader from "../ListHeader";
 import Pagenation from "../Pagenation";
-import { getBoardList } from "../../api/stock";
+import { getBoardList, getMyBoardList } from "../../api/stock";
 import { timeMark } from "../../config/datetime";
 
 export default function BoardList() {
   const [pageNo, setPageNo] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [boards, setBoards] = useState([]);
+  const [isLogin, setIsLogin] = useState(false);
+  const [filterState, setFilterState] = useState("전체 보기");
+  const [search, setSearch] = useState("");
+  const [timer, setTimer] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const pageSize = 14;
 
   const init = async () => {
-    const res = await getBoardList(id, pageNo, pageSize);
+    let res;
+    if (filterState === "전체 보기") {
+      res = await getBoardList(id, pageNo, pageSize, search);
+    } else if (filterState === "내 글 보기") {
+      res = await getMyBoardList(id, pageNo, pageSize, search);
+    }
     setBoards(res.data.results);
     setTotalCount(res.data.count);
+
+    if (sessionStorage.getItem("access_token")) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
   };
 
   useEffect(() => {
     init();
-  }, []);
+  }, [pageNo, filterState, search]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
     setPageNo(1);
-    const res = await getBoardList(id, 1, pageSize);
-    setBoards(res.data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const res = await getBoardList(id, pageNo - 1, pageSize);
-    setBoards(res.data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const res = await getBoardList(id, pageNo + 1, pageSize);
-    setBoards(res.data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const res = await getBoardList(id, lastPageNum, pageSize);
-    setBoards(res.data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const res = await getBoardList(id, num, pageSize);
-    setBoards(res.data.results);
   };
 
   // 게시글 상세 페이지로 이동
@@ -82,18 +87,20 @@ export default function BoardList() {
     return result;
   };
 
+  // 필터
   const onClickFilter = (filter) => {
-    console.log(filter);
-    // 필터 state를 filter 로 변경
-    // 전반적인 notice item 검색 api에 filter 조건 추가
-    // pageNo 1로 초기화
+    setPageNo(1);
+    setFilterState(filter);
   };
 
+  // 검색
   const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      setPageNo(1);
+      setSearch(word);
+    }, 500);
+    setTimer(newTimer);
   };
 
   return (
@@ -125,7 +132,7 @@ export default function BoardList() {
           </button>
         </div>
         <ListHeader
-          optionKind={["전체 보기", "내 글 보기"]}
+          optionKind={isLogin ? ["전체 보기", "내 글 보기"] : ["전체 보기"]}
           onClickFilter={onClickFilter}
           onSearch={onSearch}
         />

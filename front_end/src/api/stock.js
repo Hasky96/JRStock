@@ -58,12 +58,24 @@ async function getLive(codeNumber) {
 }
 
 // 종목 토론 리스트 받아오기
-async function getBoardList(code, page, size) {
+async function getBoardList(code, page, size, title) {
   const api = apiInstance();
   return await api.get(
     `stock/post/${code}?` +
       (page ? `page=${page}&` : "") +
-      (size ? `size=${size}&` : "")
+      (size ? `size=${size}&` : "") +
+      (title ? `title=${title}` : "")
+  );
+}
+
+// 종목 토론 내 글 받아오기
+async function getMyBoardList(code, page, size, title) {
+  const authApi = loginApiInstance();
+  return await authApi.get(
+    `stock/post/my/${code}?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "") +
+      (title ? `title=${title}` : "")
   );
 }
 
@@ -138,6 +150,7 @@ async function getInterest() {
 export {
   getStockItemList,
   getBoardList,
+  getMyBoardList,
   createBoard,
   getBoardDetail,
   deleteBoard,
