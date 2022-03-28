@@ -22,6 +22,8 @@ import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
 import BoardUpdate from "./components/StockItemDetail/Boardupdate";
 import Ranking from "./routes/Ranking";
+import NoticeCreate from "./components/notice/NoticeCreate";
+import AdminRoute from "./components/AdminRoute";
 // import useIsLoggedIn from "./util/useIsLoggedIn";
 
 function App() {
@@ -121,6 +123,14 @@ function App() {
           />
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
+          <Route
+            path="/notice/create"
+            element={
+              <AdminRoute>
+                <NoticeCreate />
+              </AdminRoute>
+            }
+          />
           <Route path="/ranking" element={<Ranking />} />
         </Routes>
       </div>

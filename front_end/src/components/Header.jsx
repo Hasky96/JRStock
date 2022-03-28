@@ -97,7 +97,8 @@ export default function Header({ category }) {
 
         if (result === null) return;
 
-        const { id, email, name, profile_img, profile_img_url } = result;
+        const { id, email, name, profile_img, profile_img_url, is_admin } =
+          result;
 
         setUser({
           id,
@@ -106,9 +107,14 @@ export default function Header({ category }) {
           profile_img,
           profile_img_url,
         });
+
+        sessionStorage.setItem("is_admin", is_admin);
       }
     };
+
     fetchUserInfo();
+
+    return () => {};
   }, []);
 
   const paintSearchResult = () => {
@@ -224,6 +230,7 @@ export default function Header({ category }) {
                       className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300"
                       onClick={() => {
                         window.sessionStorage.removeItem("access_token");
+                        window.sessionStorage.removeItem("is_admin");
                       }}
                     >
                       <Link to="/">로그아웃</Link>
