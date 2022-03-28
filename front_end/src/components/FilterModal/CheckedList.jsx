@@ -5,6 +5,7 @@ export default function CheckedList({
   checkedIndicators,
   indicatorInfo,
   onChange,
+  unitInfo,
 }) {
   const [max, setMax] = useState(10000);
   const [min, setMin] = useState(0);
@@ -17,6 +18,7 @@ export default function CheckedList({
         <RangeItem
           name={"T" + el.replace(" ", "")} // name- 숫자로 시작, 띄어쓰기가 있는 경우 오류를 피하기위해 이름 변경
           name2={el} // name2 - 본래 이름
+          unit={unitInfo.get(el)}
           key={el}
           min={indicatorInfo.get(el)[0]}
           max={indicatorInfo.get(el)[1]}

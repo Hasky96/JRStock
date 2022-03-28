@@ -97,7 +97,8 @@ export default function Header({ category }) {
 
         if (result === null) return;
 
-        const { id, email, name, profile_img, profile_img_url } = result;
+        const { id, email, name, profile_img, profile_img_url, is_admin } =
+          result;
 
         setUser({
           id,
@@ -106,9 +107,14 @@ export default function Header({ category }) {
           profile_img,
           profile_img_url,
         });
+
+        sessionStorage.setItem("is_admin", is_admin);
       }
     };
+
     fetchUserInfo();
+
+    return () => {};
   }, []);
 
   const paintSearchResult = () => {
@@ -159,7 +165,7 @@ export default function Header({ category }) {
     <div className="relative">
       {/* Header 상단 고정 */}
       <div className="fixed  w-full pl-4 pr-24 z-30">
-        <div className="grid grid-cols-12 m-6 rounded-xl bg-primary">
+        <div className="grid grid-cols-12 mt-6 rounded-xl bg-primary">
           {/* 카테고리 그리드 */}
           <div className="col-span-7 text-3xl my-auto ml-5 text-indigo-50">
             {nameMap.get(category)}
@@ -224,6 +230,7 @@ export default function Header({ category }) {
                       className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300"
                       onClick={() => {
                         window.sessionStorage.removeItem("access_token");
+                        window.sessionStorage.removeItem("is_admin");
                       }}
                     >
                       <Link to="/">로그아웃</Link>

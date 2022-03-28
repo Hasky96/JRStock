@@ -17,11 +17,14 @@ import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
 import Notice from "./routes/Notice";
-import NoticeDetail from "./routes/NoticeDetail";
+import NoticeDetail from "./components/notice/NoticeDetail";
 import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
 import BoardUpdate from "./components/StockItemDetail/Boardupdate";
 import Ranking from "./routes/Ranking";
+import NoticeCreate from "./components/notice/NoticeCreate";
+import AdminRoute from "./components/AdminRoute";
+import NoticeUpdate from "./components/notice/NoticeUpdate";
 // import useIsLoggedIn from "./util/useIsLoggedIn";
 
 function App() {
@@ -121,6 +124,22 @@ function App() {
           />
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
+          <Route
+            path="/notice/create"
+            element={
+              <AdminRoute>
+                <NoticeCreate />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/notice/:id/update"
+            element={
+              <AdminRoute>
+                <NoticeUpdate />
+              </AdminRoute>
+            }
+          />
           <Route path="/ranking" element={<Ranking />} />
         </Routes>
       </div>

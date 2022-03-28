@@ -5,39 +5,42 @@ import PageContainer from "../components/PageContainer";
 import Pagenation from "../components/Pagenation";
 import { getItems } from "../api/notice";
 import Tooltip from "../components/commons/Tooltip";
+import { ReactComponent as NoticeWriteIcon } from "../assets/noticeWriteIcon.svg";
+import useIsAdmin from "../util/useIsAdmin";
 
-const contents = [
-  {
-    title: "제목1",
-    src: "https://source.unsplash.com/random/400x400",
-    alt: "content1",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
-  },
-  {
-    title: "제목2",
-    src: "https://source.unsplash.com/random/400x400",
-    alt: "content2",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
-  },
-  {
-    title: "제목3",
-    src: "https://source.unsplash.com/random/400x400",
-    alt: "content3",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
-  },
-  {
-    title: "제목4",
-    src: "https://source.unsplash.com/random/400x400",
-    alt: "content4",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
-  },
-  {
-    title: "제목5",
-    src: "https://source.unsplash.com/random/400x400",
-    alt: "content5",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
-  },
-];
+// const contents = [
+//   {
+//     title: "제목1",
+//     src: "https://source.unsplash.com/random/400x400",
+//     alt: "content1",
+//     content:
+//       "paragraph1/nparagraph2/nparagraph3/nparagraph4ㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+//   },
+//   {
+//     title: "제목2",
+//     src: "https://source.unsplash.com/random/400x400",
+//     alt: "content2",
+//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
+//   },
+//   {
+//     title: "제목3",
+//     src: "https://source.unsplash.com/random/400x400",
+//     alt: "content3",
+//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
+//   },
+//   {
+//     title: "제목4",
+//     src: "https://source.unsplash.com/random/400x400",
+//     alt: "content4",
+//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
+//   },
+//   {
+//     title: "제목5",
+//     src: "https://source.unsplash.com/random/400x400",
+//     alt: "content5",
+//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
+//   },
+// ];
 
 export default function Announcement() {
   const navigate = useNavigate();
@@ -45,10 +48,13 @@ export default function Announcement() {
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
+  const isAdmin = useIsAdmin();
+  const [timer, setTimer] = useState();
 
   // 처음 화면 변수 초기화
   const init = async () => {
     const data = await getItems(pageNo, pageSize);
+
     // 전체 공지사항 개수
     setTotalCount(data.count);
     // 첫페이지 공지사항 아이템들
@@ -61,7 +67,7 @@ export default function Announcement() {
 
   // 종목 클릭 시 해당 종목 디테일 페이지로
   const goDetailPage = (id) => {
-    navigate({ pathname: `/notice/${id}` });
+    navigate(`${id}`);
   };
 
   const onClickFirst = async () => {
@@ -138,19 +144,44 @@ export default function Announcement() {
   };
 
   const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
+    // 이전에 보내려던 요청 삭제
+    clearTimeout(timer);
+    const newTimer = setTimeout(async () => {
+      // 새로운 데이터 읽어오기
+      const result = await getItems(pageNo, pageSize, word);
+
+      // 읽어온 데이터 state 저장
+      if (result) {
+        setPageNo(1); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
+        setNoticeItems(result.results);
+        setTotalCount(result.count);
+      }
+    }, 500);
+    setTimer(newTimer);
   };
 
   return (
     <PageContainer>
-      <ListHeader
-        optionKind={["전체보기"]}
-        onClickFilter={onClickFilter}
-        onSearch={onSearch}
-      />
+      <div className="mt-5 flex">
+        {isAdmin && (
+          <div>
+            <button
+              className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 rounded-lg grid grid-cols-3 hover:fill-indigo-600"
+              onClick={function () {
+                navigate("create");
+              }}
+            >
+              <NoticeWriteIcon />
+              <div className="col-span-2 my-auto">&nbsp;글쓰기</div>
+            </button>
+          </div>
+        )}
+        <ListHeader
+          optionKind={["전체 보기"]}
+          onClickFilter={onClickFilter}
+          onSearch={onSearch}
+        />
+      </div>
       <div className="border-collapse w-full text-center my-10 xl:text-base text-sm">
         <ul>
           <li className="grid grid-cols-12 h-12 bg-slate-100">
@@ -171,8 +202,11 @@ export default function Announcement() {
         onClickLast={onClickLast}
         onClickNumber={onClickNumber}
       ></Pagenation>
-
-      <Tooltip title={"공지사항"} contents={contents}></Tooltip>
+      {/* <div className="relative float-right">
+        <Tooltip contents={contents} pos={"-left-9"} right={false}></Tooltip>
+        <span>공지사항</span>
+        <Tooltip contents={contents} pos={"left-16"} right={true}></Tooltip>
+      </div> */}
     </PageContainer>
   );
 }

@@ -8,6 +8,7 @@ function classNames(...classes) {
 export default function RangeItem({
   name,
   name2,
+  unit,
   min,
   max,
   left,
@@ -26,7 +27,10 @@ export default function RangeItem({
   return (
     <div className={classNames("wrapper", name)}>
       <header>
-        <h2>{name2}</h2>
+        <div className="flex justify-between">
+          <h2>{`${name2}`}</h2>
+          {unit && <span className="pt-3">{`(단위: ${unit})`}</span>}
+        </div>
       </header>
       <div className="price-input">
         <div className="field">
