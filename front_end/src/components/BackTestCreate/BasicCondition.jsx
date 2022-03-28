@@ -105,7 +105,7 @@ export default function BasicCondition({
         </div>
 
         <div className="col-span-6 xl:col-span-4 text-left px-5">
-          <label htmlFor="asset">투자 원금 (만원)</label>
+          <label htmlFor="asset">투자 원금 (원)</label>
           <div className="flex items-center">
             <input
               id="asset"
