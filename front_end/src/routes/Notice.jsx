@@ -48,10 +48,12 @@ export default function Announcement() {
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
   const isAdmin = useIsAdmin();
+  const [timer, setTimer] = useState();
 
   // 처음 화면 변수 초기화
   const init = async () => {
     const data = await getItems(pageNo, pageSize);
+
     // 전체 공지사항 개수
     setTotalCount(data.count);
     // 첫페이지 공지사항 아이템들
@@ -145,6 +147,19 @@ export default function Announcement() {
     // 검색어 state을 word로 변경
     // 전반적으로 notice item 검색 api에 word 조건 추가
     // pageNo 1로 초기화
+    // 새로운 데이터 읽어오기
+    clearTimeout(timer);
+    const newTimer = setTimeout(async () => {
+      const result = await getItems(pageNo, pageSize, word);
+
+      // 읽어온 데이터 state 저장
+      if (result) {
+        setPageNo(1); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
+        setNoticeItems(result.results);
+        setTotalCount(result.count);
+      }
+    }, 500);
+    setTimer(newTimer);
   };
 
   return (
