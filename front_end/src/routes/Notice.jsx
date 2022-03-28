@@ -5,6 +5,8 @@ import PageContainer from "../components/PageContainer";
 import Pagenation from "../components/Pagenation";
 import { getItems } from "../api/notice";
 import Tooltip from "../components/commons/Tooltip";
+import { ReactComponent as NoticeWriteIcon } from "../assets/noticeWriteIcon.svg";
+import useIsAdmin from "../util/useIsAdmin";
 
 const contents = [
   {
@@ -45,6 +47,7 @@ export default function Announcement() {
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
+  const isAdmin = useIsAdmin();
 
   // 처음 화면 변수 초기화
   const init = async () => {
@@ -146,11 +149,26 @@ export default function Announcement() {
 
   return (
     <PageContainer>
-      <ListHeader
-        optionKind={["전체보기"]}
-        onClickFilter={onClickFilter}
-        onSearch={onSearch}
-      />
+      <div className="mt-5 flex">
+        {isAdmin && (
+          <div>
+            <button
+              className="px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 rounded-lg grid grid-cols-3 hover:fill-indigo-600"
+              onClick={function () {
+                navigate("create");
+              }}
+            >
+              <NoticeWriteIcon />
+              <div className="col-span-2 my-auto">&nbsp;글쓰기</div>
+            </button>
+          </div>
+        )}
+        <ListHeader
+          optionKind={["전체 보기"]}
+          onClickFilter={onClickFilter}
+          onSearch={onSearch}
+        />
+      </div>
       <div className="border-collapse w-full text-center my-10 xl:text-base text-sm">
         <ul>
           <li className="grid grid-cols-12 h-12 bg-slate-100">
