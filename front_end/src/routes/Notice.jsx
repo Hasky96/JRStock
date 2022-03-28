@@ -143,13 +143,10 @@ export default function Announcement() {
   };
 
   const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
-    // 새로운 데이터 읽어오기
+    // 이전에 보내려던 요청 삭제
     clearTimeout(timer);
     const newTimer = setTimeout(async () => {
+      // 새로운 데이터 읽어오기
       const result = await getItems(pageNo, pageSize, word);
 
       // 읽어온 데이터 state 저장

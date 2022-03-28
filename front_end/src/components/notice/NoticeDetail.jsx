@@ -5,12 +5,14 @@ import { userDetail } from "../../api/user";
 import PageContainer from "../PageContainer";
 import { ReactComponent as NoticeDeleteIcon } from "../../assets/noticeDeleteIcon.svg";
 import { ReactComponent as NoticeUpdateIcon } from "../../assets/noticeUpdateIcon.svg";
+import Dialog from "../commons/Dialog";
 
 export default function NoticeDetail() {
   const { id } = useParams();
   const [notice, setNotice] = useState();
   const navigate = useNavigate();
   const [user, setUser] = useState();
+  const [showDialog, setShowDialog] = useState(false);
 
   const init = async () => {
     const data = await getItem(id);
@@ -29,15 +31,20 @@ export default function NoticeDetail() {
   };
 
   const onClickDelete = async () => {
-    if (window.confirm("공지사항을 삭제하시겠습니까?")) {
+    setShowDialog(true);
+  };
+
+  const onClickBtn = async (value) => {
+    if (value) {
       await deleteNotice(notice.id);
       navigate(`/notice`);
     }
+    setShowDialog(false);
   };
 
   const noticeInfo = () => {
     return (
-      <div className="p-10">
+      <div className="p-10 whitespace-pre-wrap">
         <div className="flex justify-between items-end mb-4">
           <h1 className="text-4xl font-bold">{notice?.title}</h1>
           {user && user?.id === notice?.user.id && (
@@ -78,5 +85,17 @@ export default function NoticeDetail() {
     );
   };
 
-  return <PageContainer className="">{noticeInfo()}</PageContainer>;
+  return (
+    <PageContainer className="">
+      {noticeInfo()}
+      {showDialog && (
+        <Dialog
+          message={"정말로 삭제하시겠습니까?"}
+          leftBtn={"확인"}
+          rightBtn={"취소"}
+          onClickBtn={onClickBtn}
+        />
+      )}
+    </PageContainer>
+  );
 }
