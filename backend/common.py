@@ -31,7 +31,7 @@ def get_day_stock(code_number, start_date, end_date):
     return day_stock_list
 
 def get_current_stock_price(code_number=None):
-    """ 최신 주식 가격
+    """ DB 기준 최신 주식 가격
 
     Args:
         없는 경우 모든 주식
@@ -99,7 +99,7 @@ def buy(account, code, price, percent, date, option):
     earn_rate = round(earn_rate * 100, 3)
     name=get_stock_name_by_code(code)
     
-    print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
+    print(f'매수알림 : {date} {option}에 의해 {name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
 def sell(account, code, price, percent, date, option):
@@ -135,10 +135,17 @@ def sell(account, code, price, percent, date, option):
     earn_rate = (current_asset - account['start_price']) / account['start_price']
     earn_rate = round(earn_rate * 100, 3)
     name=get_stock_name_by_code(code)
-    print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
+    print(f'매도알림 : {date} {option}에 의해 {name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
 def get_stock_data(code_number, date):
+    """ 주식 종목 1개 정보 
+    Args:
+        code_number (String) : 주식 종목 1개 코드 '005930'
+        date (String) : 날짜 '2022-03-22'
+    Returns:
+        주식 종목 (Object)
+    """
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
     
     return day_stock_list[0]
@@ -149,6 +156,13 @@ def get_stock_name_by_code(code_number):
     return stock.company_name
 
 def get_stock_price(code_number, date):
+    """ 주식 종목 1개 가격 
+    Args:
+        code_number (String) : 주식 종목 1개 코드 '005930'
+        date (String) : 날짜 '2022-03-22'
+    Returns:
+        주식 종목 가격 (Integer)
+    """
     day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=date)
     if day_stock_list.count() == 0:
         return None
@@ -203,3 +217,107 @@ def object_to_dataframe(stocks):
         stock_list.append(temp)
     
     return pd.DataFrame(stock_list, columns=col_name)
+
+
+def get_kospi_price_by_date(date):
+    cnt = 0
+    kospi_price = None
+    while kospi_price == None:
+        cnt += 1
+        yesterday = datetime.strptime(date, '%Y-%m-%d') - timedelta(days=cnt)
+        yesterday = yesterday.strftime('%Y-%m-%d')
+        kospi_price = get_stock_price('kospi', yesterday)
+    
+    return kospi_price
+
+def init_result_data(account):
+    result_data = {
+        'year' : account['start_date'][:4], # 연도 저장
+        'year_start_price' : account['balance'], # 시작가격
+        'year_earn_rate' : 0.0, # 연평균 수익률
+        'year_cnt' : 0, # 총 연도 수
+        'max_earn' : account['balance'], # 최고 수익
+        'max_date' : None, # 최고 수익 날짜
+        'min_earn' : account['balance'], # 최저 수익
+        'min_earn_after_max' : 0, # 최고 수익 이후 최저 수익
+        'start_kospi_price' : get_kospi_price_by_date(account['start_date']), # 시작날짜 코스피 가격
+        'end_kospi_price' : get_kospi_price_by_date(account['end_date']), # 종료날자 코스피 가격
+    }
+    print(result_data)
+    return result_data
+
+# 하루마다 계산할 것
+def day_calculate(account, result_data, stock):
+    result_data['current_asset'] = int(account['balance'])
+    for code_num in account['stocks'].keys():
+        cur_price = get_stock_price(code_num, stock['date'])
+        result_data['current_asset'] += (int(cur_price) * int(account['stocks'][code_num]['amount']))
+    
+    if result_data['max_earn'] < result_data['current_asset']:
+        result_data['max_earn'] = result_data['current_asset']
+        result_data['max_date'] = datetime.strptime(stock['date'], '%Y-%m-%d')
+        
+    if result_data['min_earn'] > result_data['current_asset']:
+        result_data['min_earn'] = result_data['current_asset']
+        min_date = datetime.strptime(stock['date'], '%Y-%m-%d')
+        if result_data['max_date'] != None and result_data['max_date'] < min_date:
+            result_data['min_earn_after_max'] = result_data['current_asset']
+            
+    result_data['min_earn'] = min(result_data['min_earn'], result_data['current_asset'])
+    
+    day_earn = (result_data['current_asset'] - account['pre_price'])
+    day_earn_rate = day_earn / account['pre_price']
+    day_earn_rate = round(day_earn_rate * 100, 3)
+    account['pre_price'] = result_data['current_asset']
+    
+    # 연도가 바뀌었다면
+    if result_data['year'] != stock['date'][:4]:
+        result_data = year_calculate(account, result_data)
+        result_data['year'] = stock['date'][:4] # 연도 변경
+    
+    # 이부분 DB에 넣어주기
+    print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
+    return result_data
+
+def year_calculate(account, result_data):
+    print(result_data['year'] + '년 평균' + str((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price']))
+    
+    result_data['year_cnt'] += 1
+    result_data['year_earn_rate'] = round((result_data['year_earn_rate'] + ((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price'])) / result_data['year_cnt'] * 100, 3)
+    result_data['year_start_price'] = result_data['current_asset']
+    print('연평균' + str(result_data['year_earn_rate']))
+    
+    return result_data
+
+def end_calculate(account, result_data):
+    # 마지막 날을 기준으로 마지막 연도 평균 계산
+    result_data = year_calculate(account, result_data)
+    
+    result_data['my_profit_loss'] = int(account['pre_price']) - int(account['start_price'])
+    result_data['my_final_rate'] = round(result_data['my_profit_loss'] / int(account['start_price']) * 100, 3)
+    result_data['market_rate'] = round((float(result_data['end_kospi_price']) - float(result_data['start_kospi_price'])) / float(result_data['start_kospi_price']) * 100, 3)
+    result_data['market_over_price'] = round(result_data['my_final_rate'] - result_data['market_rate'], 3)
+    result_data['mdd'] = round((result_data['min_earn_after_max'] - result_data['max_earn']) / result_data['max_earn'] * 100, 3)
+    
+    print('내 손익 : ' + str(result_data['my_profit_loss']) + '|| 내 수익률 : ' + str(result_data['my_final_rate']) + '|| MDD : ' + str(result_data['mdd']))
+    print('시장 수익률 : ' + str(result_data['market_rate']) + '|| 시장초과수익률 : ' + str(result_data['market_over_price']) + '|| 최고자산 : ' + str(result_data['max_earn']) + '|| 최저자산 : ' + str(result_data['min_earn']))
+    return result_data
+
+
+# front로부터 받는 전략
+# window : 5일선, 20일선 등
+# 공통 파라미터 : code_number, balance, start_date, end_date, 매수전략들, 매도전략들 - 개수 달라도 가능
+# 101 : ma_uppass (window, err, weight)             # 종가가 window를 걸쳐 상향돌파, 일반적으로 매수
+# 102 : ma_downpass (window, err, weight)           # 종가가 window를 걸쳐 하향돌파, 일반적으로 매도
+# 103 : ma_gold_cross (window1, window2, weight)    # window 중 작은 값이 교차후 위로, 일반적으로 매수
+# 104 : ma_dead_cross (window1, window2, weight)    # window 중 작은 값이 교차후 아래로, 일반적으로 매도
+# 105 : ma_straight (window1, window2, weight)      # window 중 작은 값이 위에, 일반적으로 매수
+# 106 : ma_reverse (window1, window2, weight)       # window 중 작은 값이 아래에, 일반적으로 매도
+# 201 : macd_gold_cross (window1, window2, weight)  # window 중 작은 값이 교차후 위로, 일반적으로 매수
+# 202 : macd_dead_cross (window1, window2, weight)  # window 중 작은 값이 교차후 아래로, 일반적으로 매도
+# 203 : macd_straight (window1, window2, weight)    # window 중 작은 값이 위에, 일반적으로 매수
+# 204 : macd_reverse (window1, window2, weight)     # window 중 작은 값이 아래에, 일반적으로 매도
+# 301 : rsi_high (window1, window2, index, weight)  # rsi > index, 일반적으로 과매수 됐다고 평가 -> 매도
+# 302 : rsi_low  (window1, window2, index, weight)  # rsi < index, 일반적으로 과매도 됐다고 평가 -> 매수
+# 401 : obv_high  (window, weight)                  # obv > ovb_ema이면 일반적으로 매수
+# 402 : obv_low  (window, weight)                   # obv < ovb_ema이면 일반적으로 매도

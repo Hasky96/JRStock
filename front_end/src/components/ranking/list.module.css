@@ -23,9 +23,12 @@
   width: 100%;
   text-align: left;
   border-radius: 10px;
+}
+
+.tmp {
   background-image: linear-gradient(
     to right,
-    rgba(241, 245, 249, 0.5),
-    rgba(248, 250, 252, 0.1)
+    rgba(24, 33, 109, 1),
+    rgba(24, 33, 109, 0.5)
   );
 }

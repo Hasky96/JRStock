@@ -1,4 +1,5 @@
 import os
+from unittest import result
 import pandas as pd
 from datetime import datetime, timedelta
 from django.db.models import Max
@@ -91,7 +92,8 @@ def buy(account, code, price, percent, date, option):
     print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
-def sell(account, code, price, percent, date, option):
+# 이름도 같이 받아서 DB 접근 횟수 줄이기 가능할듯
+def sell(account, code, price, percent, date, option, result_data):
     """주식구매 함수
 
     Args:
@@ -113,7 +115,12 @@ def sell(account, code, price, percent, date, option):
     account['balance'] += int(price* stock_amount * 1.00015) #수수료포함 가격
     account['stocks'][code]['amount'] -= stock_amount
     if account['stocks'][code]['amount'] == 0:
+        avg = account['stocks'][code]['avg_price']
         del account['stocks'][code]
+        
+    if stock_amount == 0:
+        print("현재 비율로는 판매가 불가능")
+        return account
         
     # 현재 자산 계산
     current_asset = int(account['balance'])
@@ -124,7 +131,22 @@ def sell(account, code, price, percent, date, option):
     earn_rate = (current_asset - account['start_price']) / account['start_price']
     earn_rate = round(earn_rate * 100, 3)
     name=get_stock_name_by_code(code)
-    print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
+    
+    # 승패여부
+    if not code in account['stocks'].keys():
+        if avg < price:
+            win_or_lose = '승'
+            result_data['win_cnt'] += 1
+        else: win_or_lose = '패'
+    else:
+        if account['stocks'][code]['avg_price'] < price:
+            win_or_lose = '승'
+            result_data['win_cnt'] += 1
+        else: win_or_lose = '패'
+    
+    result_data['win_lose_cnt'] += 1
+    
+    print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price:,} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate} 승패여부{win_or_lose}')
     return account
 
 def get_stock_data(code_number, date):
@@ -141,25 +163,6 @@ def get_stock_price(code_number, date):
     if day_stock_list.count() == 0:
         return None
     return day_stock_list[0].current_price
-    
-
-def calculate_total_account(account, current_stock_price):
-    """ 현재 자산 총합
-
-    Args:
-        account (Dict): 현금 재산과 보유주식목록 딕셔너리
-        current_stock_price (Dict) : 최신 주식별 가격 딕셔너리
-
-    Returns:
-        총액 (Integer)    4,103,320원
-    """
-
-    total_account=account['balance']
-    for key in account['stocks'].keys():
-        total_account+=int(current_stock_price)*account['stocks'][key]['amount']
-    total_account=int(total_account)
-    # result=f'{total_account:,}원'
-    return total_account
 
 def get_kospi_price_by_date(date):
     cnt = 0
@@ -172,18 +175,22 @@ def get_kospi_price_by_date(date):
     
     return kospi_price
 
-def init_result_data(account):
+def init_result_data(account, trading_days):
     result_data = {
+        'trading_days': trading_days, # 총 거래일수
         'year' : account['start_date'][:4], # 연도 저장
         'year_start_price' : account['balance'], # 시작가격
-        'year_earn_rate' : 0.0, # 연평균 수익률
+        'avg_day_earn_rate' : 0.0, # 일평균 수익률
+        'avg_year_earn_rate' : 0.0, # 연평균 수익률
         'year_cnt' : 0, # 총 연도 수
         'max_earn' : account['balance'], # 최고 수익
-        'max_date' : None, # 최고 수익 날짜
+        'max_date' : datetime.strptime(account['start_date'], '%Y-%m-%d'), # 최고 수익 날짜
         'min_earn' : account['balance'], # 최저 수익
-        'min_earn_after_max' : 0, # 최고 수익 이후 최저 수익
+        'min_earn_after_max' : account['balance'], # 최고 수익 이후 최저 수익
         'start_kospi_price' : get_kospi_price_by_date(account['start_date']), # 시작날짜 코스피 가격
         'end_kospi_price' : get_kospi_price_by_date(account['end_date']), # 종료날자 코스피 가격
+        'win_lose_cnt' : 0, # 판매 횟수
+        'win_cnt' : 0, # 승리 횟수
     }
     print(result_data)
     return result_data
@@ -202,7 +209,7 @@ def day_calculate(account, result_data, stock):
     if result_data['min_earn'] > result_data['current_asset']:
         result_data['min_earn'] = result_data['current_asset']
         min_date = datetime.strptime(stock['date'], '%Y-%m-%d')
-        if result_data['max_date'] != None and result_data['max_date'] < min_date:
+        if result_data['max_date'] < min_date:
             result_data['min_earn_after_max'] = result_data['current_asset']
             
     result_data['min_earn'] = min(result_data['min_earn'], result_data['current_asset'])
@@ -217,17 +224,18 @@ def day_calculate(account, result_data, stock):
         result_data = year_calculate(account, result_data)
         result_data['year'] = stock['date'][:4] # 연도 변경
     
+    result_data['avg_day_earn_rate'] += day_earn_rate # 일평균 누적
     # 이부분 DB에 넣어주기
     print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
     return result_data
 
 def year_calculate(account, result_data):
-    print(result_data['year'] + '년 평균' + str((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price']))
+    year_earn_rate = round((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price'] * 100, 3)
+    print(result_data['year'] + '년 평균' + str(year_earn_rate))
     
     result_data['year_cnt'] += 1
-    result_data['year_earn_rate'] = round((result_data['year_earn_rate'] + ((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price'])) / result_data['year_cnt'] * 100, 3)
+    result_data['avg_year_earn_rate'] = round((result_data['avg_year_earn_rate'] + year_earn_rate) / result_data['year_cnt'], 3)
     result_data['year_start_price'] = result_data['current_asset']
-    print('연평균' + str(result_data['year_earn_rate']))
     
     return result_data
 
@@ -240,7 +248,9 @@ def end_calculate(account, result_data):
     result_data['market_rate'] = round((float(result_data['end_kospi_price']) - float(result_data['start_kospi_price'])) / float(result_data['start_kospi_price']) * 100, 3)
     result_data['market_over_price'] = round(result_data['my_final_rate'] - result_data['market_rate'], 3)
     result_data['mdd'] = round((result_data['min_earn_after_max'] - result_data['max_earn']) / result_data['max_earn'] * 100, 3)
-    
-    print('내 손익 : ' + str(result_data['my_profit_loss']) + '|| 내 수익률 : ' + str(result_data['my_final_rate']) + '|| MDD : ' + str(result_data['mdd']))
+    result_data['avg_day_earn_rate'] = round(result_data['avg_day_earn_rate'] / result_data['trading_days'], 3)
+    win_lose_rate = round(result_data['win_cnt'] / result_data['win_lose_cnt'] * 100, 3)
+    print('최종자산 : ' + str(result_data['current_asset']) + '|| 일평균' + str(result_data['avg_day_earn_rate']) +'|| 연평균' + str(result_data['avg_year_earn_rate']) + ' || 승률' + str(win_lose_rate))
+    print('총 거래일수 :' + str(result_data['trading_days']) + '||내 손익 : ' + str(result_data['my_profit_loss']) + '|| 내 수익률 : ' + str(result_data['my_final_rate']) + '|| MDD : ' + str(result_data['mdd']))
     print('시장 수익률 : ' + str(result_data['market_rate']) + '|| 시장초과수익률 : ' + str(result_data['market_over_price']) + '|| 최고자산 : ' + str(result_data['max_earn']) + '|| 최저자산 : ' + str(result_data['min_earn']))
     return result_data

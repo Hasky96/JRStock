@@ -98,23 +98,6 @@ async function getStockItemList({
   );
 }
 
-// 주식 종목 리스트 받아오기
-async function getStockItemList2({
-  page,
-  size,
-  sort,
-  company_name,
-  face_value,
-}) {
-  const api = apiInstance();
-  return await api.get(
-    `stock/?` +
-      (page ? `page=${page}&` : "") +
-      (size ? `size=${size}&` : "") +
-      (company_name ? `company_name=${company_name}&` : "")
-  );
-}
-
 // 종목별 일봉 데이터 받아오기
 async function getDayStock(codeNumber) {
   const api = apiInstance();
@@ -231,7 +214,6 @@ async function addInterest(code_number) {
 
 export {
   getStockItemList,
-  getStockItemList2,
   getBoardList,
   getMyBoardList,
   createBoard,

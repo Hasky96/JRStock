@@ -1,4 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import styles from "./list.module.css";
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
 
 export default function RankItem({ onChecked, checked, index, item }) {
   const navigate = useNavigate();
@@ -10,24 +14,22 @@ export default function RankItem({ onChecked, checked, index, item }) {
     if (rank > 3) return rank;
 
     return (
-      <div className="w-14 p-1 m-auto">
-        <img
-          // className="rounded-full"
-          src={require(`../../assets/rank${index + 1}.png`)}
-          alt="profile"
-        />
+      <div className="xl:w-14 w-12 p-1 m-auto">
+        <img src={require(`../../assets/rank${index + 1}.gif`)} alt="profile" />
       </div>
     );
   };
 
   return (
     <tr
-      className="h-14 hover:bg-primary hover:bg-opacity-50 hover:cursor-pointer text-center text-white"
+      className={classNames(
+        "h-14 hover:bg-indigo-50 hover:cursor-pointer text-center text-primary border-b rounded-lg xl:text-base text-sm"
+      )}
       onClick={() => handleOnClick()}
     >
       <td className="font-bold">{rankElement(index + 1)}</td>
       <td>
-        <div className="w-12 p-1 m-auto">
+        <div className="xl:w-12 w-10 p-1 m-auto">
           <img
             className="rounded-full"
             src="https://source.unsplash.com/random/200x200"
