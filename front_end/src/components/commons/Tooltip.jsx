@@ -5,10 +5,15 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function Tooltip2({ title, contents, pos, right }) {
+/**
+ * contents: tooltip 내에 표시할 내용 ([{title, src, alt, content}])
+ * pos: tooltip 아이콘 absolute 위치
+ * right: tooltip 내용 표시 좌/우 위치 (true면 오른쪽에 표시)
+ */
+function Tooltip({ contents, pos, right }) {
   const [tooltipStatus, setTooltipStatus] = useState(0);
   const paragraphList = (str) => {
-    return str.split("/").map((content, idx) => {
+    return str.split("/n").map((content, idx) => {
       return (
         <p className=" text-xs leading-none text-gray-600 pt-2 pb-2" key={idx}>
           {content}
@@ -20,13 +25,13 @@ function Tooltip2({ title, contents, pos, right }) {
   const contentsList = () => {
     return contents.map(({ title, src, alt, content }, idx) => {
       return (
-        <div key={idx} className="content-item">
-          <p className="text-sm font-semibold leading-none text-gray-800">
+        <div key={idx} className="content-item mb-5">
+          <p className="text-sm font-semibold leading-none mb-2 text-gray-800">
             {title}
           </p>
           <div className="grid justify-center items-center gap-1">
             <img
-              className="w-[200px] h-[200px] rounded-lg"
+              className="max-w-[200px] max-h-[200px] rounded-lg"
               src={src}
               alt={alt}
             />
@@ -69,4 +74,4 @@ function Tooltip2({ title, contents, pos, right }) {
     </>
   );
 }
-export default Tooltip2;
+export default Tooltip;
