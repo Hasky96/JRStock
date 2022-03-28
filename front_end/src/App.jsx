@@ -24,6 +24,7 @@ import BoardUpdate from "./components/StockItemDetail/Boardupdate";
 import Ranking from "./routes/Ranking";
 import NoticeCreate from "./components/notice/NoticeCreate";
 import AdminRoute from "./components/AdminRoute";
+import NoticeUpdate from "./components/notice/NoticeUpdate";
 // import useIsLoggedIn from "./util/useIsLoggedIn";
 
 function App() {
@@ -128,6 +129,14 @@ function App() {
             element={
               <AdminRoute>
                 <NoticeCreate />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/notice/:id/update"
+            element={
+              <AdminRoute>
+                <NoticeUpdate />
               </AdminRoute>
             }
           />
