@@ -15,7 +15,10 @@ function Tooltip({ contents, pos, right }) {
   const paragraphList = (str) => {
     return str.split("/n").map((content, idx) => {
       return (
-        <p className=" text-xs leading-none text-gray-600 pt-2 pb-2" key={idx}>
+        <p
+          className=" text-xs leading-none text-gray-600 pt-2 pb-2 text-ellipsis overflow-hidden"
+          key={idx}
+        >
           {content}
         </p>
       );
