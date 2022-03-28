@@ -21,4 +21,10 @@ async function createNotice(title, content) {
   });
 }
 
-export { getItems, getItem, createNotice };
+// 공지사항 삭제
+async function deleteNotice(noticeId) {
+  const authApi = loginApiInstance();
+  await authApi.delete(`notice/delete/${noticeId}`);
+}
+
+export { getItems, getItem, createNotice, deleteNotice };
