@@ -11,6 +11,8 @@ export default function BoardList() {
   const [boards, setBoards] = useState([]);
   const [isLogin, setIsLogin] = useState(false);
   const [filterState, setFilterState] = useState("전체 보기");
+  const [search, setSearch] = useState("");
+  const [timer, setTimer] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const pageSize = 14;
@@ -18,9 +20,9 @@ export default function BoardList() {
   const init = async () => {
     let res;
     if (filterState === "전체 보기") {
-      res = await getBoardList(id, pageNo, pageSize);
+      res = await getBoardList(id, pageNo, pageSize, search);
     } else if (filterState === "내 글 보기") {
-      res = await getMyBoardList(id, pageNo, pageSize);
+      res = await getMyBoardList(id, pageNo, pageSize, search);
     }
     setBoards(res.data.results);
     setTotalCount(res.data.count);
@@ -34,7 +36,7 @@ export default function BoardList() {
 
   useEffect(() => {
     init();
-  }, [pageNo, filterState]);
+  }, [pageNo, filterState, search]);
 
   // 페이지네이션 동작
   const onClickFirst = async () => {
@@ -85,16 +87,20 @@ export default function BoardList() {
     return result;
   };
 
+  // 필터
   const onClickFilter = (filter) => {
     setPageNo(1);
     setFilterState(filter);
   };
 
+  // 검색
   const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      setPageNo(1);
+      setSearch(word);
+    }, 500);
+    setTimer(newTimer);
   };
 
   return (
