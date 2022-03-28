@@ -98,7 +98,7 @@ def post_list(request, code_number):
     operation_id='게시판 종목별 내 글 조회(유저)',
     operation_description='게시판 종목별로 내가 쓴 글만 조회합니다',
     tags=['주식_게시판'],
-    manual_parameters=[page, size],
+    manual_parameters=[page, size, title],
     responses={status.HTTP_200_OK: openapi.Response(
         description="200 OK",
         schema=openapi.Schema(
@@ -118,6 +118,10 @@ def post_list(request, code_number):
 def my_post_list(request, code_number):
     post_list = Post.objects.filter(basic_info=code_number, user=request.user)
     paginator = PageNumberPagination()
+    
+    if request.GET.get('title'):
+        title = request.GET.get('title')
+        post_list = post_list.filter(title__contains=title)
     
     page_size = request.GET.get('size')
     if not page_size == None:
