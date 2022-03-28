@@ -103,7 +103,55 @@ def OBV(params, df):
     df[f'obv_ema{period}']=df[f'obv{period}'].ewm(span=period).mean()  # 지수평균이동값
     return df
 
-##############################################
+
+def MFI(params, df):
+    """ 자금흐름지표 (Money Flow Index)
+
+    Args:
+        params (list): [period, index, weight]
+        df (dataframe): 주식 데이터 프레임
+
+    Returns:
+        dataframe: 열 추가된 주식 데이터 프레임
+    """
+    typical_price=(df['current_price']+df['high_price']+df['low_price'])/3
+    money_flow=typical_price*df['volume']
+    positive_flow=[0]
+    negative_flow=[0]
+    for i in range(1, len(typical_price)):
+        if typical_price[i]>typical_price[i-1]:
+            positive_flow.append(money_flow[i-1])
+            negative_flow.append(0)
+        elif typical_price[i]<typical_price[i-1]:
+            negative_flow.append(money_flow[i-1])
+            positive_flow.append(0)
+        else :
+            positive_flow.append(0)
+            negative_flow.append(0)
+    
+    period=params[0]
+    positive_mf=[]
+    negative_mf=[]
+
+    for i in range(period-1):
+        positive_mf.append(1)
+        negative_mf.append(1)
+
+    for i in range(period-1, len(positive_flow)):
+        positive_mf.append(sum(positive_flow[i+1-period: i+1]))
+    
+    for i in range(period-1, len(negative_flow)):
+        negative_mf.append(sum(negative_flow[i+1-period: i+1]))
+    
+    mfi=[]
+    for i in range(len(positive_mf)):
+        mfi.append(100*(1-negative_mf[i]/(negative_mf[i]+positive_mf[i])))
+    df[f'mfi{period}']=mfi
+    return df
+
+
+
+###########################################################################################
 
 def rsi_high(params, df, index):
     """ RSI > 상향선 ?
@@ -412,3 +460,36 @@ def macd_reverse(params, df, index):
         return params[3]
     return 0
 
+def mfi_high(params, df, index):
+    """ MFI > 상한선 ?
+
+    Args:
+        params (list): [period, index, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    if index<params[1] or index==len(df)-1:
+        return 0
+    if df.iloc[1][f'mfi{params[0]}']>params[1]:
+        return params[2]
+    return 0
+
+def mfi_low(params, df, index):
+    """ MFI < 하한선 ?
+
+    Args:
+        params (list): [period, index, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    if index<params[1] or index==len(df)-1:
+        return 0
+    if df.iloc[1][f'mfi{params[0]}']<params[1]:
+        return params[2]
+    return 0
