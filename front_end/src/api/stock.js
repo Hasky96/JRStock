@@ -155,6 +155,16 @@ async function getBoardList(code, page, size) {
   );
 }
 
+// 종목 토론 내 글 받아오기
+async function getMyBoardList(code, page, size) {
+  const authApi = loginApiInstance();
+  return await authApi.get(
+    `stock/post/my/${code}?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "")
+  );
+}
+
 // 토론 게시글 작성
 async function createBoard(title, content, code_number) {
   const authApi = loginApiInstance();
@@ -221,6 +231,7 @@ export {
   getStockItemList,
   getStockItemList2,
   getBoardList,
+  getMyBoardList,
   createBoard,
   getBoardDetail,
   deleteBoard,
