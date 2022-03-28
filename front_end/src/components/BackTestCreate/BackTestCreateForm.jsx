@@ -1,35 +1,40 @@
 import { useState } from "react";
 import BasicCondition from "./BasicCondition";
 import TradeCondition from "./TradeCondition";
+import { paramConstructor, getParamDefault } from "../../config/backtestConfig";
 import "./BackTestCreateForm.css";
 
 export default function BackTestCreateForm() {
+  const valueDefault = {
+    commission: 0.015,
+    buy_standard: 50,
+    buy_ratio: 100,
+    sell_standard: 50,
+    sell_ratio: 100,
+  };
+  const [isStockSelected, setIsStockSelected] = useState(false);
   const [values, setValues] = useState({
+    ...valueDefault,
     title: "",
     asset: "",
     start_date: "",
     end_date: "",
     company_name: "",
     company_code: "",
-    commission: "",
-    asset: "",
-    goal_asset: "",
-    buy_standard: "",
-    buy_ratio: "",
-    sell_standard: "",
-    sell_ratio: "",
     buy_strategy: [
       {
         id: 0,
         strategy: "101",
-        params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
+        weight: 50,
+        params: { ...paramConstructor, ...getParamDefault("101") },
       },
     ],
     sell_strategy: [
       {
         id: 0,
         strategy: "101",
-        params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
+        weight: 50,
+        params: { ...paramConstructor, ...getParamDefault("101") },
       },
     ],
   });

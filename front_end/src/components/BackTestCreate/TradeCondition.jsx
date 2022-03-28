@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
 import StrategyConfig from "./StrategyConfig";
+import {
+  paramDict,
+  configDefault,
+  parameters,
+  getParamDefault,
+  paramConstructor,
+} from "../../config/backtestConfig";
 import { ReactComponent as Delete } from "../../assets/remove_circle.svg";
 
 export default function TradeCondition({
@@ -11,33 +18,6 @@ export default function TradeCondition({
 }) {
   const [strategyCount, setStrategyCount] = useState(1);
   const [paintSelect, setPaintSelect] = useState([]);
-
-  const paramDict = {
-    1: "period",
-    2: "err",
-    3: "weight",
-    4: "short_period",
-    5: "long_period",
-    6: "signal",
-    7: "index",
-  };
-
-  const parameters = {
-    101: [1, 2, 3],
-    102: [1, 2, 3],
-    103: [4, 5, 3],
-    104: [4, 5, 3],
-    105: [4, 5, 3],
-    106: [4, 5, 3],
-    203: [4, 5, 6, 3],
-    204: [4, 5, 6, 3],
-    205: [4, 5, 6, 3],
-    206: [4, 5, 6, 3],
-    307: [1, 7, 3],
-    308: [1, 7, 3],
-    407: [1, 3],
-    408: [1, 3],
-  };
 
   const handleDeleteButton = (target) => {
     setValues((state) => {
@@ -60,10 +40,12 @@ export default function TradeCondition({
         ...obj,
         params: { ...obj["params"] },
       }));
+      const paramDefaultConfig = { ...getParamDefault("101") };
       newStrategy.push({
         id: strategyCount,
         strategy: "101",
-        params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
+        weight: configDefault.weight,
+        params: { ...paramConstructor, ...paramDefaultConfig },
       });
       return {
         ...state,
@@ -89,6 +71,21 @@ export default function TradeCondition({
     });
   };
 
+  const handleWeightChange = (e, index) => {
+    setValues((state) => {
+      const newStrategy = state[`${type}_strategy`].map((obj) => ({
+        ...obj,
+        params: { ...obj["params"] },
+      }));
+      newStrategy[index]["weight"] = e.target.value;
+
+      return {
+        ...state,
+        [`${type}_strategy`]: newStrategy,
+      };
+    });
+  };
+
   const paintDeleteButton = (i) => {
     return (
       <div
@@ -100,17 +97,24 @@ export default function TradeCondition({
     );
   };
 
+  const getParamDefaultValue = (i, s, p) => {
+    const defaultValue = configDefault["params"][s][p];
+    return values[`${type}_strategy`][i]["params"][p] || defaultValue;
+  };
+
   const paintParamInput = (strategy, i) => {
     const params = parameters[strategy];
     return params.map((param, index) => (
       <div key={index} className="flex flex-col col-span-1">
-        <label htmlFor={`${i}_${param}`}>{paramDict[param]}</label>
+        <label htmlFor={`${i}_${param}`} className="text-gray-500">
+          {paramDict[param]}
+        </label>
         <input
           id={`${i}_${param}`}
           name={`${i}_${param}`}
           type="number"
           required
-          value={values[`${type}_strategy`][i]["params"][param]}
+          value={getParamDefaultValue(i, strategy, param)}
           onChange={(e) => handleParamChange(e, i, param)}
           className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
         />
@@ -136,8 +140,25 @@ export default function TradeCondition({
                 index={i}
               />
             </div>
-            <div className="col-span-1 grid grid-cols-3 px-5 gap-x-2 gap-y-1 text-xs text-gray-500">
+            <div className="col-span-1 grid grid-cols-3 px-6 gap-x-2 gap-y-1 text-xs">
               {paintParamInput(strategies[i]["strategy"], i)}
+              <div className="flex flex-col col-span-1">
+                <label htmlFor={`${i}_weight`} className="text-gray-500">
+                  weight
+                </label>
+                <input
+                  id={`${i}_weight`}
+                  name={`${i}_weight`}
+                  type="number"
+                  required
+                  value={
+                    values[`${type}_strategy`][i]["weight"] ||
+                    configDefault.weight
+                  }
+                  onChange={(e) => handleWeightChange(e, i)}
+                  className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
+                />
+              </div>
             </div>
           </div>
           {i === strategies.length - 1 ? "" : <div className="">AND</div>}
@@ -162,6 +183,7 @@ export default function TradeCondition({
             type="number"
             required
             autoComplete="off"
+            value={values[`${type}_standard`] || configDefault.standard}
             className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
           />
@@ -178,6 +200,7 @@ export default function TradeCondition({
             type="number"
             required
             autoComplete="off"
+            value={values[`${type}_ratio`] || configDefault.percent}
             className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
           />
