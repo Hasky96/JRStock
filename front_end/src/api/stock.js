@@ -9,92 +9,21 @@ async function getStockItemList({
   filterData,
 }) {
   const api = apiInstance();
+
+  let filterParams = "";
+  if (filterData) {
+    for (const [key, value] of Object.entries(filterData)) {
+      filterParams += `${key}=${value}&`;
+    }
+  }
+
   return await api.get(
     `stock/?` +
       (page ? `page=${page}&` : "") +
       (size ? `size=${size}&` : "") +
       (sort ? `sort=${sort}&` : "") +
       (company_name ? `company_name=${company_name}&` : "") +
-      (filterData && Object.keys(filterData).length && filterData["face_value"]
-        ? `face_value=${filterData["face_value"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["capital_stock"]
-        ? `capital_stock=${filterData["capital_stock"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["number_of_listings"]
-        ? `number_of_listings=${filterData["number_of_listings"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["credit_rate"]
-        ? `credit_rate=${filterData["credit_rate"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["year_high_price"]
-        ? `year_high_price=${filterData["year_high_price"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["year_low_price"]
-        ? `year_low_price=${filterData["year_low_price"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["market_cap"]
-        ? `market_cap=${filterData["market_cap"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["foreigner_percent"]
-        ? `foreigner_percent=${filterData["foreigner_percent"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["substitute_price"]
-        ? `substitute_price=${filterData["substitute_price"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["per"]
-        ? `per=${filterData["per"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["eps"]
-        ? `eps=${filterData["eps"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["roe"]
-        ? `roe=${filterData["roe"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["pbr"]
-        ? `pbr=${filterData["pbr"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["ev"]
-        ? `ev=${filterData["ev"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["bps"]
-        ? `bps=${filterData["bps"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["sales_revenue"]
-        ? `sales_revenue=${filterData["sales_revenue"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["operating_income"]
-        ? `operating_income=${filterData["operating_income"]}&`
-        : "") +
-      (filterData && Object.keys(filterData).length && filterData["net_income"]
-        ? `net_income=${filterData["net_income"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["shares_outstanding"]
-        ? `shares_outstanding=${filterData["shares_outstanding"]}&`
-        : "") +
-      (filterData &&
-      Object.keys(filterData).length &&
-      filterData["shares_outstanding_rate"]
-        ? `shares_outstanding_rate=${filterData["shares_outstanding_rate"]}&`
-        : "")
+      filterParams
   );
 }
 
@@ -200,6 +129,12 @@ async function addInterest(code_number) {
   return await authApi.post(`stock/interest/create/`, { code_number });
 }
 
+// 관심 종목 조회
+async function getInterest() {
+  const authApi = loginApiInstance();
+  return await authApi.get(`stock/interest/`);
+}
+
 export {
   getStockItemList,
   getBoardList,
@@ -217,4 +152,5 @@ export {
   deleteComment,
   getNews,
   addInterest,
+  getInterest,
 };

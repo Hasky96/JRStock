@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./BasicCondition.module.css";
 import StockSelectModal from "./StockSelectModal";
 
@@ -8,13 +8,21 @@ export default function BasicCondition({
   values,
 }) {
   const [isShowModal, setShowModal] = useState(false);
-
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
 
-  const handleStockSelectButton = () => {
+  const handleStockSelectButton = (e) => {
+    e.preventDefault();
     toggleModal();
+  };
+
+  const calProfit = (asset, goal) => {
+    if (parseInt(asset) && parseInt(goal)) {
+      return parseInt(goal / asset) * 100;
+    }
+
+    return 0;
   };
 
   return (
@@ -32,67 +40,19 @@ export default function BasicCondition({
               id="title"
               name="title"
               type="text"
-              className={styles.inputTag}
               placeholder="벡테스트 제목을 입력해주세요."
+              required
               autoComplete="off"
+              className={styles.inputTag}
               onChange={(e) => handleInputChange(e)}
             />
             <label htmlFor="title" className={styles.inputLabel}></label>
           </div>
         </div>
       </div>
-      <div className="w-full h-30 grid grid-cols-12 border-0 border-b-1 border-gray-200 shadow rounded text-center mt-3 p-3 gap-2 gap-y-5">
+      <div className="w-full h-30 grid grid-cols-12 border-0 border-b-1 border-gray-200 shadow rounded text-center mt-3 p-3 gap-y-5">
         <div className="col-span-12 text-left text-xl">기본조건</div>
-        <div className="col-span-4 text-left">
-          <label htmlFor="asset">투자 원금</label>
-          <div className="flex items-center">
-            <input
-              id="asset"
-              name="asset"
-              type="number"
-              className="h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
-              autoComplete="off"
-              onChange={(e) => handleInputChange(e)}
-            />
-            <div className="pl-3">만원</div>
-          </div>
-        </div>
-        <div className="col-span-5 flex text-left gap-2">
-          <div>
-            <label htmlFor="start_at">시작일</label>
-            <input
-              id="start_at"
-              name="start_at"
-              type="date"
-              className="h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block sm:text-sm border border-gray-300 rounded-md"
-            ></input>
-          </div>
-          <div>
-            <label htmlFor="end_at">종료일</label>
-            <input
-              id="end_at"
-              name="end_at"
-              type="date"
-              className="h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block sm:text-sm border border-gray-300 rounded-md"
-            ></input>
-          </div>
-        </div>
-
-        <div className="col-span-2 text-left">
-          <label htmlFor="commission">수수료</label>
-          <div className="flex items-center">
-            <input
-              id="commission"
-              name="commission"
-              type="number"
-              className="h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
-              autoComplete="off"
-              onChange={(e) => handleInputChange(e)}
-            />
-            <div className="pl-3">%</div>
-          </div>
-        </div>
-        <div className="col-start-1 col-span-4 text-left">
+        <div className="col-span-6 xl:col-span-4 text-left px-5">
           <label>종목 선택</label>
           <div className="flex">
             {values.company_name ? (
@@ -103,39 +63,68 @@ export default function BasicCondition({
               ""
             )}
             <button
-              onClick={() => handleStockSelectButton()}
-              className="mt-1 py-2 px-4 border border-indigo-500 bg-indigo-50 text-indigo shadow-sm text-sm font-medium rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:bg-indigo-700 hover:text-white duration-200"
+              type="button"
+              onClick={(e) => handleStockSelectButton(e)}
+              className="mt-1 py-2 px-4 border text-primary shadow-sm text-xs font-bold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-active focus:bg-active focus:text-white hover:bg-active hover:text-white duration-300"
             >
               {values.company_name ? "변경" : "검색"}
             </button>
           </div>
         </div>
-        <div className="col-span-4 text-left">
-          <label htmlFor="goal_asset">목표 자산</label>
-          <div className="flex items-center">
+        <div className="-ml-12 lg:ml-0 col-span-6 xl:col-span-5 flex text-left gap-2">
+          <div>
+            <label htmlFor="start_date">시작일</label>
             <input
-              id="goal_asset"
-              name="goal_asset"
-              type="number"
-              className="h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
-              autoComplete="off"
+              id="start_date"
+              name="start_date"
+              type="date"
+              required
               onChange={(e) => handleInputChange(e)}
-            />
-            <div className="pl-3">만원</div>
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
+            ></input>
+          </div>
+          <div>
+            <label htmlFor="end_date">종료일</label>
+            <input
+              id="end_date"
+              name="end_date"
+              type="date"
+              required
+              onChange={(e) => handleInputChange(e)}
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
+            ></input>
           </div>
         </div>
-        <div className="col-span-2 text-left">
-          <label htmlFor="goal_profit">목표 수익률</label>
+
+        <div className="col-span-6 xl:col-span-4 text-left px-5">
+          <label htmlFor="asset">투자 원금 (원)</label>
           <div className="flex items-center">
             <input
-              id="goal_profit"
-              name="goal_profit"
+              id="asset"
+              name="asset"
               type="number"
-              className="h-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 sm:text-sm border border-gray-300 rounded-md"
+              required
               autoComplete="off"
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}
             />
-            <div className="pl-3">%</div>
+          </div>
+        </div>
+
+        <div className="-ml-5 lg:ml-0 col-span-6 xl:col-span-3 text-left">
+          <label htmlFor="commission">수수료 (%)</label>
+          <div className="flex items-center">
+            <input
+              id="commission"
+              name="commission"
+              type="number"
+              required
+              autoComplete="off"
+              step="0.001"
+              value={values.commision || 0.015}
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+              onChange={(e) => handleInputChange(e)}
+            />
           </div>
         </div>
       </div>

@@ -73,55 +73,18 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
-          <Route
-            path="/stock/:id/board/new"
-            element={
-              <PrivateRoute>
-                <BoardCreate />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
-          <Route
-            path="/stock/:id/board/:boardId/update"
-            element={
-              <PrivateRoute>
-                <BoardUpdate />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/backtest"
-            element={
-              <PrivateRoute>
-                <BackTestList />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/backtest/create"
-            element={
-              <PrivateRoute>
-                <BackTestCreate />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/backtest/:id"
-            element={
-              <PrivateRoute>
-                <BackTestDetail />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/mypage"
-            element={
-              <PrivateRoute>
-                <MyPage />
-              </PrivateRoute>
-            }
-          />
+          <Route element={<PrivateRoute />}>
+            <Route path="/stock/:id/board/new" element={<BoardCreate />} />
+            <Route path="/stock/:id/board/:boardId" element={<BoardDetail />} />
+            <Route
+              path="/stock/:id/board/:boardId/update"
+              element={<BoardUpdate />}
+            />
+            <Route path="/backtest" element={<BackTestList />} />
+            <Route path="/backtest/create" element={<BackTestCreate />} />
+            <Route path="/backtest/:id" element={<BackTestDetail />} />
+            <Route path="/mypage" element={<MyPage />} />
+          </Route>
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
           <Route

@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import NavItem from "./NavItem";
 import { ReactComponent as DashboardIconActive } from "../../assets/dashboardIconActive.svg";
 import { ReactComponent as StockList } from "../../assets/stockList.svg";
@@ -60,8 +60,10 @@ export default function SideBar() {
     <div className="navbar h-screen bg-white flex flex-col items-center pt-10 drop-shadow">
       <ul className="w-full mt-10 flex flex-col">
         <li className="logo">
-          <span className="link-text">JRstock</span>
-          <Rocket />
+          <Link to="/" className="flex items-center">
+            <span className="link-text">JRstock</span>
+            <Rocket />
+          </Link>
         </li>
         {paintNavItems}
       </ul>

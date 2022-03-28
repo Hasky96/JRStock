@@ -3,10 +3,10 @@ import TabItem from "./TabItem";
 import "./TabBar.css";
 
 export default function TabBar({
+  currentTab,
   setCurrentTab,
   tabInfo,
   baseURL,
-  currentTab,
 }) {
   const marker = useRef();
 
