@@ -2,6 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 import sys
+from .serializers import ConditionInfoSerializer
 from strategy import *
 
 from stock.models import DayStock, FinancialInfo, BasicInfo
@@ -268,16 +269,30 @@ def get_kospi_price_by_date(date):
     
     return kospi_price
 
-def make_condition(strategies, standard, ratio):
+def make_condition(result, isBuy, strategies, standard, ratio):
     condition = []
     for conditions in strategies:
         option = []
+        buy_sell_option = strategy_name_dict[int(conditions.get('strategy'))]
+        params = ""
         option.append(int(conditions.get('strategy')))
         for param in conditions.get('params').values():
             if param:
+                params += param + " "
                 option.append(int(param))
+        weight = conditions.get('weight')
         option.append(int(conditions.get('weight')))
         condition.append(option)
+        
+        condition_info = {
+            'isBuy' : isBuy,
+            'buy_sell_option' : buy_sell_option,
+            'params' : params,
+            'weight' : weight,
+        }
+        serializer = ConditionInfoSerializer(data=condition_info)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(result=result)
     
     condition.append(int(standard))
     condition.append(int(ratio))
