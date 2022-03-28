@@ -15,6 +15,8 @@ import OnOffToggle from "../components/OnOffToggle";
 export default function StockItemList() {
   const navigate = useNavigate();
   const [checkedList, setcheckedList] = useState([]);
+  const [isAllChecked, setIsAllChecked] = useState(false);
+  const [currentList, setCurrentList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const [stocks, setStocks] = useState([]);
@@ -37,26 +39,40 @@ export default function StockItemList() {
 
   // 주식 종목 초기화
   const init = async () => {
+    let res;
     if (filterToggle) {
-      const res = await getStockItemList({
+      res = await getStockItemList({
         page: pageNo,
         size: pageSize,
         sort: sortBy,
         company_name: search,
         filterData,
       });
-      setStocks(res.data.results);
-      setTotalCount(res.data.count);
     } else {
-      const res = await getStockItemList({
+      res = await getStockItemList({
         page: pageNo,
         size: pageSize,
         sort: sortBy,
         company_name: search,
       });
-      setStocks(res.data.results);
-      setTotalCount(res.data.count);
     }
+    setStocks(res.data.results);
+    setTotalCount(res.data.count);
+    setCurrentList([]);
+    let temp = [];
+    let isChecked = true;
+    for (let i = 0; i < res.data.results.length; i++) {
+      temp.push(res.data.results[i].financial_info.basic_info.code_number);
+      if (
+        !checkedList.includes(
+          res.data.results[i].financial_info.basic_info.code_number
+        )
+      ) {
+        isChecked = false;
+      }
+    }
+    setIsAllChecked(isChecked);
+    setCurrentList(temp);
   };
 
   useEffect(() => {
@@ -218,15 +234,23 @@ export default function StockItemList() {
   // 전체 체크 클릭 시
   const onCheckedAll = (e) => {
     if (e.target.checked) {
-      const checkedListArray = [];
+      const temp = [];
 
-      stocks.forEach((stock) =>
-        checkedListArray.push(stock.financial_info.basic_info.code_number)
-      );
-
-      setcheckedList(checkedListArray);
+      stocks.forEach((stock) => {
+        if (
+          !checkedList.includes(stock.financial_info.basic_info.code_number)
+        ) {
+          temp.push(stock.financial_info.basic_info.code_number);
+        }
+      });
+      setcheckedList([...checkedList, ...temp]);
+      setIsAllChecked(true);
     } else {
-      setcheckedList([]);
+      const temp = checkedList.filter(
+        (stockId) => !currentList.includes(stockId)
+      );
+      setcheckedList(temp);
+      setIsAllChecked(false);
     }
   };
 
@@ -234,8 +258,16 @@ export default function StockItemList() {
   const onChecked = (id, e) => {
     if (e.target.checked) {
       setcheckedList([...checkedList, id]);
+      let isChecked = true;
+      currentList.forEach((stockId) => {
+        if (!checkedList.includes(stockId) && id !== stockId) {
+          isChecked = false;
+        }
+      });
+      setIsAllChecked(isChecked);
     } else {
       setcheckedList(checkedList.filter((el) => el !== id));
+      setIsAllChecked(false);
     }
   };
 
@@ -258,7 +290,19 @@ export default function StockItemList() {
   const addBookMark = async () => {
     if (checkedList.length) {
       const res = await addInterest(checkedList);
-      alert("관심종목에 추가되었습니다.");
+      if (res.data.duplicate) {
+        alert(
+          `이미 추가된 ${res.data.duplicate}개를 제외한 ${
+            checkedList.length - res.data.duplicate
+          }개의 항목이 관심종목에 추가되었습니다.`
+        );
+      } else {
+        alert(
+          `선택하신 ${checkedList.length}개의 항목이 관심종목에 추가되었습니다.`
+        );
+      }
+      setcheckedList([]);
+      setIsAllChecked(false);
     } else {
       alert("하나 이상의 종목을 선택해주세요.");
     }
@@ -466,13 +510,7 @@ export default function StockItemList() {
                     type="checkbox"
                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
                     onChange={onCheckedAll}
-                    checked={
-                      checkedList.length === 0
-                        ? false
-                        : checkedList.length === stocks.length
-                        ? true
-                        : false
-                    }
+                    checked={isAllChecked ? true : false}
                   />
                 </p>
                 <p className="col-span-1">No</p>
