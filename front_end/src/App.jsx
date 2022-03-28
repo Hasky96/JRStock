@@ -17,7 +17,7 @@ import MyPage from "./routes/MyPage";
 import SideBar from "./components/SideBar/SideBar";
 import Header from "./components/Header";
 import Notice from "./routes/Notice";
-import NoticeDetail from "./routes/NoticeDetail";
+import NoticeDetail from "./components/notice/NoticeDetail";
 import BoardCreate from "./components/StockItemDetail/BoardCreate";
 import BoardDetail from "./components/StockItemDetail/BoardDetail";
 import BoardUpdate from "./components/StockItemDetail/Boardupdate";

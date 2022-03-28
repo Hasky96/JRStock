@@ -64,7 +64,7 @@ export default function Announcement() {
 
   // 종목 클릭 시 해당 종목 디테일 페이지로
   const goDetailPage = (id) => {
-    navigate({ pathname: `/notice/${id}` });
+    navigate(`${id}`);
   };
 
   const onClickFirst = async () => {
