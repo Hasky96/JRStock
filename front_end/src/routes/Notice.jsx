@@ -11,31 +11,31 @@ const contents = [
     title: "제목1",
     src: "https://source.unsplash.com/random/400x400",
     alt: "content1",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+    content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
   },
   {
     title: "제목2",
     src: "https://source.unsplash.com/random/400x400",
     alt: "content2",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+    content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
   },
   {
     title: "제목3",
     src: "https://source.unsplash.com/random/400x400",
     alt: "content3",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+    content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
   },
   {
     title: "제목4",
     src: "https://source.unsplash.com/random/400x400",
     alt: "content4",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+    content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
   },
   {
     title: "제목5",
     src: "https://source.unsplash.com/random/400x400",
     alt: "content5",
-    content: "paragraph1/paragraph2/paragraph3/paragraph4",
+    content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
   },
 ];
 
@@ -171,8 +171,11 @@ export default function Announcement() {
         onClickLast={onClickLast}
         onClickNumber={onClickNumber}
       ></Pagenation>
-
-      <Tooltip title={"공지사항"} contents={contents}></Tooltip>
+      <div className="relative float-right">
+        <Tooltip contents={contents} pos={"-left-9"} right={false}></Tooltip>
+        <span>공지사항</span>
+        <Tooltip contents={contents} pos={"left-16"} right={true}></Tooltip>
+      </div>
     </PageContainer>
   );
 }
