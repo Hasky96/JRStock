@@ -12,4 +12,13 @@ async function getItem(id) {
   return (await api.get(`/notice/${id}`)).data;
 }
 
-export { getItems, getItem };
+// 공지사항 작성
+async function createNotice(title, content) {
+  const authApi = loginApiInstance();
+  return await authApi.post("/notice/create/", {
+    title,
+    content,
+  });
+}
+
+export { getItems, getItem, createNotice };
