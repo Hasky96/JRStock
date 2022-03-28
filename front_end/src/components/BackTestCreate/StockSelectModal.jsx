@@ -1,36 +1,12 @@
-import { ReactComponent as Search } from "../../assets/search.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getStockItemList } from "../../api/stock";
 import costMap from "../../util/costMap";
+import { ReactComponent as Search } from "../../assets/search.svg";
 import "./StockSelectModal.css";
 
 export default function StockSelectModal({ toggleModal, handleStateChange }) {
   const [searchWord, setSearchWord] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-
-  const paintSearchResult = searchResult.results
-    ? searchResult.results.map(({ financial_info, market_cap }, index) => (
-        <button
-          key={index}
-          type="button"
-          className="w-full grid grid-cols-3 h-8 pt-1 text-sm text-center hover:bg-indigo-100 border-b rounded"
-          onClick={() =>
-            handleStockSelect(
-              financial_info.basic_info.company_name,
-              financial_info.basic_info.code_number
-            )
-          }
-        >
-          <div className="col-span-1 text-base text-left whitespace-nowrap">
-            {financial_info.basic_info.company_name}
-          </div>
-          <div className="col-span-1">
-            ({financial_info.basic_info.code_number})
-          </div>
-          <div className="col-span-1">{costMap(market_cap)}</div>
-        </button>
-      ))
-    : [];
 
   const fetchStockItemList = async (word) => {
     const result = await getStockItemList({
@@ -58,6 +34,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
 
   const handleKeyDown = (e) => {
     if (e.keyCode === 13) {
+      e.preventDefault();
       fetchStockItemList(e.target.value);
     }
   };
@@ -73,7 +50,29 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
     toggleModal();
   };
 
-  useEffect(() => {}, [searchResult]);
+  const paintSearchResult = searchResult.results
+    ? searchResult.results.map(({ financial_info, market_cap }, index) => (
+        <button
+          key={index}
+          type="button"
+          className="w-full grid grid-cols-3 h-8 pt-1 text-sm text-center hover:bg-indigo-100 border-b rounded"
+          onClick={() =>
+            handleStockSelect(
+              financial_info.basic_info.company_name,
+              financial_info.basic_info.code_number
+            )
+          }
+        >
+          <div className="col-span-1 text-base text-left whitespace-nowrap">
+            {financial_info.basic_info.company_name}
+          </div>
+          <div className="col-span-1">
+            ({financial_info.basic_info.code_number})
+          </div>
+          <div className="col-span-1">{costMap(market_cap)}</div>
+        </button>
+      ))
+    : [];
 
   return (
     <div
@@ -110,21 +109,25 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
                   </p>
                 </div>
                 <div className="relative">
-                  {searchWord}
-                  <form onSubmit={(e) => e.preventDefault()}>
+                  <div>
                     <input
                       id="company_name"
                       name="company_name"
                       type="text"
                       values={searchWord}
+                      autoComplete="off"
                       onChange={(e) => handleSearchChange(e)}
                       onKeyDown={(e) => handleKeyDown(e)}
                       className="w-full h-8 shadow-sm focus:ring-primary focus:border-primary mt-1 sm:text-sm border bg-white border-gray-300 rounded-md"
                     />
-                    <button type="button" className="absolute right-1 top-2">
+                    <button
+                      type="button"
+                      onClick={() => fetchStockItemList(searchWord)}
+                      className="absolute right-1 top-2"
+                    >
                       <Search />
                     </button>
-                  </form>
+                  </div>
                 </div>
                 {searchResult.results && (
                   <div className="mt-1 border rounded p-3 overflow-y-scroll h-96 scroll-wrapper-box">

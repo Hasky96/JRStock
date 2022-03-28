@@ -9,6 +9,7 @@ export default function BasicCondition({
 }) {
   const [isShowModal, setShowModal] = useState(false);
   const [profitRatio, setProfitRatio] = useState(0);
+  const [assetErrorMessage, setAssetErrorMessage] = useState("");
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
@@ -23,9 +24,12 @@ export default function BasicCondition({
   }, [values]);
 
   const calProfit = (asset, goal) => {
-    if (parseInt(asset)) {
+    if (parseInt(asset) && parseInt(goal)) {
+      // setAssetErrorMessage("");
       return parseInt(goal / asset) * 100;
     }
+
+    // setAssetErrorMessage("연금술은 안돼요!");
     return 0;
   };
 
@@ -66,6 +70,7 @@ export default function BasicCondition({
               ""
             )}
             <button
+              type="button"
               onClick={(e) => handleStockSelectButton(e)}
               className="mt-1 py-2 px-4 border text-primary shadow-sm text-xs font-bold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-active focus:bg-active focus:text-white hover:bg-active hover:text-white duration-300"
             >
@@ -80,6 +85,8 @@ export default function BasicCondition({
               id="start_date"
               name="start_date"
               type="date"
+              required
+              onChange={(e) => handleInputChange(e)}
               className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
             ></input>
           </div>
@@ -89,6 +96,8 @@ export default function BasicCondition({
               id="end_date"
               name="end_date"
               type="date"
+              required
+              onChange={(e) => handleInputChange(e)}
               className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
             ></input>
           </div>
@@ -102,8 +111,8 @@ export default function BasicCondition({
               name="asset"
               type="number"
               required
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               autoComplete="off"
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}
             />
           </div>
@@ -115,14 +124,16 @@ export default function BasicCondition({
               id="goal_asset"
               name="goal_asset"
               type="number"
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+              required
               autoComplete="off"
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}
             />
           </div>
         </div>
 
-        <div className="col-span-6 xl:col-span-2 text-left text-gray-500">
+        <div className="relative col-span-6 xl:col-span-2 text-left text-gray-500">
+          <p className="absolute left-32 top-2 text-xs">{assetErrorMessage}</p>
           <label htmlFor="goal_profit">목표 수익률 (%)</label>
           <div className="flex items-center">
             <input
@@ -131,8 +142,8 @@ export default function BasicCondition({
               type="number"
               value={profitRatio}
               disabled
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               autoComplete="off"
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}
             />
           </div>
@@ -144,8 +155,10 @@ export default function BasicCondition({
               id="commission"
               name="commission"
               type="number"
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+              required
               autoComplete="off"
+              step="0.01"
+              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}
             />
           </div>

@@ -12,20 +12,22 @@ export default function BackTestCreateForm() {
     company_name: "",
     company_code: "",
     commission: "",
-    stock: "",
-    goal: "",
+    asset: "",
+    goal_asset: "",
     buy_standard: "",
+    buy_ratio: "",
     sell_standard: "",
+    sell_ratio: "",
     buy_strategy: [
       {
-        id: "0",
+        id: 0,
         strategy: "101",
         params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
       },
     ],
     sell_strategy: [
       {
-        id: "0",
+        id: 0,
         strategy: "101",
         params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
       },
@@ -44,7 +46,8 @@ export default function BackTestCreateForm() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     console.log("--------------------");
     console.log("values: ");
     console.log(values);
@@ -55,7 +58,10 @@ export default function BackTestCreateForm() {
     sell: "매도",
   };
   return (
-    <div className="bactestcreateform-container mx-auto flex flex-col justify-center items-center">
+    <form
+      onSubmit={(e) => handleSubmit(e)}
+      className="bactestcreateform-container mx-auto flex flex-col justify-center items-center"
+    >
       {/* 기본 조건 handleStateChange 는 StockSelectModal 에서 사용 */}
       <BasicCondition
         values={values}
@@ -79,13 +85,10 @@ export default function BackTestCreateForm() {
         />
       </div>
       <div className="w-full flex justify-center mt-3">
-        <button
-          onClick={() => handleSubmit()}
-          className="w-32 mt-1 py-2 px-4 border border-transparent bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
-        >
+        <button className="w-32 mt-1 py-2 px-4 border border-transparent bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300">
           백테스트 시작
         </button>
       </div>
-    </div>
+    </form>
   );
 }

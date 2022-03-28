@@ -53,7 +53,8 @@ export default function TradeCondition({
     setStrategyCount((state) => state + 1);
   };
 
-  const handleAndButton = () => {
+  const handleAndButton = (e) => {
+    e.preventDefault();
     setValues((state) => {
       const newStrategy = state[`${type}_strategy`].map((obj) => ({
         ...obj,
@@ -108,6 +109,7 @@ export default function TradeCondition({
           id={`${i}_${param}`}
           name={`${i}_${param}`}
           type="number"
+          required
           value={values[`${type}_strategy`][i]["params"][param]}
           onChange={(e) => handleParamChange(e, i, param)}
           className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
@@ -134,7 +136,7 @@ export default function TradeCondition({
                 index={i}
               />
             </div>
-            <div className="col-span-1 grid grid-cols-4 px-5 gap-x-2 gap-y-1 text-xs text-gray-500">
+            <div className="col-span-1 grid grid-cols-3 px-5 gap-x-2 gap-y-1 text-xs text-gray-500">
               {paintParamInput(strategies[i]["strategy"], i)}
             </div>
           </div>
@@ -155,26 +157,28 @@ export default function TradeCondition({
         </label>
         <div className="flex items-center">
           <input
-            id="asset"
-            name="asset"
+            id={`${type}_standard`}
+            name={`${type}_standard`}
             type="number"
-            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+            required
             autoComplete="off"
+            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
           />
         </div>
       </div>
       <div className="col-span-2 text-left px-5">
         <label htmlFor="asset" className="pl-1">
-          자산 운용 비율 (%)
+          매매 비율 (%)
         </label>
         <div className="flex items-center">
           <input
-            id="asset"
-            name="asset"
+            id={`${type}_ratio`}
+            name={`${type}_ratio`}
             type="number"
-            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+            required
             autoComplete="off"
+            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
           />
         </div>
@@ -188,7 +192,8 @@ export default function TradeCondition({
       {paintSelect}
       <div className="col-span-4 px-5">
         <button
-          onClick={() => handleAndButton()}
+          type="button"
+          onClick={(e) => handleAndButton(e)}
           className="w-full py-1 bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
         >
           and
