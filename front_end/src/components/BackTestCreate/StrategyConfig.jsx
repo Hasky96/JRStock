@@ -60,10 +60,25 @@ export default function StrategyConfig({ values, setValues, type, index }) {
   };
   const handleDetailClick = (strategy, option) => {
     setValues((state) => {
-      const newStrategy = state[`${type}_strategy`];
+      const newStrategy = state[`${type}_strategy`].map((obj) => ({
+        ...obj,
+        params: { ...obj["params"] },
+      }));
       newStrategy[index]["strategy"] = strategy + "0" + option;
-      state[`${type}_strategy`] = newStrategy;
-      return state;
+      newStrategy[index]["params"] = {
+        1: "",
+        2: "",
+        3: "",
+        4: "",
+        5: "",
+        6: "",
+        7: "",
+        8: "",
+      };
+      return {
+        ...state,
+        [`${type}_strategy`]: newStrategy,
+      };
     });
     updateStrategyDetail();
   };
@@ -82,7 +97,7 @@ export default function StrategyConfig({ values, setValues, type, index }) {
 
   useEffect(() => {
     updateStrategyDetail();
-  }, [values[`${type}_strategy`]]);
+  }, [values]);
 
   const paintLevelOne = options.map((option, index) => (
     <li key={index} className="rounded-sm relative px-3 py-1 hover:bg-gray-100">
@@ -108,7 +123,9 @@ min-w-32
       <button className="w-full outline-none focus:outline-none border px-3 py-1 bg-white rounded-sm flex items-center min-w-32">
         <div className="pr-1 flex flex-col flex-1 justify-center">
           <div className="pr-1 font-semibold flex-1">{strategy}</div>
-          <div className="pr-1 font-semibold text-sm flex-1">{detail}</div>
+          <div className="pr-1 font-semibold text-sm text-gray-500 flex-1">
+            {detail}
+          </div>
         </div>
         <div>
           <Dropdown />

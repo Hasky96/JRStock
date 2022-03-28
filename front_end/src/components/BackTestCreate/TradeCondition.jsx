@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import StrategyConfig from "./StrategyConfig";
 import { ReactComponent as Delete } from "../../assets/remove_circle.svg";
 
-export default function TradeCondition({ type, name, values, setValues }) {
+export default function TradeCondition({
+  type,
+  name,
+  values,
+  setValues,
+  handleInputChange,
+}) {
   const [strategyCount, setStrategyCount] = useState(1);
   const [paintSelect, setPaintSelect] = useState([]);
 
@@ -35,14 +41,53 @@ export default function TradeCondition({ type, name, values, setValues }) {
 
   const handleDeleteButton = (target) => {
     setValues((state) => {
-      state[`${type}_strategy`] = state[`${type}_strategy`].filter(
-        (strategy) => strategy.id !== target
-      );
-      return state;
+      const newStrategy = state[`${type}_strategy`].map((obj) => ({ ...obj }));
+      return {
+        ...state,
+        [`${type}_strategy`]: newStrategy.filter(
+          (strategy) => strategy.id !== target
+        ),
+      };
     });
 
     setStrategyCount((state) => state + 1);
   };
+
+  const handleAndButton = () => {
+    setValues((state) => {
+      const newStrategy = state[`${type}_strategy`].map((obj) => ({
+        ...obj,
+        params: { ...obj["params"] },
+      }));
+      newStrategy.push({
+        id: strategyCount,
+        strategy: "101",
+        params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
+      });
+      return {
+        ...state,
+        [`${type}_strategy`]: newStrategy,
+      };
+    });
+
+    setStrategyCount((state) => state + 1);
+  };
+
+  const handleParamChange = (e, index, param) => {
+    setValues((state) => {
+      const newStrategy = state[`${type}_strategy`].map((obj) => ({
+        ...obj,
+        params: { ...obj["params"] },
+      }));
+      newStrategy[index]["params"][param] = e.target.value;
+
+      return {
+        ...state,
+        [`${type}_strategy`]: newStrategy,
+      };
+    });
+  };
+
   const paintDeleteButton = (i) => {
     return (
       <div
@@ -54,25 +99,27 @@ export default function TradeCondition({ type, name, values, setValues }) {
     );
   };
 
-  useEffect(() => {
-    const paintParamInput = (strategy, i) => {
-      const params = parameters[strategy];
-      return params.map((param, index) => (
-        <div className="flex flex-col">
-          <label htmlFor={`${i}_${param}`}>{paramDict[param]}</label>
-          <input
-            id={`${i}_${param}`}
-            name={`${i}_${param}`}
-            type="number"
-            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
-          />
-        </div>
-      ));
-    };
+  const paintParamInput = (strategy, i) => {
+    const params = parameters[strategy];
+    return params.map((param, index) => (
+      <div key={index} className="flex flex-col col-span-1">
+        <label htmlFor={`${i}_${param}`}>{paramDict[param]}</label>
+        <input
+          id={`${i}_${param}`}
+          name={`${i}_${param}`}
+          type="number"
+          value={values[`${type}_strategy`][i]["params"][param]}
+          onChange={(e) => handleParamChange(e, i, param)}
+          className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
+        />
+      </div>
+    ));
+  };
 
+  useEffect(() => {
     const paintSelect = [];
-    const strategy = values[`${type}_strategy`];
-    for (let i = 0; i < strategy.length; i++) {
+    const strategies = values[`${type}_strategy`]; // strategies: Array
+    for (let i = 0; i < strategies.length; i++) {
       paintSelect.push(
         <div key={i} className="col-span-4">
           <div className="relative grid grid-cols-2 text-left pt-0">
@@ -87,35 +134,51 @@ export default function TradeCondition({ type, name, values, setValues }) {
                 index={i}
               />
             </div>
-            <div className="col-span-1 px-5">
-              {paintParamInput(strategy[i]["strategy"], i)}
+            <div className="col-span-1 grid grid-cols-4 px-5 gap-x-2 gap-y-1 text-xs text-gray-500">
+              {paintParamInput(strategies[i]["strategy"], i)}
             </div>
           </div>
-          {i === strategy.length - 1 ? "" : <div className="">AND</div>}
+          {i === strategies.length - 1 ? "" : <div className="">AND</div>}
         </div>
       );
     }
 
     setPaintSelect(paintSelect);
-  }, [strategyCount]);
-
-  const handleAndButton = () => {
-    setValues((state) => {
-      const newStrategy = {
-        id: strategyCount,
-        strategy: "101",
-        parameters: "",
-      };
-      state[`${type}_strategy`].push(newStrategy);
-      return state;
-    });
-
-    setStrategyCount((state) => state + 1);
-  };
+  }, [values]);
 
   return (
     <div className="w-full grid grid-cols-4 place-content-start border-0 border-b-1 border-gray-200 shadow-lg rounded text-center p-3 gap-2">
       <div className="col-span-4 text-left text-lg">{name} 조건</div>
+      <div className="col-span-2 text-left px-5">
+        <label htmlFor="asset" className="pl-1">
+          매매 기준 점수
+        </label>
+        <div className="flex items-center">
+          <input
+            id="asset"
+            name="asset"
+            type="number"
+            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+            autoComplete="off"
+            onChange={(e) => handleInputChange(e)}
+          />
+        </div>
+      </div>
+      <div className="col-span-2 text-left px-5">
+        <label htmlFor="asset" className="pl-1">
+          자산 운용 비율 (%)
+        </label>
+        <div className="flex items-center">
+          <input
+            id="asset"
+            name="asset"
+            type="number"
+            className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
+            autoComplete="off"
+            onChange={(e) => handleInputChange(e)}
+          />
+        </div>
+      </div>
       <div className="col-span-2 text-left px-5">
         <div className="p-1 border-b">{name} 전략</div>
       </div>

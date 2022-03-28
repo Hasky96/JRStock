@@ -1,5 +1,5 @@
 import { ReactComponent as Search } from "../../assets/search.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getStockItemList } from "../../api/stock";
 import costMap from "../../util/costMap";
 import "./StockSelectModal.css";
@@ -7,35 +7,6 @@ import "./StockSelectModal.css";
 export default function StockSelectModal({ toggleModal, handleStateChange }) {
   const [searchWord, setSearchWord] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-
-  const handleCancelButton = () => {
-    toggleModal();
-  };
-
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    const result = await getStockItemList({
-      page: "1",
-      size: "20",
-      company_name: searchWord,
-    })
-      .then((res) => res.data)
-      .catch((err) => console.log(err));
-
-    if (result) {
-      setSearchResult(result);
-    }
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchWord(e.target.value);
-  };
-
-  const handleStockSelect = (company_name, company_code) => {
-    handleStateChange("company_name", company_name);
-    handleStateChange("company_code", company_code);
-    toggleModal();
-  };
 
   const paintSearchResult = searchResult.results
     ? searchResult.results.map(({ financial_info, market_cap }, index) => (
@@ -60,6 +31,49 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
         </button>
       ))
     : [];
+
+  const fetchStockItemList = async (word) => {
+    const result = await getStockItemList({
+      page: "1",
+      size: "20",
+      company_name: word,
+    })
+      .then((res) => res.data)
+      .catch((err) => console.log(err));
+    if (result) {
+      setSearchResult(result);
+    }
+  };
+
+  const [timer, setTimer] = useState(null);
+  const handleSearchChange = (e) => {
+    clearTimeout(timer);
+    setSearchWord(e.target.value);
+    const newTimer = setTimeout(() => {
+      fetchStockItemList(e.target.value);
+    }, 500);
+
+    setTimer(newTimer);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      fetchStockItemList(e.target.value);
+    }
+  };
+
+  const handleCancelButton = (e) => {
+    e.preventDefault();
+    toggleModal();
+  };
+
+  const handleStockSelect = (company_name, company_code) => {
+    handleStateChange("company_name", company_name);
+    handleStateChange("company_code", company_code);
+    toggleModal();
+  };
+
+  useEffect(() => {}, [searchResult]);
 
   return (
     <div
@@ -96,15 +110,18 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
                   </p>
                 </div>
                 <div className="relative">
-                  <form onSubmit={(e) => handleSearchSubmit(e)}>
+                  {searchWord}
+                  <form onSubmit={(e) => e.preventDefault()}>
                     <input
                       id="company_name"
                       name="company_name"
                       type="text"
+                      values={searchWord}
                       onChange={(e) => handleSearchChange(e)}
+                      onKeyDown={(e) => handleKeyDown(e)}
                       className="w-full h-8 shadow-sm focus:ring-primary focus:border-primary mt-1 sm:text-sm border bg-white border-gray-300 rounded-md"
                     />
-                    <button type="submit" className="absolute right-1 top-2">
+                    <button type="button" className="absolute right-1 top-2">
                       <Search />
                     </button>
                   </form>
@@ -120,7 +137,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               type="button"
-              onClick={() => handleCancelButton()}
+              onClick={(e) => handleCancelButton(e)}
               className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-gray-900 bg-white hover:bg-active hover:text-white duration-300 text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:border-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               취소

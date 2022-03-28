@@ -6,6 +6,7 @@ import "./BackTestCreateForm.css";
 export default function BackTestCreateForm() {
   const [values, setValues] = useState({
     title: "",
+    asset: "",
     start_date: "",
     end_date: "",
     company_name: "",
@@ -13,19 +14,20 @@ export default function BackTestCreateForm() {
     commission: "",
     stock: "",
     goal: "",
-    standard: "",
+    buy_standard: "",
+    sell_standard: "",
     buy_strategy: [
       {
         id: "0",
         strategy: "101",
-        parameters: "",
+        params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
       },
     ],
     sell_strategy: [
       {
         id: "0",
         strategy: "101",
-        parameters: "",
+        params: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "" },
       },
     ],
   });
@@ -42,33 +44,45 @@ export default function BackTestCreateForm() {
     }));
   };
 
+  const handleSubmit = () => {
+    console.log("--------------------");
+    console.log("values: ");
+    console.log(values);
+  };
+
   const types = {
     buy: "매수",
     sell: "매도",
   };
   return (
     <div className="bactestcreateform-container mx-auto flex flex-col justify-center items-center">
+      {/* 기본 조건 handleStateChange 는 StockSelectModal 에서 사용 */}
       <BasicCondition
         values={values}
         handleInputChange={handleInputChange}
         handleStateChange={handleStateChange}
       />
-      <div className="w-full flex flex-col xl:flex-row justify-center mt-3 gap-2">
+      <div className="w-full flex flex-col justify-center mt-3 gap-2">
         <TradeCondition
           type="buy"
           name="매수"
           values={values}
           setValues={setValues}
+          handleInputChange={handleInputChange}
         />
         <TradeCondition
           type="sell"
           name="매도"
           values={values}
           setValues={setValues}
+          handleInputChange={handleInputChange}
         />
       </div>
       <div className="w-full flex justify-center mt-3">
-        <button className="w-32 mt-1 py-2 px-4 border border-transparent bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300">
+        <button
+          onClick={() => handleSubmit()}
+          className="w-32 mt-1 py-2 px-4 border border-transparent bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
+        >
           백테스트 시작
         </button>
       </div>
