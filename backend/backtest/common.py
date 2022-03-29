@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 import sys
-from .serializers import ConditionInfoSerializer
+from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, ResultSerializer, YearHistorySerialilzer
 from strategy import *
 
 from stock.models import DayStock, FinancialInfo, BasicInfo
@@ -69,16 +69,16 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
             for cond in sell_condition[0:-2]:
                 total_weight += call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
             if total_weight >= sell_condition[-2]:      # 기준선 이상이면 매도
-                account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option, result_data)  
+                account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option)
+                result_data['win_lose_cnt'] += 1
                 flag = True
 
         # =====매일마다 계산
         result_data = day_calculate(account, result_data, df.loc[i])
 
     # 최종 계산
-    result_data = end_calculate(account, result_data)
-    print("===================================================")
-    # print(result_data)
+    create_database(account)
+    return end_calculate(account, result_data)
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
     """ 코드로 전략 실행하는 함수 : 동적으로 함수 호출, 호출할 함수 이름과 일치해야함
@@ -164,7 +164,7 @@ def buy(account, code, price, percent, date, option):
         stock_amount -= 1
     buy_price =stock_amount * price * 1.00015 # 수수료포함가격
     if buy_price == 0: # 못사는경우
-        print("구매가 불가합니다. 잔액부족")
+        # print("구매가 불가합니다. 잔액부족")
         return account
     account['balance'] -= buy_price # 구매후 가격 갱신
     
@@ -185,11 +185,24 @@ def buy(account, code, price, percent, date, option):
     earn_rate = round(earn_rate * 100, 3)
     name = account['company_name']
     
-    print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
+    buy_data = {
+        'date' : date,
+        'isBuy' : True,
+        'buy_sell_option' : option,
+        'company_name' : name,
+        'company_code' : code,
+        'stock_amount' : stock_amount,
+        'stock_price' : price,
+        'current_rate' : earn_rate,
+        'current_asset' : current_asset,
+    }
+    account['buy_sell_list'].append(buy_data)
+    
+    # print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
 
 # 이름도 같이 받아서 DB 접근 횟수 줄이기 가능할듯
-def sell(account, code, price, percent, date, option, result_data):
+def sell(account, code, price, percent, date, option):
     """주식구매 함수
 
     Args:
@@ -205,22 +218,21 @@ def sell(account, code, price, percent, date, option, result_data):
         실패시 False 반환 -> 현재 account 반환
     """
     if code not in account['stocks'].keys():
-        print("판매가 불가능합니다. 보유한 주식수보다 작습니다.")
+        # print("판매가 불가능합니다. 보유한 주식수보다 작습니다.")
         return account
-    stock_amount = int(account['stocks'][code]['amount']*percent/100)
-    account['balance'] += int(price* stock_amount * 1.00015) #수수료포함 가격
-    account['stocks'][code]['amount'] -= stock_amount
+    stock_amount = int(account['stocks'][code]['amount'] * percent / 100)
+    if stock_amount == 0:
+        # print("현재 비율로는 판매가 불가능")
+        return account
     
+    account['balance'] += int(price * stock_amount * 1.00015) #수수료포함 가격
+    account['stocks'][code]['amount'] -= stock_amount
     
     current_asset = int(account['balance'])
     if account['stocks'][code]['amount'] == 0:
         avg = account['stocks'][code]['avg_price']
         del account['stocks'][code]
     else: current_asset += (int(price) * int(account['stocks'][code]['amount']))
-        
-    if stock_amount == 0:
-        print("현재 비율로는 판매가 불가능")
-        return account
             
     earn_rate = (current_asset - account['start_price']) / account['start_price']
     earn_rate = round(earn_rate * 100, 3)
@@ -229,18 +241,30 @@ def sell(account, code, price, percent, date, option, result_data):
     # 승패여부
     if not code in account['stocks'].keys():
         if avg < price:
-            win_or_lose = '승'
-            result_data['win_cnt'] += 1
-        else: win_or_lose = '패'
+            win_or_lose = True
+            account['win_cnt'] += 1
+        else: win_or_lose = False
     else:
         if account['stocks'][code]['avg_price'] < price:
-            win_or_lose = '승'
-            result_data['win_cnt'] += 1
-        else: win_or_lose = '패'
+            win_or_lose = True
+            account['win_cnt'] += 1
+        else: win_or_lose = False
+        
+    sell_data = {
+        'date' : date,
+        'isBuy' : True,
+        'buy_sell_option' : option,
+        'company_name' : name,
+        'company_code' : code,
+        'stock_amount' : stock_amount,
+        'stock_price' : price,
+        'current_rate' : earn_rate,
+        'current_asset' : current_asset,
+        'isWin' : win_or_lose,
+    }
+    account['buy_sell_list'].append(sell_data)
     
-    result_data['win_lose_cnt'] += 1
-    
-    print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate} 승패여부{win_or_lose}')
+    # print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate} 승패여부{win_or_lose}')
     return account
 
 def get_stock_data(code_number, date):
@@ -270,7 +294,8 @@ def get_kospi_price_by_date(date):
     return kospi_price
 
 def make_condition(result, isBuy, strategies, standard, ratio):
-    condition = []
+    db_input = []   # DB에 저장하기 위한 리스트
+    condition = []  # 리턴하기 위한 리스트
     for conditions in strategies:
         option = []
         buy_sell_option = strategy_name_dict[int(conditions.get('strategy'))]
@@ -290,10 +315,13 @@ def make_condition(result, isBuy, strategies, standard, ratio):
             'params' : params,
             'weight' : weight,
         }
-        serializer = ConditionInfoSerializer(data=condition_info)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(result=result)
+        db_input.append(condition_info)
     
+    # DB 접근은 한 번만해서 정보 넣기
+    serializer = ConditionInfoSerializer(data=db_input, many=True)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(result=result)
+        
     condition.append(int(standard))
     condition.append(int(ratio))
     
@@ -315,9 +343,7 @@ def init_result_data(account, trading_days):
         'start_kospi_price' : get_kospi_price_by_date(account['start_date']), # 시작날짜 코스피 가격
         'end_kospi_price' : get_kospi_price_by_date(account['end_date']), # 종료날자 코스피 가격
         'win_lose_cnt' : 0, # 판매 횟수
-        'win_cnt' : 0, # 승리 횟수
     }
-    print(result_data)
     return result_data
 
 # 하루마다 계산할 것
@@ -350,15 +376,29 @@ def day_calculate(account, result_data, stock):
         result_data['year'] = stock['date'][:4] # 연도 변경
     
     result_data['avg_day_earn_rate'] += day_earn_rate # 일평균 누적
-    # 이부분 DB에 넣어주기
-    print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
+    
+    day_history_data = {
+        'date' : stock['date'],
+        'day_earn_rate' : day_earn_rate,
+        'day_earn' : day_earn,
+        'current_asset' : result_data['current_asset']
+    }
+    account['day_history_list'].append(day_history_data)
+    # print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
     return result_data
 
 def year_calculate(account, result_data, date):
     year_earn_rate = round((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price'] * 100, 3)
     market_current_price = float(get_kospi_price_by_date(date))
     market_year_rate = round((market_current_price - result_data['market_year_start_price']) / result_data['market_year_start_price'] * 100, 3)
-    print(result_data['year'] + '년 평균' + str(year_earn_rate) + '|| 시장연평균 :' + str(market_year_rate))
+    
+    year_history_data = {
+        'year' : result_data['year'],
+        'year_rate' : year_earn_rate,
+        'market_rate' : market_year_rate
+    }
+    account['year_history_list'].append(year_history_data)
+    # print(result_data['year'] + '년 평균' + str(year_earn_rate) + '|| 시장연평균 :' + str(market_year_rate))
     
     result_data['year_cnt'] += 1
     result_data['avg_year_earn_rate'] = round((result_data['avg_year_earn_rate'] + year_earn_rate) / result_data['year_cnt'], 3)
@@ -367,7 +407,23 @@ def year_calculate(account, result_data, date):
     
     return result_data
 
-def end_calculate(account, result_data):
+def create_database(account):
+    # 매수매도내역 DB에 저장
+    serializer = BuySellSerializer(data=account['buy_sell_list'], many=True)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(result=account['result'])
+        
+    # 일일데이터 저장
+    serializer = DayHistorySerialilzer(data=account['day_history_list'], many=True)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(result=account['result'])
+        
+    # 연데이터 저장
+    serializer = YearHistorySerialilzer(data=account['year_history_list'], many=True)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(result=account['result'])
+
+def end_calculate(account, result_data): 
     # 마지막 날을 기준으로 마지막 연도 평균 계산
     result_data = year_calculate(account, result_data, account['end_date'])
     
@@ -380,12 +436,42 @@ def end_calculate(account, result_data):
     max_earn_rate = round((result_data['max_earn'] - account['start_price']) / account['start_price'] * 100, 3)
     min_earn_rate = round((result_data['min_earn'] - account['start_price']) / account['start_price'] * 100, 3)
     
-    if result_data['win_cnt'] == 0 or result_data['win_lose_cnt'] == 0:
+    if account['win_cnt'] == 0 or result_data['win_lose_cnt'] == 0:
         win_lose_rate = 0
-    else: win_lose_rate = round(result_data['win_cnt'] / result_data['win_lose_cnt'] * 100, 3)
+    else: win_lose_rate = round(account['win_cnt'] / result_data['win_lose_cnt'] * 100, 3)
     
-    print('최종자산 : ' + str(result_data['current_asset']) + '|| 일평균' + str(result_data['avg_day_earn_rate']) +'|| 연평균' + str(result_data['avg_year_earn_rate']) + ' || 승률' + str(win_lose_rate))
-    print('총 거래일수 :' + str(result_data['trading_days']) + '||내 손익 : ' + str(result_data['my_profit_loss']) + '|| 내 수익률 : ' + str(result_data['my_final_rate']) + '|| MDD : ' + str(result_data['mdd']))
-    print('시장 수익률 : ' + str(result_data['market_rate']) + '|| 시장초과수익률 : ' + str(result_data['market_over_price']) + '|| 최고자산 : ' + str(result_data['max_earn']) + '|| 최저자산 : ' + str(result_data['min_earn']))
-    print('최고수익률 : ' + str(max_earn_rate) + '|| 최저수익률 : ' + str(min_earn_rate))
-    return result_data
+    input_data = {
+        'title' : account['result'].title,
+        'asset' : account['result'].asset,
+        'test_start_date' : account['result'].test_start_date,
+        'test_end_date' : account['result'].test_end_date,
+        'commission' : account['result'].commission,
+        'buy_standard' : account['result'].buy_standard,
+        'buy_ratio' : account['result'].buy_ratio,
+        'sell_standard' : account['result'].sell_standard,
+        'sell_ratio' : account['result'].sell_ratio,
+        'avg_day_earn_rate' : result_data['avg_day_earn_rate'],
+        'avg_year_earn_rate' : result_data['avg_year_earn_rate'],
+        'market_rate' : result_data['market_rate'],
+        'market_over_rate' : result_data['market_over_price'],
+        'max_earn' : result_data['max_earn'],
+        'min_earn' : result_data['min_earn'],
+        'max_earn_rate' : max_earn_rate,
+        'min_earn_rate' : min_earn_rate,
+        'trading_days' : result_data['trading_days'],
+        'mdd' : result_data['mdd'],
+        'win_lose_rate' : win_lose_rate,
+        'final_asset' : result_data['current_asset'],
+        'final_earn' : result_data['my_profit_loss'],
+        'final_rate' : result_data['my_final_rate']
+    }
+    
+    serializer = ResultSerializer(instance=account['result'], data=input_data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+    
+    # print('최종자산 : ' + str(result_data['current_asset']) + '|| 일평균' + str(result_data['avg_day_earn_rate']) +'|| 연평균' + str(result_data['avg_year_earn_rate']) + ' || 승률' + str(win_lose_rate))
+    # print('총 거래일수 :' + str(result_data['trading_days']) + '||내 손익 : ' + str(result_data['my_profit_loss']) + '|| 내 수익률 : ' + str(result_data['my_final_rate']) + '|| MDD : ' + str(result_data['mdd']))
+    # print('시장 수익률 : ' + str(result_data['market_rate']) + '|| 시장초과수익률 : ' + str(result_data['market_over_price']) + '|| 최고자산 : ' + str(result_data['max_earn']) + '|| 최저자산 : ' + str(result_data['min_earn']))
+    # print('최고수익률 : ' + str(max_earn_rate) + '|| 최저수익률 : ' + str(min_earn_rate))
+    return serializer

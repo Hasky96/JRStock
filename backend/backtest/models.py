@@ -40,11 +40,12 @@ class BuySell(models.Model):
     isBuy = models.BooleanField()
     buy_sell_option = models.TextField()
     company_name = models.CharField(max_length=50)
+    company_code = models.CharField(max_length=10)
     stock_amount = models.BigIntegerField()
     stock_price = models.IntegerField()
     current_rate = models.FloatField()
     current_asset = models.BigIntegerField()
-    isWin = models.BooleanField()
+    isWin = models.BooleanField(blank=True, null=True)
     
     class Meta:
         ordering = ['-id']
