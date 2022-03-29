@@ -142,9 +142,14 @@ async function addInterest(code_number) {
 }
 
 // 관심 종목 조회
-async function getInterest() {
+async function getInterest({ page, size, sort, company_name }) {
   const authApi = loginApiInstance();
-  return await authApi.get(`stock/interest/`);
+  return await authApi.get(
+    `stock/interest/?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "") +
+      (sort ? `sort=${sort}&` : "")
+  );
 }
 
 export {
