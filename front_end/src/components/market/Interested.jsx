@@ -27,6 +27,7 @@ export default function Interested() {
         liveRes["isError"] = true;
       }
       liveRes["company_name"] = stock.financial_info.basic_info.company_name;
+      liveRes["code_number"] = stock.financial_info.basic_info.code_number;
       temp.push(liveRes);
     }
     setLives(temp);
@@ -51,6 +52,11 @@ export default function Interested() {
     navigate("/stock");
   };
 
+  // 종목 상세 페이지로
+  const goStockDetail = (codeNumber) => {
+    navigate(`/stock/${codeNumber}/detail`)
+  };
+
   // 실시간 데이터로 html 구성
   const liveList = () => {
     const result = [];
@@ -62,7 +68,10 @@ export default function Interested() {
         >
           <div>
             <div className="grid grid-cols-11">
-              <div className="col-span-2 my-auto text-xl font-bold">
+              <div
+                className="col-span-2 my-auto text-xl font-bold cursor-pointer"
+                onClick={goStockDetail.bind(this, live.code_number)}
+              >
                 {live.company_name}
               </div>
               <div className="col-span-3">
