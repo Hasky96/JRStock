@@ -15,4 +15,6 @@ urlpatterns = [
     path('interest/delete/', views.interset_stock_delete, name='interset_stock_delete'),
     
     path('news/<str:code_number>', views.get_recent_news, name='get_recent_news'),
+    
+    path('start-end/<str:code_number>', views.get_start_end_date, name='get_start_end_date'),
 ]
