@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import GoogleLogin from "react-google-login";
 import { login, oauth } from "../api/user";
 import { ReactComponent as ABtest } from "../assets/landing_page/abtest.svg";
+import { ReactComponent as Rocket } from "../assets/rocket.svg";
 import "./background.css";
 
 export default function Login() {
@@ -70,13 +71,18 @@ export default function Login() {
             <ABtest />
           </div>
           <div className="min-w-[350px] max-w-lg space-y-8">
-            <div>
-              <h2 className="text-3xl font-extrabold text-primary text-center">
-                JRstock
-              </h2>
+            <div className="flex justify-center relative">
+              <Link to="/">
+                <h2 className="text-3xl font-extrabold text-primary text-center">
+                  JRstock
+                </h2>
+                <div className="absolute right-[90px] top-1">
+                  <Rocket fill="#ff825c" />
+                </div>
+              </Link>
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-primary">
+              <h2 className="text-xl font-extrabold text-primary text-center">
                 Login in to your account
               </h2>
             </div>
