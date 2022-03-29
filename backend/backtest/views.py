@@ -123,6 +123,9 @@ def test_start(request):
     
     # 매수 관련 정보 받기 및 DB에 저장, 에러 발생시 진행된 값들 제거
     try:
+        # 백테스트 활성화
+        request.user.is_backtest = True
+        request.user.save()
         buy_condition = make_condition(result, True, buy_strategy, buy_standard, buy_ratio)
         sell_condition = make_condition(result, False, sell_strategy, sell_standard, sell_ratio)
         serializer = backtest(account, company_code, start_date, end_date, buy_condition, sell_condition)
@@ -130,6 +133,8 @@ def test_start(request):
         request.user.save()
     except Exception as e:
         result.delete()
+        request.user.is_backtest = False
+        request.user.save()
         return Response({'message' : str(e)}, status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
