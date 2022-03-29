@@ -11,6 +11,14 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = '__all__'
+        
+class RankResultSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    rank = serializers.IntegerField()
+    
+    class Meta:
+        model = Result
+        fields = '__all__'
 
 class BuySellSerializer(serializers.ModelSerializer):
     # result = ResultSerializer(read_only=True)

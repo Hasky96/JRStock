@@ -412,7 +412,7 @@ def end_calculate(account, result_data):
         'asset' : account['result'].asset,
         'test_start_date' : account['result'].test_start_date,
         'test_end_date' : account['result'].test_end_date,
-        'commission' : (account['result'].commission - 1) * 100,
+        'commission' : round((account['result'].commission - 1) * 100, 3),
         'buy_standard' : account['result'].buy_standard,
         'buy_ratio' : account['result'].buy_ratio,
         'sell_standard' : account['result'].sell_standard,

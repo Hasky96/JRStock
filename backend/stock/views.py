@@ -408,12 +408,12 @@ def live_data(request, code_number):
 def interest_stock_create(request):
     # 체크박스를 리스트 형식으로 받아와서 저장
     code_numbers = request.data.get('code_number')
-    
+    print(code_numbers)
     duplicate_list = []
     
     # 중복확인
     for code_number in code_numbers:
-        interest = Interest.objects.filter(basic_info_id=code_number)
+        interest = Interest.objects.filter(user=request.user, basic_info_id=code_number)
         
         if interest.count() == 0:
             serializer = InterestSerializer(data=request.data)
