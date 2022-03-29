@@ -27,11 +27,7 @@ export default function BackTestList() {
 
   const onCheckedAll = (e) => {
     if (e.target.checked) {
-      const checkedListArray = [];
-
-      backTestItems.forEach((item) => checkedListArray.push(item.id));
-
-      setcheckedList(checkedListArray);
+      setcheckedList(backTestItems.map((item) => item.id));
     } else {
       setcheckedList([]);
     }
@@ -110,22 +106,11 @@ export default function BackTestList() {
     // pageNo 1로 초기화
   };
 
-  // const handleCreateButtonClick = () => {
-  //   if (sessionStorage.getItem("access_token")) {
-  //     navigate("create");
-  //   } else {
-  //     navigate("/login");
-  //   }
-  // };
-
   return (
     <PageContainer>
       <div className="flex">
         <Link to="create">
-          <button
-            className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300"
-            // onClick={() => handleCreateButtonClick()}
-          >
+          <button className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300">
             <Create />
             <div className="col-span-2 my-auto">백테스트 생성</div>
           </button>
