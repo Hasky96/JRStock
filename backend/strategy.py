@@ -103,7 +103,78 @@ def OBV(params, df):
     df[f'obv_ema{period}']=df[f'obv{period}'].ewm(span=period).mean()  # 지수평균이동값
     return df
 
-##############################################
+
+def MFI(params, df):
+    """ 자금흐름지표 (Money Flow Index)
+
+    Args:
+        params (list): [period, index, weight]
+        df (dataframe): 주식 데이터 프레임
+
+    Returns:
+        dataframe: 열 추가된 주식 데이터 프레임
+    """
+    typical_price=(df['current_price']+df['high_price']+df['low_price'])/3
+    money_flow=typical_price*df['volume']
+    positive_flow=[0]
+    negative_flow=[0]
+    for i in range(1, len(typical_price)):
+        if typical_price[i]>typical_price[i-1]:
+            positive_flow.append(money_flow[i-1])
+            negative_flow.append(0)
+        elif typical_price[i]<typical_price[i-1]:
+            negative_flow.append(money_flow[i-1])
+            positive_flow.append(0)
+        else :
+            positive_flow.append(0)
+            negative_flow.append(0)
+    
+    period=params[0]
+    positive_mf=[]
+    negative_mf=[]
+
+    for i in range(period-1):
+        positive_mf.append(1)
+        negative_mf.append(1)
+
+    for i in range(period-1, len(positive_flow)):
+        positive_mf.append(sum(positive_flow[i+1-period: i+1]))
+    
+    for i in range(period-1, len(negative_flow)):
+        negative_mf.append(sum(negative_flow[i+1-period: i+1]))
+    
+    mfi=[]
+    for i in range(len(positive_mf)):
+        mfi.append(100*(1-negative_mf[i]/(negative_mf[i]+positive_mf[i])))
+    df[f'mfi{period}']=mfi
+    return df
+
+
+def IKH(params, df): 
+    # 일목균형표 (Ichimoku Kinkou Hyo)
+    period9_max_price = df['high_price'].rolling(window=9).max()
+    period9_min_price = df['low_price'].rolling(window=9).min()
+    df['conversion_line'] = (period9_max_price + period9_min_price) /2   # 기준선 (conversion line)
+    period26_max_price = df['high_price'].rolling(window=26).max()
+    period26_min_price = df['low_price'].rolling(window=26).min()
+    df['base_line'] = (period26_max_price + period26_min_price) / 2    # 기준선 (base line)
+    df['leading_span1'] = ((df['conversion_line'] + df['base_line']) / 2).shift(26)    # 선행스팬1 (leading span 1)
+    period52_max_price = df['high_price'].rolling(window=52).max()
+    period52_min_price = df['low_price'].rolling(window=52).min()
+    df['leading_span2'] = ((period52_max_price + period52_min_price) / 2).shift(26)    # 선행스팬1 (leading span 1)
+    df['lagging_span'] = df['current_price'].shift(-26)     # 후행스팬 (lagging span)
+    df['cloud']=df['leading_span1']-df['leading_span2']     # 구름층 
+    
+    return df
+    # print('전환선: ',df['tenkan_sen'].iloc[-1])
+    # print('기준선: ',df['kijun_sen'].iloc[-1])
+    # print('후행스팬: ',df['chikou_span'].iloc[-27])
+    # print('선행스팬1: ',df['senkou_span_a'].iloc[-1])
+    # print('선행스팬2: ',df['senkou_span_b'].iloc[-1])
+    # print('')
+
+
+###########################################################################################
 
 def rsi_high(params, df, index):
     """ RSI > 상향선 ?
@@ -412,3 +483,72 @@ def macd_reverse(params, df, index):
         return params[3]
     return 0
 
+def mfi_high(params, df, index):
+    """ MFI > 상한선 ?
+
+    Args:
+        params (list): [period, index, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    if index<params[1] or index==len(df)-1:
+        return 0
+    if df.iloc[1][f'mfi{params[0]}']>params[1]:
+        return params[2]
+    return 0
+
+def mfi_low(params, df, index):
+    """ MFI < 하한선 ?
+
+    Args:
+        params (list): [period, index, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    if index<params[1] or index==len(df)-1:
+        return 0
+    if df.iloc[1][f'mfi{params[0]}']<params[1]:
+        return params[2]
+    return 0
+
+
+def ikh_straight(params, df, index):
+    if index<26 or index==len(df)-1:
+        return 0
+    count=params[0]
+    # flag=true
+    if count>=3:
+        if not(df.iloc[1]['current_price']<df.iloc[1]['conversion_line']<df.iloc[1]['base_line']):
+            return 0
+    if count>=4:
+        if not(df.iloc[1]['lagging_span']<df.iloc[1]['current_price']):
+            return 0
+    if count>=5:
+        if index<52 or not(df.iloc[1]['current_price']<df.iloc[1]['cloud']):
+            return 0
+
+    return params[1]
+
+
+def ikh_reverse(params, df, index):
+    if index<26 or index==len(df)-1:
+        return 0
+    count=params[0]
+    # flag=true
+    if count>=3:
+        if not(df.iloc[1]['current_price']>df.iloc[1]['conversion_line']>df.iloc[1]['base_line']):
+            return 0
+    if count>=4:
+        if not(df.iloc[1]['lagging_span']>df.iloc[1]['current_price']):
+            return 0
+    if count>=5:
+        if index<52 or not(df.iloc[1]['current_price']>df.iloc[1]['cloud']):
+            return 0
+
+    return params[1]

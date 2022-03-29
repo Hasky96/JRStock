@@ -13,7 +13,7 @@ kospi_index=[0, 0, 0, 0]
 kosdaq_index=[0, 0, 0, 0]
 
 def updateDayStock(dt_now):
-    dt_now=dt_now-timedelta(days=1)
+    dt_now=dt_now-timedelta(days=4)
     tdate=dt_now.year*10000+dt_now.month*100+dt_now.day # 오늘 날짜
     t_date=dt_now.date()
     before_one_week=(dt_now-timedelta(weeks=1)).date()
