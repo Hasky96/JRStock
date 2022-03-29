@@ -12,7 +12,7 @@ export default function NavItem({ currentPath, linkPath, linkText, children }) {
       <Link to={linkPath}>
         <div className={currentPath.includes(linkPath) ? active : inActive}>
           {children}
-          <span className="link-text">{linkText}</span>
+          <span className="link-text font-semibold">{linkText}</span>
         </div>
       </Link>
     </li>

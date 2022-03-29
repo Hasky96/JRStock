@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getItems } from "../api/notice";
+import { getBacktest } from "../api/backtest";
 import PageContainer from "../components/PageContainer";
 import ListHeader from "../components/ListHeader";
 import ListTitle from "../components/BackTestList/ListTitle";
@@ -9,21 +9,22 @@ import Pagenation from "../components/Pagenation";
 import { ReactComponent as Create } from "../assets/create.svg";
 
 export default function BackTestList() {
-  const data = [
-    {
-      id: 0,
-      title: "나만의 전략1",
-      created_at: "2022-03-08",
-    },
-    {
-      id: 1,
-      title: "나만의 전략2",
-      created_at: "2022-03-09",
-    },
-  ];
-
-  const [backTestItems, setbackTestItems] = useState(data);
+  const [backTestItems, setbackTestItems] = useState([]);
   const [checkedList, setcheckedList] = useState([]);
+  const [totalCount, setTotalCount] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const pageSize = 10;
+
+  const fetchBackTestItems = async () => {
+    const res = await getBacktest({ page: pageNo, size: pageSize });
+    return res.data;
+  };
+
+  useEffect(async () => {
+    const { count, results } = await fetchBackTestItems();
+    setTotalCount(count);
+    setbackTestItems(results);
+  }, [pageNo]);
 
   const onCheckedAll = (e) => {
     if (e.target.checked) {
@@ -54,42 +55,26 @@ export default function BackTestList() {
     );
   });
 
-  const [totalCount, setTotalCount] = useState(1);
-  const [pageNo, setPageNo] = useState(1);
-  const pageSize = 10;
-
   const onClickFirst = async () => {
     setPageNo(1);
-    const data = await getItems(1, pageSize);
-    // 첫페이지 공지사항 아이템들
-    setbackTestItems(data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const data = await getItems(pageNo - 1, pageSize);
-    setbackTestItems(data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const data = await getItems(pageNo + 1, pageSize);
-    setbackTestItems(data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const data = await getItems(lastPageNum, pageSize);
-    // 마지막 페이지 공지사항 아이템들
-    setbackTestItems(data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const data = await getItems(num, pageSize);
-    setbackTestItems(data.results);
   };
 
   const onClickFilter = (filter) => {
@@ -139,21 +124,31 @@ export default function BackTestList() {
             }
             titles={["No", "테스트 이름", "생성일"]}
           />
-          <tbody>{backTestItems.length && paintBackTestItems}</tbody>
+          {backTestItems.length ? (
+            <tbody>{paintBackTestItems}</tbody>
+          ) : (
+            <td colSpan="4" className="text-center py-5">
+              생성된 백테스트가 없습니다.
+            </td>
+          )}
         </table>
       </div>
-      <div className="relative w-full flex justify-center">
-        <Pagenation
-          selectedNum={pageNo}
-          totalCnt={totalCount}
-          pageSize={pageSize}
-          onClickFirst={onClickFirst}
-          onClickLeft={onClickLeft}
-          onClickRight={onClickRight}
-          onClickLast={onClickLast}
-          onClickNumber={onClickNumber}
-        ></Pagenation>
-      </div>
+      {backTestItems.length ? (
+        <div className="relative w-full flex justify-center">
+          <Pagenation
+            selectedNum={pageNo}
+            totalCnt={totalCount}
+            pageSize={pageSize}
+            onClickFirst={onClickFirst}
+            onClickLeft={onClickLeft}
+            onClickRight={onClickRight}
+            onClickLast={onClickLast}
+            onClickNumber={onClickNumber}
+          ></Pagenation>
+        </div>
+      ) : (
+        ""
+      )}
     </PageContainer>
   );
 }

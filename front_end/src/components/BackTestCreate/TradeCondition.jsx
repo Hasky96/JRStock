@@ -12,10 +12,12 @@ import { ReactComponent as Delete } from "../../assets/remove_circle.svg";
 export default function TradeCondition({
   type,
   name,
+  color,
   values,
   setValues,
   handleInputChange,
 }) {
+  const [strategyId, setStrategyId] = useState(1);
   const [strategyCount, setStrategyCount] = useState(1);
   const [paintSelect, setPaintSelect] = useState([]);
 
@@ -30,7 +32,8 @@ export default function TradeCondition({
       };
     });
 
-    setStrategyCount((state) => state + 1);
+    setStrategyId((state) => state + 1);
+    setStrategyCount((state) => state - 1);
   };
 
   const handleAndButton = (e) => {
@@ -42,7 +45,7 @@ export default function TradeCondition({
       }));
       const paramDefaultConfig = { ...getParamDefault("101") };
       newStrategy.push({
-        id: strategyCount,
+        id: strategyId,
         strategy: "101",
         weight: configDefault.weight,
         params: { ...paramConstructor, ...paramDefaultConfig },
@@ -53,6 +56,7 @@ export default function TradeCondition({
       };
     });
 
+    setStrategyId((state) => state + 1);
     setStrategyCount((state) => state + 1);
   };
 
@@ -90,9 +94,9 @@ export default function TradeCondition({
     return (
       <div
         onClick={() => handleDeleteButton(values[`${type}_strategy`][i]["id"])}
-        className="absolute -left-2 top-3 hover:cursor-pointer"
+        className="absolute -left-2 top-4 hover:cursor-pointer"
       >
-        <Delete className="hover:fill-active duration-300" />
+        <Delete className="fill-active hover:fill-red-700 duration-300" />
       </div>
     );
   };
@@ -121,7 +125,6 @@ export default function TradeCondition({
       </div>
     ));
   };
-
   useEffect(() => {
     const paintSelect = [];
     const strategies = values[`${type}_strategy`]; // strategies: Array
@@ -170,9 +173,13 @@ export default function TradeCondition({
 
   return (
     <div className="w-full grid grid-cols-4 place-content-start border-0 border-b-1 border-gray-200 shadow-lg rounded text-center p-3 gap-2">
-      <div className="col-span-4 text-left text-lg">{name} 조건</div>
+      <div
+        className={`col-span-4 text-left text-lg font-semibold cursor-default text-${color}-600`}
+      >
+        {name} 조건
+      </div>
       <div className="col-span-2 text-left px-5">
-        <label htmlFor="asset" className="pl-1">
+        <label htmlFor={`${type}_standard`} className="pl-1">
           매매 기준 점수
         </label>
         <div className="flex items-center">
@@ -189,7 +196,7 @@ export default function TradeCondition({
         </div>
       </div>
       <div className="col-span-2 text-left px-5">
-        <label htmlFor="asset" className="pl-1">
+        <label htmlFor={`${type}_ratio`} className="pl-1">
           매매 비율 (%)
         </label>
         <div className="flex items-center">
@@ -206,20 +213,30 @@ export default function TradeCondition({
         </div>
       </div>
       <div className="col-span-2 text-left px-5">
-        <div className="p-1 border-b">{name} 전략</div>
+        <div className="p-1 border-b cursor-default">{name} 전략</div>
       </div>
       <div className="col-span-2 text-left px-5">
-        <div className="p-1 border-b">세부 설정</div>
+        <div className="p-1 border-b cursor-default">세부 설정</div>
       </div>
       {paintSelect}
       <div className="col-span-4 px-5">
-        <button
-          type="button"
-          onClick={(e) => handleAndButton(e)}
-          className="w-full py-1 bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
-        >
-          and
-        </button>
+        {strategyCount < 10 ? (
+          <button
+            type="button"
+            onClick={(e) => handleAndButton(e)}
+            className="w-full py-1 bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
+          >
+            and
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="w-full py-1 bg-active text-white shadow-sm text-sm font-medium rounded-md hover:bg-primary duration-300 cursor-not-allowed"
+          >
+            전략은 최대 10개까지 사용 가능합니다.
+          </button>
+        )}
       </div>
     </div>
   );

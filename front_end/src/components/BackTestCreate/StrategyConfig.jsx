@@ -90,7 +90,7 @@ min-w-32
       <button className="w-full outline-none focus:outline-none border px-3 py-1 bg-white rounded-sm flex items-center min-w-32">
         <div className="pr-1 flex flex-col flex-1 justify-center">
           <div className="pr-1 font-semibold flex-1">{strategy}</div>
-          <div className="pr-1 font-semibold text-sm text-gray-500 flex-1">
+          <div className="pr-1 font-semibold text-sm text-gray-500 flex-1 relative">
             {detail}
           </div>
         </div>

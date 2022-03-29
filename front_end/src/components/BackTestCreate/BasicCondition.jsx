@@ -1,13 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./BasicCondition.module.css";
 import StockSelectModal from "./StockSelectModal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import ko from "date-fns/locale/ko";
+
+const inputPriceFormat = (str) => {
+  const comma = (str) => {
+    str = String(str);
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
+  };
+  const uncomma = (str) => {
+    str = String(str);
+    return str.replace(/[^\d]+/g, "");
+  };
+  return comma(uncomma(str));
+};
 
 export default function BasicCondition({
   handleInputChange,
   handleStateChange,
+  setIsStockSelected,
   values,
 }) {
+  const [formattedAsset, setFormattedAsset] = useState(0);
   const [isShowModal, setShowModal] = useState(false);
+  const [startDate, setStartDate] = useState(new Date("2014/02/08"));
+  const [endDate, setEndDate] = useState(new Date());
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
@@ -30,6 +49,7 @@ export default function BasicCondition({
       {isShowModal && (
         <StockSelectModal
           toggleModal={toggleModal}
+          setIsStockSelected={setIsStockSelected}
           handleStateChange={handleStateChange}
         />
       )}
@@ -40,7 +60,7 @@ export default function BasicCondition({
               id="title"
               name="title"
               type="text"
-              placeholder="벡테스트 제목을 입력해주세요."
+              placeholder="벡테스트 전략 제목을 입력해주세요."
               required
               autoComplete="off"
               className={styles.inputTag}
@@ -51,7 +71,9 @@ export default function BasicCondition({
         </div>
       </div>
       <div className="w-full h-30 grid grid-cols-12 border-0 border-b-1 border-gray-200 shadow rounded text-center mt-3 p-3 gap-y-5">
-        <div className="col-span-12 text-left text-xl">기본조건</div>
+        <div className="col-span-12 text-left text-xl font-semibold">
+          기본 조건
+        </div>
         <div className="col-span-6 xl:col-span-4 text-left px-5">
           <label>종목 선택</label>
           <div className="flex">
@@ -71,42 +93,57 @@ export default function BasicCondition({
             </button>
           </div>
         </div>
-        <div className="-ml-12 lg:ml-0 col-span-6 xl:col-span-5 flex text-left gap-2">
-          <div>
+        <div className="-ml-5 lg:ml-0 col-start-7 xl:col-start-5 flex text-left gap-2 date-picker-container">
+          <div className="relative">
             <label htmlFor="start_date">시작일</label>
-            <input
-              id="start_date"
-              name="start_date"
-              type="date"
-              required
-              onChange={(e) => handleInputChange(e)}
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
-            ></input>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => {
+                handleStateChange("start_date", date);
+                setStartDate(date);
+              }}
+              dateFormat="yyyy년 MM월 dd일"
+              locale={ko}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+            />
           </div>
           <div>
             <label htmlFor="end_date">종료일</label>
-            <input
-              id="end_date"
-              name="end_date"
-              type="date"
-              required
-              onChange={(e) => handleInputChange(e)}
-              className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
-            ></input>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => {
+                handleStateChange("end_date", date);
+                setEndDate(date);
+              }}
+              dateFormat="yyyy년 MM월 dd일"
+              locale={ko}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              maxDate={new Date()}
+            />
           </div>
         </div>
 
-        <div className="col-span-6 xl:col-span-4 text-left px-5">
+        <div className="col-start-1 col-span-6 xl:col-start-1 xl:col-span-4 text-left px-5">
           <label htmlFor="asset">투자 원금 (원)</label>
           <div className="flex items-center">
             <input
               id="asset"
               name="asset"
-              type="number"
+              type="text"
+              value={formattedAsset}
               required
               autoComplete="off"
               className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
-              onChange={(e) => handleInputChange(e)}
+              onChange={(e) => {
+                const formattedValue = inputPriceFormat(e.target.value);
+                setFormattedAsset(formattedValue);
+                handleStateChange("asset", formattedValue);
+              }}
             />
           </div>
         </div>

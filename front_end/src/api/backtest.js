@@ -1,9 +1,21 @@
 import { loginApiInstance } from "./index.js";
 
-// 관심 종목 추가
-async function startBacktest(values) {
+async function startBacktest(data) {
   const authApi = loginApiInstance();
-  return await authApi.post(`backtest/start/`, values);
+  return await authApi.post(`backtest/start/`, data);
 }
 
-export { startBacktest };
+async function getBacktest(params) {
+  const authApi = loginApiInstance();
+  let paramURL = "";
+  if (params) {
+    paramURL += "?";
+    for (const [key, value] of Object.entries(params)) {
+      paramURL += `${key}=${value}&`;
+    }
+  }
+
+  return await authApi.get(`backtest/` + paramURL);
+}
+
+export { startBacktest, getBacktest };

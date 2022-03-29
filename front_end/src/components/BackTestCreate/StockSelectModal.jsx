@@ -3,8 +3,13 @@ import { getStockItemList } from "../../api/stock";
 import costMap from "../../util/costMap";
 import { ReactComponent as Search } from "../../assets/search.svg";
 import "./StockSelectModal.css";
+import { toast } from "react-toastify";
 
-export default function StockSelectModal({ toggleModal, handleStateChange }) {
+export default function StockSelectModal({
+  toggleModal,
+  handleStateChange,
+  setIsStockSelected,
+}) {
   const [searchWord, setSearchWord] = useState("");
   const [searchResult, setSearchResult] = useState([]);
 
@@ -19,6 +24,7 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
     if (result) {
       setSearchResult(result);
     }
+    console.log(result);
   };
 
   const [timer, setTimer] = useState(null);
@@ -47,7 +53,9 @@ export default function StockSelectModal({ toggleModal, handleStateChange }) {
   const handleStockSelect = (company_name, company_code) => {
     handleStateChange("company_name", company_name);
     handleStateChange("company_code", company_code);
+    setIsStockSelected(true);
     toggleModal();
+    toast.success("종목이 선택되었습니다.");
   };
 
   const paintSearchResult = searchResult.results
