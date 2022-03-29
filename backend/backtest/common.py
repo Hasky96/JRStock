@@ -2,6 +2,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 import sys
+
+from .models import BuySell, DayHistory, YearHistory
 from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, ResultSerializer, YearHistorySerialilzer
 from strategy import *
 
@@ -160,9 +162,9 @@ def buy(account, code, price, percent, date, option):
         실패시 False 반환 -> 현재 account 반환
     """
     stock_amount = int((account['balance'] * percent/100) // price)
-    if stock_amount * price * 1.00015 > account['balance']: 
+    if stock_amount * price * account['commission'] > account['balance']: 
         stock_amount -= 1
-    buy_price =stock_amount * price * 1.00015 # 수수료포함가격
+    buy_price =stock_amount * price * account['commission'] # 수수료포함가격
     if buy_price == 0: # 못사는경우
         # print("구매가 불가합니다. 잔액부족")
         return account
@@ -185,18 +187,9 @@ def buy(account, code, price, percent, date, option):
     earn_rate = round(earn_rate * 100, 3)
     name = account['company_name']
     
-    buy_data = {
-        'date' : date,
-        'isBuy' : True,
-        'buy_sell_option' : option,
-        'company_name' : name,
-        'company_code' : code,
-        'stock_amount' : stock_amount,
-        'stock_price' : price,
-        'current_rate' : earn_rate,
-        'current_asset' : current_asset,
-    }
-    account['buy_sell_list'].append(buy_data)
+    account['buy_sell_list'].append(BuySell(result=account['result'], 
+        date=date, isBuy=True, buy_sell_option=option, company_name=name, company_code=code, stock_amount=stock_amount,
+        stock_price=price, current_rate=earn_rate, current_asset=current_asset))
     
     # print(f'매수알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매수 == 현재 자산 {current_asset} 총 수익률 {earn_rate}')
     return account
@@ -225,7 +218,7 @@ def sell(account, code, price, percent, date, option):
         # print("현재 비율로는 판매가 불가능")
         return account
     
-    account['balance'] += int(price * stock_amount * 1.00015) #수수료포함 가격
+    account['balance'] += int(price * stock_amount * account['commission']) #수수료포함 가격
     account['stocks'][code]['amount'] -= stock_amount
     
     current_asset = int(account['balance'])
@@ -250,19 +243,9 @@ def sell(account, code, price, percent, date, option):
             account['win_cnt'] += 1
         else: win_or_lose = False
         
-    sell_data = {
-        'date' : date,
-        'isBuy' : True,
-        'buy_sell_option' : option,
-        'company_name' : name,
-        'company_code' : code,
-        'stock_amount' : stock_amount,
-        'stock_price' : price,
-        'current_rate' : earn_rate,
-        'current_asset' : current_asset,
-        'isWin' : win_or_lose,
-    }
-    account['buy_sell_list'].append(sell_data)
+    account['buy_sell_list'].append(BuySell(result=account['result'], 
+        date=date, isBuy=True, buy_sell_option=option, company_name=name, company_code=code, stock_amount=stock_amount,
+        stock_price=price, current_rate=earn_rate, current_asset=current_asset, isWin=win_or_lose))
     
     # print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate} 승패여부{win_or_lose}')
     return account
@@ -310,6 +293,7 @@ def make_condition(result, isBuy, strategies, standard, ratio):
         condition.append(option)
         
         condition_info = {
+            'result' : result.id,
             'isBuy' : isBuy,
             'buy_sell_option' : buy_sell_option,
             'params' : params,
@@ -320,7 +304,7 @@ def make_condition(result, isBuy, strategies, standard, ratio):
     # DB 접근은 한 번만해서 정보 넣기
     serializer = ConditionInfoSerializer(data=db_input, many=True)
     if serializer.is_valid(raise_exception=True):
-        serializer.save(result=result)
+        serializer.save()
         
     condition.append(int(standard))
     condition.append(int(ratio))
@@ -376,14 +360,7 @@ def day_calculate(account, result_data, stock):
         result_data['year'] = stock['date'][:4] # 연도 변경
     
     result_data['avg_day_earn_rate'] += day_earn_rate # 일평균 누적
-    
-    day_history_data = {
-        'date' : stock['date'],
-        'day_earn_rate' : day_earn_rate,
-        'day_earn' : day_earn,
-        'current_asset' : result_data['current_asset']
-    }
-    account['day_history_list'].append(day_history_data)
+    account['day_history_list'].append(DayHistory(result=account['result'], date=stock['date'], day_earn_rate=day_earn_rate, day_earn=day_earn, current_asset=result_data['current_asset']))
     # print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
     return result_data
 
@@ -392,12 +369,8 @@ def year_calculate(account, result_data, date):
     market_current_price = float(get_kospi_price_by_date(date))
     market_year_rate = round((market_current_price - result_data['market_year_start_price']) / result_data['market_year_start_price'] * 100, 3)
     
-    year_history_data = {
-        'year' : result_data['year'],
-        'year_rate' : year_earn_rate,
-        'market_rate' : market_year_rate
-    }
-    account['year_history_list'].append(year_history_data)
+    account['year_history_list'].append(YearHistory(result=account['result'], 
+        year=result_data['year'], year_rate=year_earn_rate, market_rate=market_year_rate))
     # print(result_data['year'] + '년 평균' + str(year_earn_rate) + '|| 시장연평균 :' + str(market_year_rate))
     
     result_data['year_cnt'] += 1
@@ -409,19 +382,13 @@ def year_calculate(account, result_data, date):
 
 def create_database(account):
     # 매수매도내역 DB에 저장
-    serializer = BuySellSerializer(data=account['buy_sell_list'], many=True)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(result=account['result'])
+    BuySell.objects.bulk_create(account['buy_sell_list'])
         
     # 일일데이터 저장
-    serializer = DayHistorySerialilzer(data=account['day_history_list'], many=True)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(result=account['result'])
+    DayHistory.objects.bulk_create(account['day_history_list'])
         
     # 연데이터 저장
-    serializer = YearHistorySerialilzer(data=account['year_history_list'], many=True)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(result=account['result'])
+    YearHistory.objects.bulk_create(account['year_history_list'])
 
 def end_calculate(account, result_data): 
     # 마지막 날을 기준으로 마지막 연도 평균 계산

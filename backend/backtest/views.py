@@ -9,11 +9,23 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .serializers import ResultSerializer
+
+from .models import BuySell, ConditionInfo, DayHistory, Result, YearHistory
+from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, ResultSerializer, YearHistorySerialilzer
 
 from stock.models import BasicInfo
 
 from .common import backtest, make_condition
+from .parser import get_serializer
+
+page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
+                        description="페이지 번호", type=openapi.TYPE_INTEGER)
+size = openapi.Parameter('size', openapi.IN_QUERY, default=5,
+                        description="한 페이지에 표시할 객체 수", type=openapi.TYPE_INTEGER)
+sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
+                        description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
+title = openapi.Parameter('title', openapi.IN_QUERY, default="제목",
+                        description="검색할 글 제목", type=openapi.TYPE_STRING)
 
 @swagger_auto_schema(
     method='post',
@@ -56,13 +68,14 @@ def test_start(request):
     sell_strategy = request.data.get('sell_strategy')               # 매도조건
     sell_standard = request.data.get('sell_standard')               # 매수비중
     sell_ratio = request.data.get('sell_ratio')                     # 매수비율
+    commission = (float(commission) / 100) + 1
     
     result_base = {
         'title' : title,
         'asset' : asset,
+        'commission' : commission,
         'test_start_date' : start_date,
         'test_end_date' : end_date,
-        'commission' : commission,
         'buy_standard' : buy_standard,
         'buy_ratio' : buy_ratio,
         'sell_standard' : sell_standard,
@@ -87,6 +100,7 @@ def test_start(request):
             #     "avg_price":70000
             #     },
         },
+        "commission" : commission,
         "result" : result,
         "win_cnt" : 0,
         "buy_sell_list" : [],
@@ -100,3 +114,136 @@ def test_start(request):
 
     serializer = backtest(account, company_code, start_date, end_date, buy_condition, sell_condition)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='내 백테스트 결과 목록 조회(유저)',
+    operation_description='내 백테스트 결과 목록을 조회합니다.',
+    tags=['주식_백테스트'],
+    manual_parameters=[page, size, title],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 백테스트 결과 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("result", "백테스트 결과 정보"),
+            }
+        )
+    )}
+)  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def get_my_backtest_result(request):
+    my_backtest_result_list = Result.objects.filter(user=request.user)
+    paginator = PageNumberPagination()
+    
+    if request.GET.get('title'):
+        title = request.GET.get('title')
+        my_backtest_result_list = my_backtest_result_list.filter(title__contains=title)
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    result = paginator.paginate_queryset(my_backtest_result_list, request)
+    serializer = ResultSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='백테스트 결과 조회(모두)',
+    operation_description='백테스트 결과를 조회합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: ResultSerializer}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_backtest_result(request, pk):
+    backtest_result = get_object_or_404(Result, pk=pk)
+    serializer = ResultSerializer(backtest_result)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='백테스트 매수매도 내역(모두)',
+    operation_description='해당 백테스트의 매수매도 내역 전체를 조회합니다',
+    tags=['주식_백테스트'],
+    manual_parameters=[page, size],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 백테스트 결과 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("buysell", "백테스트 매수매도 정보"),
+            }
+        )
+    )}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_backtest_buysell(request, backtest_id):
+    buysell_list = BuySell.objects.filter(result_id=backtest_id)
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    result = paginator.paginate_queryset(buysell_list, request)
+    serializer = BuySellSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='백테스트 매도매수 조건(모두)',
+    operation_description='해당 백테스트의 매도매수 조건을 조회합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: ConditionInfoSerializer}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_backtest_condition(request, backtest_id):
+    condition_list = ConditionInfo.objects.filter(result_id=backtest_id)
+    serializer = ConditionInfoSerializer(condition_list, many=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='백테스트 일별 데이터(모두)',
+    operation_description='해당 백테스트의 일별 데이터를 조회합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: DayHistorySerialilzer}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_backtest_day_history(request, backtest_id):
+    day_history_list = DayHistory.objects.filter(result_id=backtest_id)
+    serializer = DayHistorySerialilzer(day_history_list, many=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='백테스트 연도별 데이터(모두)',
+    operation_description='해당 백테스트의 연도별 데이터를 조회합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: YearHistorySerialilzer}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_backtest_year_history(request, backtest_id):
+    year_history_list = YearHistory.objects.filter(result_id=backtest_id)
+    serializer = YearHistorySerialilzer(year_history_list, many=True)
+    susu = 0.015
+    print((susu / 100) + 1)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)

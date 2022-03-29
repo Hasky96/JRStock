@@ -11,30 +11,30 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = '__all__'
-        
+
 class BuySellSerializer(serializers.ModelSerializer):
-    result = ResultSerializer(read_only=True)
+    # result = ResultSerializer(read_only=True)
     
     class Meta:
         model = BuySell
         fields = '__all__'
         
 class ConditionInfoSerializer(serializers.ModelSerializer):
-    result = ResultSerializer(read_only=True)
+    # result = ResultSerializer(read_only=True)
     
     class Meta:
         model = ConditionInfo
         fields = '__all__'
         
 class DayHistorySerialilzer(serializers.ModelSerializer):
-    result = ResultSerializer(read_only=True)
+    # result = ResultSerializer(read_only=True)
     
     class Meta:
         model = DayHistory
         fields = '__all__'
         
 class YearHistorySerialilzer(serializers.ModelSerializer):
-    result = ResultSerializer(read_only=True)
+    # result = ResultSerializer(read_only=True)
     
     class Meta:
         model = YearHistory
