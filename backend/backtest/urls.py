@@ -9,4 +9,6 @@ urlpatterns = [
     path('condition/<int:backtest_id>', views.get_backtest_condition, name='get_backtest_condition'),
     path('day/<int:backtest_id>', views.get_backtest_day_history, name='get_backtest_day_history'),
     path('year/<int:backtest_id>', views.get_backtest_year_history, name='get_backtest_year_history'),
+    
+    path('rank/', views.get_rank, name='get_rank')
 ]

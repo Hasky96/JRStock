@@ -11,12 +11,17 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from .models import BuySell, ConditionInfo, DayHistory, Result, YearHistory
-from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, ResultSerializer, YearHistorySerialilzer
+from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, RankResultSerializer, ResultSerializer, YearHistorySerialilzer
 
 from stock.models import BasicInfo
 
 from .common import backtest, make_condition
 from .parser import get_serializer
+
+from datetime import datetime, timedelta
+from django.db.models import F
+from django.db.models.expressions import Window
+from django.db.models.functions import Rank
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -26,6 +31,10 @@ sort = openapi.Parameter('sort', openapi.IN_QUERY, default="id",
                         description="정렬할 기준 Column, 'id'면 오름차순 '-id'면 내림차순", type=openapi.TYPE_STRING)
 title = openapi.Parameter('title', openapi.IN_QUERY, default="제목",
                         description="검색할 글 제목", type=openapi.TYPE_STRING)
+name = openapi.Parameter('name', openapi.IN_QUERY, default="이름",
+                        description="검색할 이름", type=openapi.TYPE_STRING)
+option = openapi.Parameter('option', openapi.IN_QUERY, default="옵션",
+                        description="일간=today, 주간=week, 월간=month", type=openapi.TYPE_STRING)
 
 @swagger_auto_schema(
     method='post',
@@ -68,7 +77,7 @@ def test_start(request):
     sell_strategy = request.data.get('sell_strategy')               # 매도조건
     sell_standard = request.data.get('sell_standard')               # 매수비중
     sell_ratio = request.data.get('sell_ratio')                     # 매수비율
-    commission = (float(commission) / 100) + 1
+    commission = round((float(commission) / 100) + 1, 3)
     
     result_base = {
         'title' : title,
@@ -81,6 +90,10 @@ def test_start(request):
         'sell_standard' : sell_standard,
         'sell_ratio' : sell_ratio,
     }
+    
+    # 이미 백테스트를 신청했음
+    if request.user.is_backtest == True:
+        return Response({'message' : 'Already Running Backtest'}, status=status.HTTP_403_FORBIDDEN)
     
     # 기본 정보를 DB에 입력
     serializer = ResultSerializer(data=result_base)
@@ -108,11 +121,16 @@ def test_start(request):
         "year_history_list" : []
     }
     
-    # 매수 관련 정보 받기 및 DB에 저장
-    buy_condition = make_condition(result, True, buy_strategy, buy_standard, buy_ratio)
-    sell_condition = make_condition(result, False, sell_strategy, sell_standard, sell_ratio)
-
-    serializer = backtest(account, company_code, start_date, end_date, buy_condition, sell_condition)
+    # 매수 관련 정보 받기 및 DB에 저장, 에러 발생시 진행된 값들 제거
+    try:
+        buy_condition = make_condition(result, True, buy_strategy, buy_standard, buy_ratio)
+        sell_condition = make_condition(result, False, sell_strategy, sell_standard, sell_ratio)
+        serializer = backtest(account, company_code, start_date, end_date, buy_condition, sell_condition)
+        request.user.is_backtest = False
+        request.user.save()
+    except Exception as e:
+        result.delete()
+        return Response({'message' : str(e)}, status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @swagger_auto_schema(
@@ -247,3 +265,69 @@ def get_backtest_year_history(request, backtest_id):
     print((susu / 100) + 1)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='백테스트 랭킹(모두)',
+    operation_description='백테스팅 랭킹을 조회합니다',
+    tags=['주식_백테스트'],
+    manual_parameters=[page, size, option, name],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'count': openapi.Schema(type=openapi.TYPE_STRING, description="전체 백테스트 결과 수"),
+                'next': openapi.Schema(type=openapi.TYPE_STRING, description="다음 조회 페이지 주소"),
+                'previous': openapi.Schema(type=openapi.TYPE_STRING, description="이전 조회 페이지 주소"),
+                'results' : get_serializer("result", "백테스트 상세 정보"),
+            }
+        )
+    )}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_rank(request):
+    result_list = Result.objects.all()
+    today = datetime.today()
+    start_time = datetime.strptime(str(today.year)+" "+str(today.month)+" "+str(today.day) ,'%Y %m %d')
+    end_time = datetime.strptime(str(today.year)+" "+str(today.month)+" "+str(today.day)+" 23:59:59", '%Y %m %d %H:%M:%S')
+    
+    if request.GET.get('option'):
+        option = request.GET.get('option')
+        
+        if option == 'today':
+            start_time = datetime.strptime(str(today.year)+" "+str(today.month)+" "+str(today.day) ,'%Y %m %d')
+        elif option == 'week':        
+            while today.weekday() != 0:
+                today = today - timedelta(days=1)
+            start_time = datetime.strptime(str(today.year)+" "+str(today.month)+" "+str(today.day) ,'%Y %m %d')
+        elif option == 'month':
+            start_time = datetime.strptime(str(today.year)+" "+str(today.month)+" "+str(1) ,'%Y %m %d')
+            
+    result_list = result_list.filter(created_at__range=(start_time, end_time))
+    result_list = result_list.annotate(rank=Window(expression=Rank(), order_by=F('final_rate').desc())).order_by('rank')    
+    
+    paginator = PageNumberPagination()
+    
+    page_size = request.GET.get('size')
+    if not page_size == None:
+        paginator.page_size = page_size
+    
+    # 이름 검색을 했으면 랭크는 유지하며 검색된 값 찾기
+    if request.GET.get('name'):
+        name = request.GET.get('name')
+        name_list = []
+        result_list = list(result_list)
+        for result in result_list:
+            if result.user.name.find(name) != -1:
+                name_list.append(result)
+        
+        result = paginator.paginate_queryset(name_list, request)    
+    else:
+        result = paginator.paginate_queryset(result_list, request)
+    
+    serializer = RankResultSerializer(result, many=True)
+    return paginator.get_paginated_response(serializer.data)
+    
