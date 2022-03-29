@@ -286,7 +286,7 @@ def make_condition(result, isBuy, strategies, standard, ratio):
         option.append(int(conditions.get('strategy')))
         for param in conditions.get('params').values():
             if param:
-                params += param + " "
+                params += str(param) + " "
                 option.append(int(param))
         weight = conditions.get('weight')
         option.append(int(conditions.get('weight')))
@@ -412,7 +412,7 @@ def end_calculate(account, result_data):
         'asset' : account['result'].asset,
         'test_start_date' : account['result'].test_start_date,
         'test_end_date' : account['result'].test_end_date,
-        'commission' : account['result'].commission,
+        'commission' : (account['result'].commission - 1) * 100,
         'buy_standard' : account['result'].buy_standard,
         'buy_ratio' : account['result'].buy_ratio,
         'sell_standard' : account['result'].sell_standard,
