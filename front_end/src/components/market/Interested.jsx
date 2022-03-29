@@ -1,14 +1,18 @@
 import { getInterest, getLive } from "../../api/stock";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Interested() {
   const [stocks, setStocks] = useState([]);
   const [lives, setLives] = useState([]);
   const [refTime, setRefTime] = useState("");
+  const [stockCount, setStockCount] = useState(-1);
+  const navigate = useNavigate();
 
   const init = async () => {
     const res = await getInterest({ page: 1, size: 5 });
     setStocks(res.data.results);
+    setStockCount(res.data.count);
 
     let temp = [];
     for (let stock of res.data.results) {
@@ -36,6 +40,16 @@ export default function Interested() {
     init();
     // updateLive();
   }, []);
+
+  // 관심 종목 페이지로
+  const goMyStock = () => {
+    navigate("/mypage");
+  };
+
+  // 종목 리스트 페이지로
+  const goStockList = () => {
+    navigate("/stock");
+  };
 
   // 실시간 데이터로 html 구성
   const liveList = () => {
@@ -188,7 +202,7 @@ export default function Interested() {
 
   return (
     <div className="mx-3">
-      <div className="flex">
+      <div className="flex justify-between items-end">
         <div className="flex items-end">
           <svg
             version="1.1"
@@ -212,8 +226,25 @@ export default function Interested() {
             {refTime && refTime + " 기준"}
           </div>
         </div>
+        {stockCount > 5 && (
+          <div className="text-gray-400 cursor-pointer" onClick={goMyStock}>
+            더 보기 +
+          </div>
+        )}
       </div>
-      <div>{liveList()}</div>
+      <div>
+        {stockCount === 0 ? (
+          <div className="flex my-10 text-center w-full justify-center text-gray-400">
+            관심 종목이 없습니다.&nbsp;
+            <div className="cursor-pointer underline" onClick={goStockList}>
+              종목 리스트
+            </div>
+            에서 추가해 보세요!
+          </div>
+        ) : (
+          liveList()
+        )}
+      </div>
     </div>
   );
 }
