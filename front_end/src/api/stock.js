@@ -141,10 +141,21 @@ async function addInterest(code_number) {
   return await authApi.post(`stock/interest/create/`, { code_number });
 }
 
-// 관심 종목 조회
-async function getInterest() {
+// 관심 종목 삭제
+async function deleteInterest(code_number) {
   const authApi = loginApiInstance();
-  return await authApi.get(`stock/interest/`);
+  return await authApi.post(`stock/interest/delete/`, { code_number });
+}
+
+// 관심 종목 조회
+async function getInterest({ page, size, sort, company_name }) {
+  const authApi = loginApiInstance();
+  return await authApi.get(
+    `stock/interest/?` +
+      (page ? `page=${page}&` : "") +
+      (size ? `size=${size}&` : "") +
+      (sort ? `sort=${sort}&` : "")
+  );
 }
 
 export {
@@ -165,5 +176,6 @@ export {
   deleteComment,
   getNews,
   addInterest,
+  deleteInterest,
   getInterest,
 };
