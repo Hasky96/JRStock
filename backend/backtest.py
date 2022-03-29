@@ -16,6 +16,15 @@ import sys
 # 상대적강도지수(RSI): 주가의 과매수 또는 과매도 상태를 평가하기 위한 방법, 높으면 과매수 상태, 낮으면 과매도 상태, EMA 사용, ex) 14일, 20이하, 80이상
 # 거래량균형(OBV): 주식 거래량 흐름 사용 ex) 20일
 # 자금흐름지표 (Money Flow Index): RSI지수에 거래량 강도를 더함, 높으면 과매수 상태, 낮으면 과매도 상태, EMA 사용, ex) 14일, 20이하, 80이상
+# 일목균형표(IKH) : 매수세와 매도세 간의 세력 균형(균형표)을 한 눈에 볼 수 있게 만든 것
+    # 전환선 (Conversion Line) : 최근 9일 간의 최고점과 최저점의 중간값을 그린 선
+    # 기준선 (Base Ling) : 최근 26일 간의 최고점과 최저점의 중간값을 그린 선
+    # 후행스팬 (Lagging Span) : 현재의 주가를 26일 후행시켜 연결한 선, 한 달 전의 주가와 현재 주가 비교 가능
+    # 선행스팬1 (Leading Span1) : 전환선과 기준선의 중간값을 26일 앞으로 선행해서 그린 선
+    # 선행스팬2 (Leading Span2) : 최근 52일 간의 최고점과 최저점의 중간값을 그린 선
+    # 구름층 (Cloud) : 선행스팬1과 후행스팬2 사이 구간
+        # 양운 : 선행스팬1>후행스팬2
+        # 음운 : 선행스팬1<후행스팬1
 
 # 상향돌파(up_pass) : 종가가 period를 걸쳐 상향돌파하는 상황, 매수
 # 하향돌파(up_pass) : 종가가 period를 걸쳐 하향돌파하는 상황, 매도
@@ -25,8 +34,8 @@ import sys
 # 역배열(reverse): 단기<장기, 매도
 # high, low는 단순 비교, 그때그때 다름, (아래 주석 참고)
 
-# 101 : ma_up_pass (period, err, weight)                        # 오차범위<종가
-# 102 : ma_down_pass (period, err, weight)                      # 오차범위>종가
+# 101 : ma_up_pass (period, err, weight)     # 오차범위<종가
+# 102 : ma_down_pass (period, err, weight)   # 오차범위>종가
 # 103 : ma_golden_cross (short_period, long_period, weight)
 # 104 : ma_dead_cross (short_period, long_period, weight)
 # 105 : ma_straight (short_period, long_period, weight)
@@ -37,18 +46,21 @@ import sys
 # 206 : macd_reverse (short_period, long_period, signal, weight)
 # 307 : rsi_high (period, index, weight)     # rsi>index, 과매수 됐다고 평가 -> 매도
 # 308 : rsi_low  (period, index, weight)     # rsi<index, 과매도 됐다고 평가 -> 매수
-# 407 : obv_high  (period, weight)                              # obv>ovb_ema, 매수
-# 408 : obv_low  (period, weight)                               # obv<ovb_ema, 매도
+# 407 : obv_high  (period, weight)           # obv>ovb_ema, 매수
+# 408 : obv_low  (period, weight)            # obv<ovb_ema, 매도
 # 507 : mfi_high (period, index, weight)     # mfi>index, 과매수 됐다고 평가 -> 매도
 # 508 : mfi_low  (period, index, weight)     # mfi<index, 과매도 됐다고 평가 -> 매수
-
+# 605 : ikh_straight (count, weight)   # 3: 주가>전환선>기준선, 4: 후행스팬>주가>전환선>기준선, 5: 후행스팬>주가>전환선>기준선>구름층(양운)
+# 606 : ikh_reverse (count, weight)   # 3: 주가<전환선<기준선,  4: 후행스팬<주가<전환선<기준선, 5: 후행스팬<주가<전환선<기준선<구름층(음운)
+# count: 비교하는 변수 개수 (3: 주가, 전환선, 기준선, 4: 후행스팬, 주가, 전환선, 기준선, 5: 후행스팬, 주가, 전환선, 기준선, 구름층)
 
 strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
     203: 'macd_golden_cross', 204: 'macd_dead_cross', 205: 'macd_straight', 206: 'macd_reverse',
     307: 'rsi_high', 308: 'rsi_low',
     407: 'obv_high', 408: 'obv_low',
-    507: 'mfi_high', 508: 'mfi_low'
+    507: 'mfi_high', 508: 'mfi_low',
+    605: 'ikh_straight', 606: 'ikh_reverse'
 }
 
 strategy_indicator_dict={
@@ -56,7 +68,8 @@ strategy_indicator_dict={
     203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
     307: 'RSI', 308: 'RSI',
     407: 'OBV', 408: 'OBV',
-    507: 'MFI', 508: 'MFI'
+    507: 'MFI', 508: 'MFI',
+    605: 'IKH', 606: 'IKH'
 }
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
@@ -173,8 +186,8 @@ account = {
 # sell_condition=[ [206, 12, 26, 9, 30], 30, 100 ]
 # buy_condition=[ [105, 20, 120, 30], [508, 14, 20, 40], 40, 80 ]
 # sell_condition=[ [106, 20, 120, 30], [507, 14, 80, 40], 40, 80 ]
-buy_condition=[ [508, 14, 20, 40], 40, 80 ]
-sell_condition=[ [507, 14, 80, 40], 40, 80 ]
+buy_condition=[ [605, 3, 40], 40, 80 ]
+sell_condition=[ [606, 3, 40], 40, 80 ]
 backtest(account, code_number, start_date, end_date, buy_condition, sell_condition)
 print(account)
 current_stock_price=get_stock_price(code_number, end_date)

@@ -150,6 +150,29 @@ def MFI(params, df):
     return df
 
 
+def IKH(params, df): 
+    # 일목균형표 (Ichimoku Kinkou Hyo)
+    period9_max_price = df['high_price'].rolling(window=9).max()
+    period9_min_price = df['low_price'].rolling(window=9).min()
+    df['conversion_line'] = (period9_max_price + period9_min_price) /2   # 기준선 (conversion line)
+    period26_max_price = df['high_price'].rolling(window=26).max()
+    period26_min_price = df['low_price'].rolling(window=26).min()
+    df['base_line'] = (period26_max_price + period26_min_price) / 2    # 기준선 (base line)
+    df['leading_span1'] = ((df['conversion_line'] + df['base_line']) / 2).shift(26)    # 선행스팬1 (leading span 1)
+    period52_max_price = df['high_price'].rolling(window=52).max()
+    period52_min_price = df['low_price'].rolling(window=52).min()
+    df['leading_span2'] = ((period52_max_price + period52_min_price) / 2).shift(26)    # 선행스팬1 (leading span 1)
+    df['lagging_span'] = df['current_price'].shift(-26)     # 후행스팬 (lagging span)
+    df['cloud']=df['leading_span1']-df['leading_span2']     # 구름층 
+    
+    return df
+    # print('전환선: ',df['tenkan_sen'].iloc[-1])
+    # print('기준선: ',df['kijun_sen'].iloc[-1])
+    # print('후행스팬: ',df['chikou_span'].iloc[-27])
+    # print('선행스팬1: ',df['senkou_span_a'].iloc[-1])
+    # print('선행스팬2: ',df['senkou_span_b'].iloc[-1])
+    # print('')
+
 
 ###########################################################################################
 
@@ -493,3 +516,39 @@ def mfi_low(params, df, index):
     if df.iloc[1][f'mfi{params[0]}']<params[1]:
         return params[2]
     return 0
+
+
+def ikh_straight(params, df, index):
+    if index<26 or index==len(df)-1:
+        return 0
+    count=params[0]
+    # flag=true
+    if count>=3:
+        if not(df.iloc[1]['current_price']<df.iloc[1]['conversion_line']<df.iloc[1]['base_line']):
+            return 0
+    if count>=4:
+        if not(df.iloc[1]['lagging_span']<df.iloc[1]['current_price']):
+            return 0
+    if count>=5:
+        if index<52 or not(df.iloc[1]['current_price']<df.iloc[1]['cloud']):
+            return 0
+
+    return params[1]
+
+
+def ikh_reverse(params, df, index):
+    if index<26 or index==len(df)-1:
+        return 0
+    count=params[0]
+    # flag=true
+    if count>=3:
+        if not(df.iloc[1]['current_price']>df.iloc[1]['conversion_line']>df.iloc[1]['base_line']):
+            return 0
+    if count>=4:
+        if not(df.iloc[1]['lagging_span']>df.iloc[1]['current_price']):
+            return 0
+    if count>=5:
+        if index<52 or not(df.iloc[1]['current_price']>df.iloc[1]['cloud']):
+            return 0
+
+    return params[1]
