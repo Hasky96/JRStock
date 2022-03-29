@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BasicCondition from "./BasicCondition";
 import TradeCondition from "./TradeCondition";
 import { paramConstructor, getParamDefault } from "../../config/backtestConfig";
@@ -7,6 +8,7 @@ import { toast } from "react-toastify";
 import { startBacktest } from "../../api/backtest";
 
 export default function BackTestCreateForm() {
+  const navigate = useNavigate();
   const valueDefault = {
     commission: 0.015,
     buy_standard: 50,
@@ -63,11 +65,13 @@ export default function BackTestCreateForm() {
 
     const data = { ...values, asset: values.asset.replace(/,/gi, "") };
 
-    startBacktest(data)
-      .then((res) => console.log(res))
+    const res = startBacktest(data)
+      .then((res) => console.log("res", res))
       .catch((err) => console.log("err: ", err));
 
-    console.log("hello");
+    // if (res.status === 201) {
+    //   navigate(`/backtest/${res.id}`);
+    // }
   };
 
   const types = {

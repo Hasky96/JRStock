@@ -16,22 +16,6 @@ export default function Strategy() {
       key: "수수료",
       value: "0.1%",
     },
-    {
-      key: "목표 수익률",
-      value: "1,500 %",
-    },
-    {
-      key: "종목 선정 방식",
-      value: "나의 포트폴리오 / 추천 종목",
-    },
-    {
-      key: "사용 전략",
-      value: "볼린저 밴드",
-    },
-    {
-      key: "리밸런싱",
-      value: "연 단위",
-    },
   ];
 
   const buyStrategy = [
