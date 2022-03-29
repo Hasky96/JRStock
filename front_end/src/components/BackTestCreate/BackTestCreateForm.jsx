@@ -43,6 +43,7 @@ export default function BackTestCreateForm() {
   });
 
   const handleInputChange = (e) => {
+    e.stopPropagation();
     const { name, value } = e.target;
     handleStateChange(name, value);
   };
@@ -60,9 +61,10 @@ export default function BackTestCreateForm() {
       toast.warning("종목을 선택해주세요!");
     }
 
-    console.log("--------------------");
-    console.log("values: ");
-    console.log({ ...values, asset: values.asset.replace(/,/gi, "") });
+    const data = { ...values, asset: values.asset.replace(/,/gi, "") };
+    startBacktest(data)
+      .then((res) => window.localStorage.setItem("bactestResult", res))
+      .catch((err) => console.log("err: ", err));
   };
 
   const types = {

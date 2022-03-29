@@ -24,7 +24,6 @@ export default function StockSelectModal({
     if (result) {
       setSearchResult(result);
     }
-    console.log(result);
   };
 
   const [timer, setTimer] = useState(null);

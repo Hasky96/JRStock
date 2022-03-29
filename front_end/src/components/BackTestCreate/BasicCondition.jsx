@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./BasicCondition.module.css";
 import StockSelectModal from "./StockSelectModal";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ko from "date-fns/locale/ko";
+import { getAvailableDate } from "../../api/stock";
 
 const inputPriceFormat = (str) => {
+  if (str === "0") {
+    return "";
+  }
+
   const comma = (str) => {
     str = String(str);
     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
@@ -23,10 +28,28 @@ export default function BasicCondition({
   setIsStockSelected,
   values,
 }) {
-  const [formattedAsset, setFormattedAsset] = useState(0);
+  const [formattedAsset, setFormattedAsset] = useState("");
   const [isShowModal, setShowModal] = useState(false);
-  const [startDate, setStartDate] = useState(new Date("2014/02/08"));
+  const [minDate, setMinDate] = useState(new Date("2022/01/01"));
+  const [maxDate, setMaxDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date("2022/01/01"));
   const [endDate, setEndDate] = useState(new Date());
+
+  const fetchDate = async (company_code) => {
+    const res = await getAvailableDate(company_code);
+    return res.data;
+  };
+
+  useEffect(async () => {
+    if (values.company_code) {
+      const { start_date, end_date } = await fetchDate(values.company_code);
+      setStartDate(new Date(start_date));
+      setMinDate(new Date(start_date));
+      setEndDate(new Date(end_date));
+      setMaxDate(new Date(end_date));
+    }
+  }, [values.company_code]);
+
   const toggleModal = () => {
     setShowModal((cur) => !cur);
   };
@@ -105,6 +128,8 @@ export default function BasicCondition({
               dateFormat="yyyy년 MM월 dd일"
               locale={ko}
               selectsStart
+              minDate={minDate}
+              maxDate={endDate}
               startDate={startDate}
               endDate={endDate}
             />
@@ -123,7 +148,7 @@ export default function BasicCondition({
               startDate={startDate}
               endDate={endDate}
               minDate={startDate}
-              maxDate={new Date()}
+              maxDate={maxDate}
             />
           </div>
         </div>
@@ -158,7 +183,8 @@ export default function BasicCondition({
               required
               autoComplete="off"
               step="0.001"
-              value={values.commision || 0.015}
+              defaultValue={0.015}
+              placeholder="소수점 셋째 자리까지 가능"
               className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}
             />
