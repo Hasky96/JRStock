@@ -91,6 +91,10 @@ def test_start(request):
         'sell_ratio' : sell_ratio,
     }
     
+    # 이미 백테스트를 신청했음
+    if request.user.is_backtest == True:
+        return Response({'message' : 'Already Running Backtest'}, status=status.HTTP_403_FORBIDDEN)
+    
     # 기본 정보를 DB에 입력
     serializer = ResultSerializer(data=result_base)
     if serializer.is_valid(raise_exception=True):
@@ -122,9 +126,11 @@ def test_start(request):
         buy_condition = make_condition(result, True, buy_strategy, buy_standard, buy_ratio)
         sell_condition = make_condition(result, False, sell_strategy, sell_standard, sell_ratio)
         serializer = backtest(account, company_code, start_date, end_date, buy_condition, sell_condition)
+        request.user.is_backtest = False
+        request.user.save()
     except Exception as e:
         result.delete()
-        return Response({'message' : str(e) }, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message' : str(e)}, status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @swagger_auto_schema(
