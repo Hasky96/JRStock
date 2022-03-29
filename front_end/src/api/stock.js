@@ -158,6 +158,11 @@ async function getInterest({ page, size, sort, company_name }) {
   );
 }
 
+async function getAvailableDate(code_number) {
+  const api = apiInstance();
+  return await api.get(`stock/start-end/${code_number}`);
+}
+
 export {
   getStockItemList,
   getBoardList,
@@ -178,4 +183,5 @@ export {
   addInterest,
   deleteInterest,
   getInterest,
+  getAvailableDate,
 };
