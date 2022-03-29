@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getBacktest } from "../api/backtest";
+import { getBacktestList } from "../api/backtest";
 import PageContainer from "../components/PageContainer";
-import ListHeader from "../components/ListHeader";
 import ListTitle from "../components/BackTestList/ListTitle";
 import ListItem from "../components/BackTestList/ListItem";
 import Pagenation from "../components/Pagenation";
+import SearchBar from "../components/BackTestList/SearchBar";
 import { ReactComponent as Create } from "../assets/create.svg";
 
 export default function BackTestList() {
@@ -16,7 +16,7 @@ export default function BackTestList() {
   const pageSize = 10;
 
   const fetchBackTestItems = async () => {
-    const res = await getBacktest({ page: pageNo, size: pageSize });
+    const res = await getBacktestList({ page: pageNo, size: pageSize });
     return res.data;
   };
 
@@ -44,10 +44,17 @@ export default function BackTestList() {
   };
 
   const paintBackTestItems = backTestItems.map((item, index) => {
+    const { title, created_at, final_asset } = item;
+    const status = final_asset ? "완료" : "테스트 중";
+    const newItem = {
+      title,
+      status: status,
+      created_at: created_at.slice(0, 10),
+    };
     return (
       <ListItem
         key={index}
-        item={item}
+        item={newItem}
         index={index}
         checked={checkedList.includes(index) ? true : false}
         onChecked={onChecked}
@@ -77,62 +84,52 @@ export default function BackTestList() {
     setPageNo(num);
   };
 
-  const onClickFilter = (filter) => {
-    console.log(filter);
-    // 필터 state를 filter 로 변경
-    // 전반적인 notice item 검색 api에 filter 조건 추가
-    // pageNo 1로 초기화
-  };
-
-  const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
-  };
+  const onSearch = (word) => {};
 
   return (
     <PageContainer>
-      <div className="flex">
+      <div className="flex justify-between">
         <Link to="create">
           <button className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300">
             <Create />
             <div className="col-span-2 my-auto">백테스트 생성</div>
           </button>
         </Link>
-        <ListHeader
-          optionKind={["aaa", "bbb", "ccc"]}
-          onClickFilter={onClickFilter}
-          onSearch={onSearch}
-        />
+        <div className="w-40">
+          <SearchBar onSearch={onSearch} />
+        </div>
       </div>
 
-      <div className="mt-5">
-        <table className="table-auto w-full text-left">
-          <colgroup>
-            <col span="1" style={{ width: 5 + "%" }} />
-            <col span="1" style={{ width: 5 + "%" }} />
-            <col span="1" style={{ width: 70 + "%" }} />
-            <col span="1" style={{ width: 15 + "%" }} />
-          </colgroup>
-          <ListTitle
-            onCheckedAll={onCheckedAll}
-            checked={
-              checkedList.length && checkedList.length === backTestItems.length
-                ? true
-                : false
-            }
-            titles={["No", "테스트 이름", "생성일"]}
-          />
-          {backTestItems.length ? (
-            <tbody>{paintBackTestItems}</tbody>
-          ) : (
-            <td colSpan="4" className="text-center py-5">
-              생성된 백테스트가 없습니다.
-            </td>
-          )}
-        </table>
-      </div>
+      <table className="table-auto w-full text-left mt-5">
+        <colgroup>
+          <col span="1" style={{ width: 5 + "%" }} />
+          <col span="1" style={{ width: 5 + "%" }} />
+          <col span="1" style={{ width: 60 + "%" }} />
+          <col span="1" style={{ width: 10 + "%" }} />
+          <col span="1" style={{ width: 15 + "%" }} />
+        </colgroup>
+        <ListTitle
+          onCheckedAll={onCheckedAll}
+          checked={
+            checkedList.length && checkedList.length === backTestItems.length
+              ? true
+              : false
+          }
+          titles={["No", "테스트 이름", "상태", "생성일"]}
+        />
+        {backTestItems.length ? (
+          <tbody>{paintBackTestItems}</tbody>
+        ) : (
+          <tbody>
+            <tr>
+              <td colSpan="4" className="text-center py-5">
+                생성된 백테스트가 없습니다.
+              </td>
+            </tr>
+          </tbody>
+        )}
+      </table>
+
       {backTestItems.length ? (
         <div className="relative w-full flex justify-center">
           <Pagenation

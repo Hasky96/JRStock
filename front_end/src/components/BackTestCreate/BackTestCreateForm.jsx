@@ -55,16 +55,19 @@ export default function BackTestCreateForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isStockSelected) {
       toast.warning("종목을 선택해주세요!");
     }
 
     const data = { ...values, asset: values.asset.replace(/,/gi, "") };
+
     startBacktest(data)
-      .then((res) => window.localStorage.setItem("bactestResult", res))
+      .then((res) => console.log(res))
       .catch((err) => console.log("err: ", err));
+
+    console.log("hello");
   };
 
   const types = {

@@ -5,7 +5,7 @@ async function startBacktest(data) {
   return await authApi.post(`backtest/start/`, data);
 }
 
-async function getBacktest(params) {
+async function getBacktestList(params) {
   const authApi = loginApiInstance();
   let paramURL = "";
   if (params) {
@@ -18,4 +18,4 @@ async function getBacktest(params) {
   return await authApi.get(`backtest/` + paramURL);
 }
 
-export { startBacktest, getBacktest };
+export { startBacktest, getBacktestList };

@@ -47,6 +47,8 @@ export default function BasicCondition({
       setMinDate(new Date(start_date));
       setEndDate(new Date(end_date));
       setMaxDate(new Date(end_date));
+      handleStateChange("start_date", start_date);
+      handleStateChange("end_date", end_date);
     }
   }, [values.company_code]);
 
@@ -122,8 +124,11 @@ export default function BasicCondition({
             <DatePicker
               selected={startDate}
               onChange={(date) => {
-                handleStateChange("start_date", date);
                 setStartDate(date);
+                handleStateChange(
+                  "start_date",
+                  date.toISOString().slice(0, 10)
+                );
               }}
               dateFormat="yyyy년 MM월 dd일"
               locale={ko}
@@ -139,8 +144,8 @@ export default function BasicCondition({
             <DatePicker
               selected={endDate}
               onChange={(date) => {
-                handleStateChange("end_date", date);
                 setEndDate(date);
+                handleStateChange("end_date", date.toISOString().slice(0, 10));
               }}
               dateFormat="yyyy년 MM월 dd일"
               locale={ko}
