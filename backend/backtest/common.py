@@ -244,7 +244,7 @@ def sell(account, code, price, percent, date, option):
         else: win_or_lose = False
         
     account['buy_sell_list'].append(BuySell(result=account['result'], 
-        date=date, isBuy=True, buy_sell_option=option, company_name=name, company_code=code, stock_amount=stock_amount,
+        date=date, isBuy=False, buy_sell_option=option, company_name=name, company_code=code, stock_amount=stock_amount,
         stock_price=price, current_rate=earn_rate, current_asset=current_asset, isWin=win_or_lose))
     
     # print(f'매도알림 : {option}에 의해{name}({code}) 주식 {price} 가격에 {stock_amount:,}주 매도 == 현재 자산 {current_asset} 총 수익률 {earn_rate} 승패여부{win_or_lose}')
