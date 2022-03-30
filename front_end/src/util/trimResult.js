@@ -1,5 +1,3 @@
-import { data } from "autoprefixer";
-
 export const trimResultSummary = ({
   test_start_date,
   test_end_date,

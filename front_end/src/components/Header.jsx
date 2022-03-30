@@ -194,7 +194,7 @@ export default function Header({ category }) {
                 name="price"
                 id="header-search-input"
                 autoComplete="off"
-                className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
+                className="hover:border-primary focus:ring-primary focus:border-primary block w-full h-10 pl-10 pr-12 border-white rounded-lg duration-300"
                 placeholder="Search..."
                 onKeyUp={onKeyUp}
                 // 검색창 포커스 사라졌을 때
