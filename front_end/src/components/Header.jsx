@@ -16,7 +16,7 @@ export default function Header({ category }) {
   ]);
 
   const [user, setUser] = useState();
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const navigate = useNavigate();
   const [selectedNum, setSelectedNum] = useState(0); // 현재 선택된 검색 리스트 아이템
   const [preword, setPreword] = useState("");
@@ -55,7 +55,7 @@ export default function Header({ category }) {
     const newTimer = setTimeout(async () => {
       // 빈 입력값은 data 초기화
       if (e.target.value === "") {
-        setData({});
+        setData([]);
         setSelectedNum(0);
         return;
       }
@@ -70,13 +70,14 @@ export default function Header({ category }) {
       // 읽어온 데이터 state 저장
       if (result) {
         setSelectedNum(0); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
-        setData(result);
+        setData(result.results);
       }
     }, 500);
     setTimer(newTimer);
   };
 
   const onBlur = (e) => {
+    console.log("onBlur");
     const el = document.getElementById("search-result");
     // 리스트 아이템이 눌렸을 경우
     if (!e.relatedTarget?.classList.contains("result-item"))
@@ -84,6 +85,8 @@ export default function Header({ category }) {
   };
 
   const onFocus = () => {
+    console.log("onFocus");
+    console.log(data);
     const el = document.getElementById("search-result");
     el.classList.toggle("hidden");
   };
@@ -119,47 +122,53 @@ export default function Header({ category }) {
   }, []);
 
   const paintSearchResult = () => {
-    return data.results?.map(
-      ({ changes, chages_ratio, financial_info }, index) => (
-        <button
-          key={index}
-          type="button"
-          className={`result-item w-full flex flex-col xl:flex-row py-2 justify-between items-center text-center rounded p-1 ${
-            selectedNum === index ? "bg-indigo-100" : null
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(`/stock/${financial_info.basic_info.code_number}/detail`);
-            setSelectedNum(index);
-            const el = document.getElementById("search-result");
-            el.classList.toggle("hidden");
-          }}
-          onMouseOver={() => {
-            setSelectedNum(index);
-          }}
-        >
-          <div className="col-span-2 text-left whitespace-nowrap">
-            {`${financial_info.basic_info.company_name} (${financial_info.basic_info.code_number})`}
-          </div>
-          <div
-            className={
-              changes > 0
-                ? "col-span-3 text-red-500"
-                : changes < 0
-                ? "col-span-3 text-blue-600"
-                : "col-span-3 text-gray-600"
-            }
-          >
-            {changes > 0
-              ? "▲ " + changes.toLocaleString()
-              : changes < 0
-              ? "▼ " + (-changes).toLocaleString()
-              : "- " + (+changes).toLocaleString()}{" "}
-            ({chages_ratio + "%"})
-          </div>
+    if (data.length === 0) {
+      return (
+        <button className="result-item w-full flex flex-col xl:flex-row justify-between items-center text-center rounded">
+          검색 결과가 없습니다.
         </button>
-      )
-    );
+      );
+    }
+
+    return data?.map(({ changes, chages_ratio, financial_info }, index) => (
+      <button
+        key={index}
+        type="button"
+        className={`result-item w-full flex flex-col xl:flex-row py-2 justify-between items-center text-center rounded p-1 ${
+          selectedNum === index ? "bg-indigo-100" : null
+        }`}
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(`/stock/${financial_info.basic_info.code_number}/detail`);
+          setSelectedNum(index);
+          const el = document.getElementById("search-result");
+          el.classList.toggle("hidden");
+        }}
+        onMouseOver={() => {
+          setSelectedNum(index);
+        }}
+      >
+        <div className="col-span-2 text-left whitespace-nowrap">
+          {`${financial_info.basic_info.company_name} (${financial_info.basic_info.code_number})`}
+        </div>
+        <div
+          className={
+            changes > 0
+              ? "col-span-3 text-red-500"
+              : changes < 0
+              ? "col-span-3 text-blue-600"
+              : "col-span-3 text-gray-600"
+          }
+        >
+          {changes > 0
+            ? "▲ " + changes.toLocaleString()
+            : changes < 0
+            ? "▼ " + (-changes).toLocaleString()
+            : "- " + (+changes).toLocaleString()}{" "}
+          ({chages_ratio + "%"})
+        </div>
+      </button>
+    ));
   };
 
   return (

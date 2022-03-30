@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ListHeader from "../components/ListHeader";
 import PageContainer from "../components/PageContainer";
-import Pagenation from "../components/Pagenation";
+import Pagenation from "../components/Pagenation2";
 import { getItems } from "../api/notice";
 import Tooltip from "../components/commons/Tooltip";
 import Tooltip2 from "../components/commons/Tooltip2";
 import { ReactComponent as NoticeWriteIcon } from "../assets/noticeWriteIcon.svg";
 import useIsAdmin from "../util/useIsAdmin";
 import ToolContent1 from "../components/commons/ToolContent1";
+import NoticeListItem from "../components/notice/NoticeListItem";
 
 // const contents = [
 //   {
@@ -30,88 +31,22 @@ export default function Announcement() {
   const pageSize = 10;
   const isAdmin = useIsAdmin();
   const [timer, setTimer] = useState();
+  const inputRef = useRef();
 
-  // 처음 화면 변수 초기화
-  const init = async () => {
-    const data = await getItems(pageNo, pageSize);
-
-    // 전체 공지사항 개수
-    setTotalCount(data.count);
-    // 첫페이지 공지사항 아이템들
+  const getNotice = async (pN) => {
+    const data = await getItems(pN, pageSize, inputRef.current.value);
     setNoticeItems(data.results);
+    setTotalCount(data.count);
   };
 
   useEffect(() => {
-    init(pageNo, 10);
-  }, []);
-
-  // 종목 클릭 시 해당 종목 디테일 페이지로
-  const goDetailPage = (id) => {
-    navigate(`${id}`);
-  };
-
-  const onClickFirst = async () => {
-    setPageNo(1);
-    const data = await getItems(1, pageSize);
-    // 첫페이지 공지사항 아이템들
-    setNoticeItems(data.results);
-  };
-
-  const onClickLeft = async () => {
-    setPageNo((cur) => cur - 1);
-    const data = await getItems(pageNo - 1, pageSize);
-    setNoticeItems(data.results);
-  };
-
-  const onClickRight = async () => {
-    setPageNo((cur) => cur + 1);
-    const data = await getItems(pageNo + 1, pageSize);
-    setNoticeItems(data.results);
-  };
-
-  const onClickLast = async () => {
-    const lastPageNum =
-      parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
-    setPageNo(lastPageNum);
-    const data = await getItems(lastPageNum, pageSize);
-    // 마지막 페이지 공지사항 아이템들
-    setNoticeItems(data.results);
-  };
-
-  const onClickNumber = async (num) => {
-    setPageNo(num);
-    const data = await getItems(num, pageSize);
-    setNoticeItems(data.results);
-  };
+    getNotice(pageNo);
+  }, [pageNo]);
 
   const noticeList = () => {
     const list = [];
-    noticeItems.forEach((element, idx) => {
-      list.push(
-        <li
-          key={element.id}
-          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer border-b xl:text-base text-sm"
-        >
-          <p
-            className="col-span-6 my-auto"
-            onClick={goDetailPage.bind(this, element.id)}
-          >
-            {element.title}
-          </p>
-          <p
-            className="col-span-3 my-auto"
-            onClick={goDetailPage.bind(this, element.id)}
-          >
-            {element.user.name}
-          </p>
-          <p
-            className="col-span-3 my-auto"
-            onClick={goDetailPage.bind(this, element.id)}
-          >
-            {element.created_at.substring(0, 10)}
-          </p>
-        </li>
-      );
+    noticeItems.forEach((element) => {
+      list.push(<NoticeListItem element={element} key={element.id} />);
     });
     return list;
   }; // 화면에 그려줄 공지사항 목록
@@ -127,15 +62,8 @@ export default function Announcement() {
     // 이전에 보내려던 요청 삭제
     clearTimeout(timer);
     const newTimer = setTimeout(async () => {
-      // 새로운 데이터 읽어오기
-      const result = await getItems(pageNo, pageSize, word);
-
-      // 읽어온 데이터 state 저장
-      if (result) {
-        setPageNo(1); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
-        setNoticeItems(result.results);
-        setTotalCount(result.count);
-      }
+      if (pageNo === 1) getNotice(1);
+      else setPageNo(1);
     }, 500);
     setTimer(newTimer);
   };
@@ -160,6 +88,7 @@ export default function Announcement() {
           optionKind={["전체 보기"]}
           onClickFilter={onClickFilter}
           onSearch={onSearch}
+          inputRef={inputRef}
         />
       </div>
       <div className="border-collapse w-full text-center my-10 xl:text-base text-sm">
@@ -176,11 +105,7 @@ export default function Announcement() {
         selectedNum={pageNo}
         totalCnt={totalCount}
         pageSize={pageSize}
-        onClickFirst={onClickFirst}
-        onClickLeft={onClickLeft}
-        onClickRight={onClickRight}
-        onClickLast={onClickLast}
-        onClickNumber={onClickNumber}
+        setPageNo={setPageNo}
       ></Pagenation>
       {/* <div className="relative float-right">
         <Tooltip iPos={"bottom-0 -left-6"} cPos={"bottom-[25px] -left-[400px]"}>

@@ -76,7 +76,7 @@ export default function StrategyConfig({ values, setValues, type, index }) {
       </button>
       <ul
         className="w-full bg-white border rounded-sm absolute top-0 right-1 
-transition duration-300 ease-in-out origin-top-left
+transition duration-300 ease-in-out origin-top-left z-[100]
 min-w-32
 "
       >
@@ -100,7 +100,7 @@ min-w-32
       </button>
       <ul
         className="w-full bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute 
-  transition duration-300 ease-in-out origin-top min-w-32 z-50"
+  transition duration-300 ease-in-out origin-top min-w-32 z-[100]"
       >
         {paintLevelOne}
       </ul>

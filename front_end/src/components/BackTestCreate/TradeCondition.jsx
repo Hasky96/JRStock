@@ -8,6 +8,20 @@ import {
   paramConstructor,
 } from "../../config/backtestConfig";
 import { ReactComponent as Delete } from "../../assets/remove_circle.svg";
+import Tooltip from "../commons/Tooltip";
+import ToolContent1 from "../commons/ToolContent1";
+
+const contents = [
+  {
+    // title: "이동평균수렴확산지수\n(골든크로스)",
+    title: "이동평균선(상향돌파)",
+    src: "ma_high_graph.png",
+    alt: "content1",
+    content:
+      "이동평균선은 일정기간 동안의 주가를 산술 평균한 값이다. 주식에서는 주로 장기(120일), 중기(60일), 단기(5, 20일)의 이동평균선이 있다. 종가 기준으로 날짜를 합산하여 평균값을 구한다./n" +
+      "period: 이동평균선 기간 변수\nerr: 이동평균선 허용 오차 범위 변수\nweight: 가중치 변수",
+  },
+];
 
 export default function TradeCondition({
   type,
@@ -134,7 +148,9 @@ export default function TradeCondition({
         <div key={i} className="col-span-4">
           <div className="relative grid grid-cols-2 text-left pt-0">
             {i === 0 ? "" : paintDeleteButton(i)}
-
+            <Tooltip iPos={"left-5 top-7"} cPos={"top-6"}>
+              <ToolContent1 contents={contents}></ToolContent1>
+            </Tooltip>
             <div className="col-span-1 px-5">
               <StrategyConfig
                 type={type}

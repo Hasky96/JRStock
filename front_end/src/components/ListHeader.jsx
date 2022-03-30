@@ -16,7 +16,12 @@ ListHeader.propTypes = {
  * onClickFilter: 해당 옵션의 필터가 선택됐을 때 작동시킬 함수
  * onSearch: 검색을 했을 때 작동시킬 함수
  */
-export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
+export default function ListHeader({
+  optionKind,
+  onClickFilter,
+  onSearch,
+  inputRef,
+}) {
   const [selected, setSelected] = useState(optionKind[0]);
   const optionList = [];
   optionKind.forEach((element, idx) => {
@@ -99,6 +104,7 @@ export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
               e.preventDefault();
               onSearch(e.target.value);
             }}
+            ref={inputRef}
           />
         </div>
       </div>
