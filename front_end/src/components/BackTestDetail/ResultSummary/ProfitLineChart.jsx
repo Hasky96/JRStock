@@ -1,27 +1,37 @@
 import { createChart } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
 
-export const ProfitLineChart = ({ priceData, dayEarnData, period }) => {
+export const ProfitLineChart = ({
+  priceData,
+  dayEarnData,
+  period,
+  records,
+  markers,
+}) => {
   const zeroFill = (s) => {
     return ("00" + s).slice(-2);
   };
 
   const stringToDate = (date) => {
     const [year, month, day] = date.split("-");
-    return year + " - " + zeroFill(month) + " - " + zeroFill(day);
+    return year + "-" + zeroFill(month) + "-" + zeroFill(day);
+  };
+
+  const dateObjToString = (date) => {
+    return date.year + "-" + date.month + "-" + date.day;
   };
 
   const initailDate =
     typeof priceData[priceData.length - 1].time === "string"
       ? stringToDate(priceData[priceData.length - 1].time)
       : priceData[priceData.length - 1].time.year +
-        " - " +
+        "-" +
         priceData[priceData.length - 1].time.month +
-        " - " +
+        "-" +
         priceData[priceData.length - 1].time.day;
 
   const initialLegend = {
-    dateStr: initailDate,
+    dateStr: stringToDate(initailDate),
     price: priceData[priceData.length - 1].value,
     earn: dayEarnData[priceData.length - 1].value,
   };
@@ -116,15 +126,35 @@ export const ProfitLineChart = ({ priceData, dayEarnData, period }) => {
       } else {
         const dateStr =
           param.time.year +
-          " - " +
+          "-" +
           zeroFill(param.time.month) +
-          " - " +
+          "-" +
           zeroFill(param.time.day);
 
         const price = param.seriesPrices.get(priceSeries);
         const earn = param.seriesPrices.get(dayEarnSeries);
 
-        setLegends({ dateStr, price, earn });
+        if (typeof records[dateStr] === "object") {
+          const { buy_sell_option, isBuy, isWin, stock_amount, stock_price } =
+            records[dateStr];
+
+          setLegends({
+            dateStr,
+            price,
+            earn,
+            buy_sell_option,
+            isBuy,
+            isWin,
+            stock_amount,
+            stock_price,
+          });
+        } else {
+          setLegends({
+            dateStr,
+            price,
+            earn,
+          });
+        }
       }
     });
 
@@ -158,6 +188,26 @@ export const ProfitLineChart = ({ priceData, dayEarnData, period }) => {
     priceSeries.createPriceLine(minPriceLine);
     priceSeries.createPriceLine(maxPriceLine);
 
+    function myVisibleTimeRangeChangeHandler(newVisibleTimeRange) {
+      if (newVisibleTimeRange === null) {
+        // handle null
+      }
+
+      if (
+        new Date(dateObjToString(newVisibleTimeRange.to)) -
+          new Date(dateObjToString(newVisibleTimeRange.from)) <
+        10800000000
+      ) {
+        priceSeries.setMarkers(markers);
+      } else {
+        priceSeries.setMarkers([]);
+      }
+    }
+
+    chart
+      .timeScale()
+      .subscribeVisibleTimeRangeChange(myVisibleTimeRangeChangeHandler);
+
     const handleResize = () => {
       chart.applyOptions({ width: chartContainerRef.current.clientWidth });
     };
@@ -171,7 +221,7 @@ export const ProfitLineChart = ({ priceData, dayEarnData, period }) => {
 
       chart.remove();
     };
-  }, [priceData, dayEarnData, period]);
+  }, [priceData, dayEarnData, period, records]);
 
   return (
     <div className="parent-container">
@@ -185,6 +235,42 @@ export const ProfitLineChart = ({ priceData, dayEarnData, period }) => {
           <span>{legends.earn.toLocaleString()}원</span>
           <br></br>
           <span className="mr-3 text-xs font-normal">{legends.dateStr}</span>
+
+          {legends.buy_sell_option && (
+            <>
+              <span className="mr-1 text-xs font-normal">매수 전략</span>
+              <span className="mr-3 text-xs font-normal">
+                {legends.buy_sell_option}
+              </span>
+            </>
+          )}
+
+          <span className="mr-3 text-xs font-normal">
+            {typeof legends.isBuy === "boolean" &&
+              (legends.isBuy ? "매수" : "매도")}
+          </span>
+          {legends.stock_amount && (
+            <>
+              <span className="mr-1 text-xs font-normal">매매 수량</span>
+              <span className="mr-3 text-xs font-normal">
+                {legends.stock_amount}
+              </span>
+            </>
+          )}
+
+          {legends.stock_price && (
+            <>
+              <span className="mr-1 text-xs font-normal">매매가</span>
+              <span className="mr-3 text-xs font-normal">
+                {legends.stock_price}
+              </span>
+            </>
+          )}
+
+          <span className="mr-3 text-xs font-normal">
+            {typeof legends.isWin === "boolean" &&
+              (legends.isWin ? "승" : "패")}
+          </span>
         </span>
       </div>
     </div>

@@ -72,3 +72,33 @@ export const trimAnnually = async (data) => {
     backtestData,
   };
 };
+
+export const trimRecords = async (data) => {
+  const records = {};
+  const markers = [];
+  await data.forEach(
+    (
+      { date, buy_sell_option, isBuy, isWin, stock_amount, stock_price },
+      index
+    ) => {
+      records[`${date}`] = {
+        buy_sell_option,
+        isBuy,
+        isWin,
+        stock_amount,
+        stock_price,
+      };
+
+      const win = isWin ? "승" : "패";
+      markers.push({
+        time: date,
+        position: isBuy ? "belowBar" : "aboveBar",
+        color: isBuy ? "#3b82f6" : "#ef4444",
+        shape: isBuy ? "arrowUp" : "arrowDown",
+        text: isBuy ? `Buy @${stock_amount}` : `Sell @${stock_amount}` + win,
+      });
+    }
+  );
+
+  return { records, markers };
+};

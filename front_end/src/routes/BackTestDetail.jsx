@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getBacktestDetail } from "../api/backtest";
+import { getBacktestDetail, getBacktestTradeRecord } from "../api/backtest";
 import ResultSummary from "../components/BackTestDetail/ResultSummary/ResultSummary";
 import Profit from "../components/BackTestDetail/Profit/Profit";
 import TradingRecord from "../components/BackTestDetail/TradingRecord/TradingRecord";
@@ -24,19 +24,24 @@ export default function BackTestDetail() {
 
   useEffect(() => {
     const fetching = setInterval(async () => {
-      const result = await fetchBacktestDetail(id);
+      // 로딩이 끝난 경우 ()
+      if (!isLoading) {
+        clearInterval(fetching);
+        return;
+      }
 
+      const result = await fetchBacktestDetail(id);
       if (result.final_asset) {
         setBacktestResult(result);
         setIsLoading(false);
         console.log("@loading over");
-        console.log(backtestResult);
+        console.log("set backtest result");
         clearInterval(fetching);
       } else {
         console.log("@loading");
       }
     }, 500);
-  }, []);
+  }, [isLoading]);
 
   return (
     <PageContainer>

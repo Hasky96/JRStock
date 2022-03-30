@@ -13,8 +13,8 @@ export default function Contact() {
     const storageCount = window.localStorage.getItem("submit_count");
     const submitCount = storageCount ? parseInt(storageCount) : 0;
 
-    if (submitCount >= 5) {
-      toast.error("메시지를 너무 많이 전송하였습니다. 멈춰!");
+    if (submitCount >= 3) {
+      toast.error("STOP! 메시지를 너무 많이 전송하였습니다.");
       return;
     }
 
