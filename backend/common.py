@@ -303,21 +303,3 @@ def end_calculate(account, result_data):
     print('시장 수익률 : ' + str(result_data['market_rate']) + '|| 시장초과수익률 : ' + str(result_data['market_over_price']) + '|| 최고자산 : ' + str(result_data['max_earn']) + '|| 최저자산 : ' + str(result_data['min_earn']))
     return result_data
 
-
-# front로부터 받는 전략
-# window : 5일선, 20일선 등
-# 공통 파라미터 : code_number, balance, start_date, end_date, 매수전략들, 매도전략들 - 개수 달라도 가능
-# 101 : ma_uppass (window, err, weight)             # 종가가 window를 걸쳐 상향돌파, 일반적으로 매수
-# 102 : ma_downpass (window, err, weight)           # 종가가 window를 걸쳐 하향돌파, 일반적으로 매도
-# 103 : ma_gold_cross (window1, window2, weight)    # window 중 작은 값이 교차후 위로, 일반적으로 매수
-# 104 : ma_dead_cross (window1, window2, weight)    # window 중 작은 값이 교차후 아래로, 일반적으로 매도
-# 105 : ma_straight (window1, window2, weight)      # window 중 작은 값이 위에, 일반적으로 매수
-# 106 : ma_reverse (window1, window2, weight)       # window 중 작은 값이 아래에, 일반적으로 매도
-# 201 : macd_gold_cross (window1, window2, weight)  # window 중 작은 값이 교차후 위로, 일반적으로 매수
-# 202 : macd_dead_cross (window1, window2, weight)  # window 중 작은 값이 교차후 아래로, 일반적으로 매도
-# 203 : macd_straight (window1, window2, weight)    # window 중 작은 값이 위에, 일반적으로 매수
-# 204 : macd_reverse (window1, window2, weight)     # window 중 작은 값이 아래에, 일반적으로 매도
-# 301 : rsi_high (window1, window2, index, weight)  # rsi > index, 일반적으로 과매수 됐다고 평가 -> 매도
-# 302 : rsi_low  (window1, window2, index, weight)  # rsi < index, 일반적으로 과매도 됐다고 평가 -> 매수
-# 401 : obv_high  (window, weight)                  # obv > ovb_ema이면 일반적으로 매수
-# 402 : obv_low  (window, weight)                   # obv < ovb_ema이면 일반적으로 매도
