@@ -29,7 +29,7 @@ function Tooltip({ children, iPos, cPos }) {
               <div
                 role="tooltip"
                 className={classNames(
-                  "z-[60] absolute transition duration-150 ease-in-out shadow-lg bg-white p-4 rounded max-h-[250px] min-w-[300px] overflow-y-scroll border-2 border-primary",
+                  "z-[60] absolute transition duration-150 ease-in-out shadow-lg bg-white p-4 rounded max-h-[400px] min-w-[300px] overflow-y-scroll border-2 border-primary",
                   cPos
                 )}
               >
