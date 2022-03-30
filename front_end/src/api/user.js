@@ -56,6 +56,12 @@ async function userUpdate(id, userInfo) {
   ).data;
 }
 
+// 일반 건의사항 기능
+async function contact(info) {
+  const api = apiInstance();
+  return await api.post("/user/contact/", info);
+}
+
 export {
   registerUser,
   checkDuplication,
@@ -65,4 +71,5 @@ export {
   userDetail,
   userUpdate,
   passwordReset,
+  contact,
 };

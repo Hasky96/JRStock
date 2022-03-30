@@ -289,7 +289,7 @@ def email_confirm(request, **kwargs):
         user.is_active = True
         user.save()
         
-        return redirect(BASE_URL)
+        return redirect(BASE_URL + 'login')
 
 @swagger_auto_schema(
     method='post',

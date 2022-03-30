@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { userDetail } from "../api/user";
 import { getStockItemList } from "../api/stock";
 import { API_MEDIA_URL } from "../config";
+import { DotsVerticalIcon } from "@heroicons/react/solid";
 
 export default function Header({ category }) {
   const nameMap = new Map([
@@ -15,7 +16,7 @@ export default function Header({ category }) {
   ]);
 
   const [user, setUser] = useState();
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const navigate = useNavigate();
   const [selectedNum, setSelectedNum] = useState(0); // 현재 선택된 검색 리스트 아이템
   const [preword, setPreword] = useState("");
@@ -54,7 +55,7 @@ export default function Header({ category }) {
     const newTimer = setTimeout(async () => {
       // 빈 입력값은 data 초기화
       if (e.target.value === "") {
-        setData({});
+        setData([]);
         setSelectedNum(0);
         return;
       }
@@ -69,13 +70,14 @@ export default function Header({ category }) {
       // 읽어온 데이터 state 저장
       if (result) {
         setSelectedNum(0); // 글자 입력하다 방향키 누를 시 Process라는 키와 함께 방향키가 눌려서 문제가 발생 -> 이전 검색어 저장해서 해결
-        setData(result);
+        setData(result.results);
       }
     }, 500);
     setTimer(newTimer);
   };
 
   const onBlur = (e) => {
+    console.log("onBlur");
     const el = document.getElementById("search-result");
     // 리스트 아이템이 눌렸을 경우
     if (!e.relatedTarget?.classList.contains("result-item"))
@@ -83,6 +85,8 @@ export default function Header({ category }) {
   };
 
   const onFocus = () => {
+    console.log("onFocus");
+    console.log(data);
     const el = document.getElementById("search-result");
     el.classList.toggle("hidden");
   };
@@ -118,54 +122,60 @@ export default function Header({ category }) {
   }, []);
 
   const paintSearchResult = () => {
-    return data.results?.map(
-      ({ changes, chages_ratio, financial_info }, index) => (
-        <button
-          key={index}
-          type="button"
-          className={`result-item w-full grid grid-cols-5 my-2 h-8 justify-between items-center text-center border-b rounded p-1 ${
-            selectedNum === index ? "bg-indigo-100" : null
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(`/stock/${financial_info.basic_info.code_number}/detail`);
-            setSelectedNum(index);
-            const el = document.getElementById("search-result");
-            el.classList.toggle("hidden");
-          }}
-          onMouseOver={() => {
-            setSelectedNum(index);
-          }}
-        >
-          <div className="col-span-2 text-left whitespace-nowrap">
-            {`${financial_info.basic_info.company_name} (${financial_info.basic_info.code_number})`}
-          </div>
-          <div
-            className={
-              changes > 0
-                ? "col-span-3 my-auto text-red-500"
-                : changes < 0
-                ? "col-span-3 my-auto text-blue-600"
-                : "col-span-3 my-auto text-gray-600"
-            }
-          >
-            {changes > 0
-              ? "▲ " + changes.toLocaleString()
-              : changes < 0
-              ? "▼ " + (-changes).toLocaleString()
-              : "- " + (+changes).toLocaleString()}{" "}
-            ({chages_ratio + "%"})
-          </div>
+    if (data.length === 0) {
+      return (
+        <button className="result-item w-full flex flex-col xl:flex-row justify-between items-center text-center rounded">
+          검색 결과가 없습니다.
         </button>
-      )
-    );
+      );
+    }
+
+    return data?.map(({ changes, chages_ratio, financial_info }, index) => (
+      <button
+        key={index}
+        type="button"
+        className={`result-item w-full flex flex-col xl:flex-row py-2 justify-between items-center text-center rounded p-1 ${
+          selectedNum === index ? "bg-indigo-100" : null
+        }`}
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(`/stock/${financial_info.basic_info.code_number}/detail`);
+          setSelectedNum(index);
+          const el = document.getElementById("search-result");
+          el.classList.toggle("hidden");
+        }}
+        onMouseOver={() => {
+          setSelectedNum(index);
+        }}
+      >
+        <div className="col-span-2 text-left whitespace-nowrap">
+          {`${financial_info.basic_info.company_name} (${financial_info.basic_info.code_number})`}
+        </div>
+        <div
+          className={
+            changes > 0
+              ? "col-span-3 text-red-500"
+              : changes < 0
+              ? "col-span-3 text-blue-600"
+              : "col-span-3 text-gray-600"
+          }
+        >
+          {changes > 0
+            ? "▲ " + changes.toLocaleString()
+            : changes < 0
+            ? "▼ " + (-changes).toLocaleString()
+            : "- " + (+changes).toLocaleString()}{" "}
+          ({chages_ratio + "%"})
+        </div>
+      </button>
+    ));
   };
 
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
-      <div className="fixed  w-full pl-4 pr-24 z-30">
-        <div className="grid grid-cols-12 mt-6 rounded-xl bg-primary">
+      <div className="fixed w-full pl-4 pr-24 z-30">
+        <div className="grid grid-cols-12 mt-6 mx-6 rounded-xl bg-primary h-[60px]">
           {/* 카테고리 그리드 */}
           <div className="col-span-7 text-3xl my-auto ml-5 text-indigo-50">
             {nameMap.get(category)}
@@ -194,7 +204,7 @@ export default function Header({ category }) {
                 name="price"
                 id="header-search-input"
                 autoComplete="off"
-                className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
+                className="hover:border-primary focus:ring-primary focus:border-primary block w-full h-10 pl-10 pr-12 border-white rounded-lg duration-300 hover:shadow-inner"
                 placeholder="Search..."
                 onKeyUp={onKeyUp}
                 // 검색창 포커스 사라졌을 때
@@ -202,7 +212,7 @@ export default function Header({ category }) {
                 onFocus={onFocus}
               />
               <div
-                className="absolute top-full w-full hidden"
+                className="mt-1 absolute top-full w-full hidden bg-white rounded shadow-xl border border-primary p-2"
                 id="search-result"
               >
                 {paintSearchResult()}
@@ -240,13 +250,9 @@ export default function Header({ category }) {
               </button>
             ) : (
               // 비로그인 시
-              <button className="w-14 p-1 group duration-300 relative">
-                <img
-                  className="rounded-full w-[50px] h-[50px]"
-                  src={require("../assets/profile1.jpg")}
-                  alt="profile"
-                />
-                <div className="absolute top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
+              <button className="p-1 group duration-300 relative">
+                <DotsVerticalIcon className="w-5 fill-white cursor-pointer" />
+                <div className="absolute -left-5 top-[50px] invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
                   <ul className="text-left border rounded ">
                     <li className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
                       <Link to="/login">로그인</Link>

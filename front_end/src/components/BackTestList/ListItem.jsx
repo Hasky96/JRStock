@@ -18,7 +18,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
     return elementArray;
   };
   const handleOnClick = () => {
-    navigate(`${index}`);
+    navigate(`${item.id}`);
   };
   return (
     <tr
@@ -32,7 +32,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
           type="checkbox"
           className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
           onClick={(e) => e.stopPropagation()}
-          onChange={(e) => onChecked(e, index)}
+          onChange={(e) => onChecked(e, item.id)}
           checked={checked}
         />
       </td>

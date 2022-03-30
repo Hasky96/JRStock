@@ -76,7 +76,7 @@ export default function StrategyConfig({ values, setValues, type, index }) {
       </button>
       <ul
         className="w-full bg-white border rounded-sm absolute top-0 right-1 
-transition duration-300 ease-in-out origin-top-left
+transition duration-300 ease-in-out origin-top-left z-[100]
 min-w-32
 "
       >
@@ -90,7 +90,7 @@ min-w-32
       <button className="w-full outline-none focus:outline-none border px-3 py-1 bg-white rounded-sm flex items-center min-w-32">
         <div className="pr-1 flex flex-col flex-1 justify-center">
           <div className="pr-1 font-semibold flex-1">{strategy}</div>
-          <div className="pr-1 font-semibold text-sm text-gray-500 flex-1">
+          <div className="pr-1 font-semibold text-sm text-gray-500 flex-1 relative">
             {detail}
           </div>
         </div>
@@ -100,7 +100,7 @@ min-w-32
       </button>
       <ul
         className="w-full bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute 
-  transition duration-300 ease-in-out origin-top min-w-32 z-50"
+  transition duration-300 ease-in-out origin-top min-w-32 z-[100]"
       >
         {paintLevelOne}
       </ul>

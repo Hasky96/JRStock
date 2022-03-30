@@ -16,7 +16,12 @@ ListHeader.propTypes = {
  * onClickFilter: 해당 옵션의 필터가 선택됐을 때 작동시킬 함수
  * onSearch: 검색을 했을 때 작동시킬 함수
  */
-export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
+export default function ListHeader({
+  optionKind,
+  onClickFilter,
+  onSearch,
+  inputRef,
+}) {
   const [selected, setSelected] = useState(optionKind[0]);
   const optionList = [];
   optionKind.forEach((element, idx) => {
@@ -93,12 +98,13 @@ export default function ListHeader({ optionKind, onClickFilter, onSearch }) {
             type="text"
             name="price"
             id="price"
-            className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+            className="hover:border-primary focus:ring-primary focus:border-primary text-xs block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
             placeholder="Search..."
             onChange={(e) => {
               e.preventDefault();
               onSearch(e.target.value);
             }}
+            ref={inputRef}
           />
         </div>
       </div>

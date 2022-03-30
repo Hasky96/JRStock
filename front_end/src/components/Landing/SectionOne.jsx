@@ -1,5 +1,4 @@
 import { ReactComponent as Thinking } from "../../assets/landing_page/thinking.svg";
-import { ReactComponent as Notes } from "../../assets/landing_page/notes.svg";
 
 export default function SectionOne() {
   return (

@@ -17,4 +17,6 @@ urlpatterns = [
     path('news/<str:code_number>', views.get_recent_news, name='get_recent_news'),
     
     path('start-end/<str:code_number>', views.get_start_end_date, name='get_start_end_date'),
+    
+    path('predict/<str:code_number>', views.get_predict_data, name='get_predict_data'),
 ]

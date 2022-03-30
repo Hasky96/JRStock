@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useIsAdmin from "../util/useIsAdmin";
 
 export default function AdminRoute({ children, redirectPath }) {
@@ -15,5 +15,5 @@ export default function AdminRoute({ children, redirectPath }) {
     );
   }
 
-  return children;
+  return children ? children : <Outlet />;
 }

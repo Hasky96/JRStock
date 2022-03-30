@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.serializers import UserSerializer
 
-from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest, MonthStock, WeekStock
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest, MonthStock, Predict, WeekStock
 
 # ====================================================================== 통합 ======================================================================  
 class BasicInfoSerializer(serializers.ModelSerializer):
@@ -47,23 +47,7 @@ class MonthStockSerializer(serializers.ModelSerializer):
         model = MonthStock
         fields = '__all__'
         
-# ====================================================================== 코스피 ======================================================================
-# class InfoKospiSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = InfoKospi
-#         fields = '__all__'
-        
-# class FinancialKospiSerializer(serializers.ModelSerializer):
-#     info_kospi = InfoKospiSerializer(read_only=True)
-    
-#     class Meta:
-#         model = FinancialKospi
-#         fields = '__all__'   
-
-# class KospiCustomSerializer(serializers.ModelSerializer):
-#     info_kospi = InfoKospiSerializer(read_only=True)
-    
-#     class Meta:
-#         model = FinancialKospi
-#         fields = ('info_kospi', )
-        
+class PredictSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Predict
+        fields = '__all__'
