@@ -34,13 +34,8 @@ export default function Interested() {
     setLives(temp);
   };
 
-  const updateLive = async () => {
-    console.log(stocks);
-  };
-
   useEffect(() => {
     init();
-    // updateLive();
   }, []);
 
   // 관심 종목 페이지로
@@ -62,7 +57,7 @@ export default function Interested() {
   const clickDelete = async (codeNumber) => {
     if (window.confirm("관심 종목에서 삭제하시겠습니까?")) {
       try {
-        await deleteInterest(codeNumber);
+        await deleteInterest([codeNumber]);
         alert("삭제되었습니다.");
         init();
       } catch (e) {
@@ -70,6 +65,16 @@ export default function Interested() {
       }
     }
   };
+
+  // 10초마다 실시간 데이터 요청
+  const TENSEC_MS = 10000;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      init();
+    }, TENSEC_MS);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // 실시간 데이터로 html 구성
   const liveList = () => {
@@ -83,9 +88,7 @@ export default function Interested() {
         >
           <div>
             <div className="grid grid-cols-11">
-              <div
-                className="col-span-2 my-auto text-xl font-bold"
-              >
+              <div className="col-span-2 my-auto text-xl font-bold">
                 {live.company_name}
               </div>
               <div className="col-span-3">
