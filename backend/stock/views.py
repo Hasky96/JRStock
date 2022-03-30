@@ -22,6 +22,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+from django.db.models import Max, Min
+
 
 page = openapi.Parameter('page', openapi.IN_QUERY, default=1,
                         description="페이지 번호", type=openapi.TYPE_INTEGER)
@@ -406,12 +408,12 @@ def live_data(request, code_number):
 def interest_stock_create(request):
     # 체크박스를 리스트 형식으로 받아와서 저장
     code_numbers = request.data.get('code_number')
-    
+    print(code_numbers)
     duplicate_list = []
     
     # 중복확인
     for code_number in code_numbers:
-        interest = Interest.objects.filter(basic_info_id=code_number)
+        interest = Interest.objects.filter(user=request.user, basic_info_id=code_number)
         
         if interest.count() == 0:
             serializer = InterestSerializer(data=request.data)
@@ -695,3 +697,29 @@ def get_recent_news(reqeust, code_number):
         news_list.append(result)
 
     return Response(news_list, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='해당종목 시작, 끝 날짜(모두)',
+    operation_description='해당 종목의 시작과 끝 날짜를 조회합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: openapi.Response(
+        description="200 OK",
+        schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'start_date': openapi.Schema(type=openapi.TYPE_STRING, description="데이터 시작 날짜"),
+                'end_date': openapi.Schema(type=openapi.TYPE_STRING, description="데이터 종료 날짜"),
+            }
+        )
+    )}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_start_end_date(request, code_number):
+    stock_list = DayStock.objects.filter(code_number=code_number)
+    start_date = stock_list.aggregate(Min('date'))['date__min']
+    end_date = stock_list.aggregate(Max('date'))['date__max']
+    
+    return Response({'start_date' : start_date,
+                    'end_date' : end_date}, status=status.HTTP_200_OK)
