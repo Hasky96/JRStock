@@ -95,7 +95,7 @@ def get_day_stock(code_number, start_date, end_date):
     
     return pd.DataFrame(stock_list, columns=col_name) 
 
-def buy(account, code, price, percent, date, option):
+def buy(account, code, price, percent, date, option, result):
     """주식구매 함수
 
     Args:
@@ -136,7 +136,7 @@ def buy(account, code, price, percent, date, option):
     earn_rate = round(earn_rate * 100, 3)
     name = account['company_name']
     
-    account['buy_sell_list'].append(BuySell(result=account['result'], 
+    account['buy_sell_list'].append(BuySell(result=result, 
         date=date, isBuy=True, buy_sell_option=option, company_name=name, company_code=code, stock_amount=stock_amount,
         stock_price=price, current_rate=earn_rate, current_asset=current_asset))
     
@@ -144,7 +144,7 @@ def buy(account, code, price, percent, date, option):
     return account
 
 # 이름도 같이 받아서 DB 접근 횟수 줄이기 가능할듯
-def sell(account, code, price, percent, date, option):
+def sell(account, code, price, percent, date, option, result):
     """주식구매 함수
 
     Args:
@@ -192,7 +192,7 @@ def sell(account, code, price, percent, date, option):
             account['win_cnt'] += 1
         else: win_or_lose = False
         
-    account['buy_sell_list'].append(BuySell(result=account['result'], 
+    account['buy_sell_list'].append(BuySell(result=result, 
         date=date, isBuy=False, buy_sell_option=option, company_name=name, company_code=code, stock_amount=stock_amount,
         stock_price=price, current_rate=earn_rate, current_asset=current_asset, isWin=win_or_lose))
     
@@ -280,7 +280,7 @@ def init_result_data(account, trading_days):
     return result_data
 
 # 하루마다 계산할 것
-def day_calculate(account, result_data, stock):
+def day_calculate(account, result_data, stock, result):
     result_data['current_asset'] = int(account['balance'])
     for code_num in account['stocks'].keys():
         cur_price = get_stock_price(code_num, stock['date'])
@@ -305,20 +305,20 @@ def day_calculate(account, result_data, stock):
     
     # 연도가 바뀌었다면
     if result_data['year'] != stock['date'][:4]:
-        result_data = year_calculate(account, result_data, stock['date'])
+        result_data = year_calculate(account, result_data, stock['date'], result)
         result_data['year'] = stock['date'][:4] # 연도 변경
     
     result_data['avg_day_earn_rate'] += day_earn_rate # 일평균 누적
-    account['day_history_list'].append(DayHistory(result=account['result'], date=stock['date'], day_earn_rate=day_earn_rate, day_earn=day_earn, current_asset=result_data['current_asset']))
+    account['day_history_list'].append(DayHistory(result=result, date=stock['date'], day_earn_rate=day_earn_rate, day_earn=day_earn, current_asset=result_data['current_asset']))
     # print('일수익률 : ' + str(day_earn_rate) + '|| 일손익 : ' + str(day_earn) + '|| 현재 자산 : ' + str(result_data['current_asset']) + '|| 날짜 : ' + str(stock['date']))
     return result_data
 
-def year_calculate(account, result_data, date):
+def year_calculate(account, result_data, date, result):
     year_earn_rate = round((result_data['current_asset'] - result_data['year_start_price']) / result_data['year_start_price'] * 100, 3)
     market_current_price = float(get_kospi_price_by_date(date))
     market_year_rate = round((market_current_price - result_data['market_year_start_price']) / result_data['market_year_start_price'] * 100, 3)
     
-    account['year_history_list'].append(YearHistory(result=account['result'], 
+    account['year_history_list'].append(YearHistory(result=result, 
         year=result_data['year'], year_rate=year_earn_rate, market_rate=market_year_rate))
     # print(result_data['year'] + '년 평균' + str(year_earn_rate) + '|| 시장연평균 :' + str(market_year_rate))
     
@@ -339,7 +339,7 @@ def create_database(account):
     # 연데이터 저장
     YearHistory.objects.bulk_create(account['year_history_list'])
 
-def end_calculate(account, result_data): 
+def end_calculate(account, result_data, result): 
     # 마지막 날을 기준으로 마지막 연도 평균 계산
     result_data = year_calculate(account, result_data, account['end_date'])
     
@@ -357,15 +357,15 @@ def end_calculate(account, result_data):
     else: win_lose_rate = round(account['win_cnt'] / result_data['win_lose_cnt'] * 100, 3)
     
     input_data = {
-        'title' : account['result'].title,
-        'asset' : account['result'].asset,
-        'test_start_date' : account['result'].test_start_date,
-        'test_end_date' : account['result'].test_end_date,
-        'commission' : round((account['result'].commission - 1) * 100, 3),
-        'buy_standard' : account['result'].buy_standard,
-        'buy_ratio' : account['result'].buy_ratio,
-        'sell_standard' : account['result'].sell_standard,
-        'sell_ratio' : account['result'].sell_ratio,
+        'title' : result.title,
+        'asset' : result.asset,
+        'test_start_date' : result.test_start_date,
+        'test_end_date' : result.test_end_date,
+        'commission' : round((result.commission - 1) * 100, 3),
+        'buy_standard' : result.buy_standard,
+        'buy_ratio' : result.buy_ratio,
+        'sell_standard' : result.sell_standard,
+        'sell_ratio' : result.sell_ratio,
         'avg_day_earn_rate' : result_data['avg_day_earn_rate'],
         'avg_year_earn_rate' : result_data['avg_year_earn_rate'],
         'market_rate' : result_data['market_rate'],
@@ -382,7 +382,7 @@ def end_calculate(account, result_data):
         'final_rate' : result_data['my_final_rate']
     }
     
-    serializer = ResultSerializer(instance=account['result'], data=input_data)
+    serializer = ResultSerializer(instance=result, data=input_data)
     if serializer.is_valid(raise_exception=True):
         serializer.save()
     

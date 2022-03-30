@@ -115,7 +115,6 @@ def test_start(request):
             #     },
         },
         "commission" : commission,
-        "result" : result,
         "win_cnt" : 0,
         "buy_sell_list" : [],
         "day_history_list" : [],
