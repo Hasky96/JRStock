@@ -3,7 +3,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // primary: rgb(24, 33, 109)
+        // primary: rgba(24, 33, 109, 1)
         // active: rgb(255, 130, 92)
         // third: rgb(254, 118, 36)
         primary: "#18216d",

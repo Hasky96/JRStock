@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { getBacktestAnnually, getBacktestDaily } from "../../../api/backtest";
+import {
+  getBacktestAnnually,
+  getBacktestDaily,
+  getBacktestTradeRecord,
+} from "../../../api/backtest";
 import { trimAnnually, trimDaily } from "../../../util/trimResult";
 import { ProfitLineChart } from "./ProfitLineChart";
 import { assetKey, profitKey } from "../../../config/backtestConfig";
@@ -28,6 +32,11 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     return res.data;
   };
 
+  const fetchBacktestTradeRecord = async (backtestId) => {
+    const res = await getBacktestTradeRecord(backtestId);
+    return res.data;
+  };
+
   useEffect(() => {
     async function fetchAndSetDaily() {
       const data = await fetchBacktestDaily(id);
@@ -48,9 +57,17 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       setIsAnnualData(true);
     }
 
+    async function fetchAndSetTradeRecord() {
+      const data = await fetchBacktestTradeRecord(id);
+      console.log("trade record:", data);
+
+      // setTradeRecord()
+    }
+
     if (!isLoading) {
       fetchAndSetDaily();
       fetchAndSetAnnually();
+      fetchAndSetTradeRecord();
     }
   }, [isLoading]);
 

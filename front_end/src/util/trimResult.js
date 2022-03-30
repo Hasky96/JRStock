@@ -20,8 +20,8 @@ export const trimResultSummary = ({
         parseInt(asset).toLocaleString(),
         parseInt(final_asset).toLocaleString(),
         parseInt(final_earn).toLocaleString(),
-        test_end_date,
         test_start_date,
+        test_end_date,
         trading_days,
       ],
       profitResult: [
@@ -45,7 +45,10 @@ export const trimDaily = async (data) => {
 
   await data.forEach(({ date, current_asset, day_earn }, index) => {
     lineChartData.push({ time: date, value: current_asset });
-    barChartData.push({ time: date, value: day_earn });
+
+    const color =
+      day_earn > 0 ? "#ef4444" : day_earn < 0 ? "#3b82f6" : "#d1d5db";
+    barChartData.push({ time: date, value: day_earn, color });
   });
 
   return {

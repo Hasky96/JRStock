@@ -64,9 +64,12 @@ export const ProfitLineChart = ({ priceData, dayEarnData, period }) => {
       },
     });
 
-    const priceSeries = chart.addLineSeries({
-      color: "rgba(255, 130, 92, 0.8)",
-      lineWidth: 2,
+    const priceSeries = chart.addAreaSeries({
+      // rgba(24, 33, 109, 1)
+      topColor: "rgba(255, 130, 92, 0.8)",
+      bottomColor: "rgba(255, 130, 92, 0)",
+      lineColor: "rgba(255, 130, 92, 1)",
+      lineWidth: 1,
     });
 
     const dayEarnSeries = chart.addHistogramSeries({
