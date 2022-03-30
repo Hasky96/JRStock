@@ -1,3 +1,5 @@
+from common import *
+
 def SMA(params, df):
     """ 단순이동평균 (Simple Moving Average)
 
@@ -161,18 +163,36 @@ def IKH(params, df):
     df['leading_span1'] = ((df['conversion_line'] + df['base_line']) / 2).shift(26)    # 선행스팬1 (leading span 1)
     period52_max_price = df['high_price'].rolling(window=52).max()
     period52_min_price = df['low_price'].rolling(window=52).min()
-    df['leading_span2'] = ((period52_max_price + period52_min_price) / 2).shift(26)    # 선행스팬1 (leading span 1)
+    df['leading_span2'] = ((period52_max_price + period52_min_price) / 2).shift(26)    # 선행스팬2 (leading span 2)
     df['lagging_span'] = df['current_price'].shift(-26)     # 후행스팬 (lagging span)
     df['cloud']=df['leading_span1']-df['leading_span2']     # 구름층 
     
     return df
-    # print('전환선: ',df['tenkan_sen'].iloc[-1])
-    # print('기준선: ',df['kijun_sen'].iloc[-1])
-    # print('후행스팬: ',df['chikou_span'].iloc[-27])
-    # print('선행스팬1: ',df['senkou_span_a'].iloc[-1])
-    # print('선행스팬2: ',df['senkou_span_b'].iloc[-1])
-    # print('')
 
+
+def KS(params, df):
+    period=params[0]
+    start_date=df.iloc[0]['date']
+    end_date=df.iloc[-1]['date']
+    kospi=get_day_stock("kospi", start_date, end_date)
+    kospi=object_to_dataframe(kospi)
+    df['ks_open']=kospi['start_price']
+    df['ks_close']=kospi['current_price']
+    df[f'ks_ma{period}']=kospi['current_price'].rolling(window=period).mean()
+
+    return df
+
+def KQ(params, df):
+    period=params[0]
+    start_date=df.iloc[0]['date']
+    end_date=df.iloc[-1]['date']
+    kosdaq=get_day_stock("kosdaq", start_date, end_date)
+    kosdaq=object_to_dataframe(kosdaq)
+    df['kq_open']=kosdaq['start_price']
+    df['kq_close']=kosdaq['current_price']
+    df[f'kq_ma{period}']=kosdaq['current_price'].rolling(window=period).mean()
+
+    return df
 
 ###########################################################################################
 
@@ -267,7 +287,7 @@ def ma_up_pass(params, df, index):
     err=params[1]
     col = f'sma{window}'  # df 에서 가져올 col 이름 
     sma = df.iloc[1][col] 
-    sma_err = (1-err/100)* sma  # 오차범위 값 지정
+    sma_err = (1+err/100)* sma  # 오차범위 값 지정
     if (df.iloc[1]['start_price'] < df.iloc[1]['current_price']):  # 양봉이어야함
         if(sma > df.iloc[1]['start_price'] and sma_err < df.iloc[1]['current_price']):
             return params[2]
@@ -522,15 +542,22 @@ def ikh_straight(params, df, index):
     if index<26 or index==len(df)-1:
         return 0
     count=params[0]
-    # flag=true
+    if count==1:
+        if df.iloc[1]['cloud']>0 and index>=52:
+            return params[1]
+        else:
+            return 0
+    if count>=2:
+        if not(df.iloc[1]['conversion_line']>df.iloc[1]['base_line']):
+            return 0
     if count>=3:
-        if not(df.iloc[1]['current_price']<df.iloc[1]['conversion_line']<df.iloc[1]['base_line']):
+        if not(df.iloc[1]['current_price']>df.iloc[1]['conversion_line']):
             return 0
     if count>=4:
-        if not(df.iloc[1]['lagging_span']<df.iloc[1]['current_price']):
+        if not(df.iloc[1]['lagging_span']>df.iloc[1]['current_price']):
             return 0
     if count>=5:
-        if index<52 or not(df.iloc[1]['current_price']<df.iloc[1]['cloud']):
+        if index<52 or not(df.iloc[1]['base_line']>max(df.iloc[1]['leading_span1'], df.iloc[1]['leading_span2'])):
             return 0
 
     return params[1]
@@ -540,15 +567,116 @@ def ikh_reverse(params, df, index):
     if index<26 or index==len(df)-1:
         return 0
     count=params[0]
-    # flag=true
+    if count==1:
+        if df.iloc[1]['cloud']<0 and index>=52:
+            return params[1]
+        else:
+            return 0
+    if count>=2:
+        if not(df.iloc[1]['conversion_line']<df.iloc[1]['base_line']):
+            return 0
+
     if count>=3:
-        if not(df.iloc[1]['current_price']>df.iloc[1]['conversion_line']>df.iloc[1]['base_line']):
+        if not(df.iloc[1]['current_price']<df.iloc[1]['conversion_line']):
             return 0
     if count>=4:
-        if not(df.iloc[1]['lagging_span']>df.iloc[1]['current_price']):
+        if not(df.iloc[1]['lagging_span']<df.iloc[1]['current_price']):
             return 0
     if count>=5:
-        if index<52 or not(df.iloc[1]['current_price']>df.iloc[1]['cloud']):
+        if index<52 or not(df.iloc[1]['base_line']<min(df.iloc[1]['leading_span1'], df.iloc[1]['leading_span2'])):
             return 0
 
     return params[1]
+
+
+def ks_high(params, df, index):
+    """코스피 이평선보다 코스피지수 위에 있어야함
+
+    Args:
+        params (list): [period, err, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    window=params[0]
+    if index+1<window or index==len(df)-1:
+        return 0
+    err=params[1]
+    col = f'ks_ma{window}'  # df 에서 가져올 col 이름 
+    ks_ma = df.iloc[1][col] 
+    ks_err = (1 + err/100) * ks_ma  # 오차범위 값 지정
+    if (df.iloc[1]['ks_open'] < df.iloc[1]['ks_close']):  # 양봉이어야함
+        if(ks_err < df.iloc[1]['ks_open']):
+            return params[2]
+    return 0
+
+def ks_low(params, df, index):
+    """코스피 이평선보다 코스피지수 아래에 있어야함
+
+    Args:
+        params (list): [period, err, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    window=params[0]
+    if index+1<window or index==len(df)-1:
+        return 0
+    err=params[1]
+    col = f'ks_ma{window}'  # df 에서 가져올 col 이름 
+    ks_ma = df.iloc[1][col] 
+    ks_err = (1 + err/100) * ks_ma  # 오차범위 값 지정
+    if (df.iloc[1]['ks_open'] > df.iloc[1]['ks_close']):  # 양봉이어야함
+        if(ks_err > df.iloc[1]['ks_open']):
+            return params[2]
+    return 0
+
+def kq_high(params, df, index):
+    """코스닥 이평선보다 코스닥지수 위에 있어야함
+
+    Args:
+        params (list): [period, err, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    window=params[0]
+    if index+1<window or index==len(df)-1:
+        return 0
+    err=params[1]
+    col = f'kq_ma{window}'  # df 에서 가져올 col 이름 
+    kq_ma = df.iloc[1][col] 
+    kq_err = (1 + err/100) * kq_ma  # 오차범위 값 지정
+    if (df.iloc[1]['kq_open'] < df.iloc[1]['kq_close']):  # 양봉이어야함
+        if(kq_err < df.iloc[1]['kq_open']):
+            return params[2]
+    return 0
+
+def kq_low(params, df, index):
+    """코스닥 이평선보다 코스닥지수 아래에 있어야함
+
+    Args:
+        params (list): [period, err, weight]
+        df (dataframe): 주식 데이터 프레임
+        index (int): 몇번째 행인지
+
+    Returns:
+        int: 조건에 만족하면 가중치, 아니면 0
+    """
+    window=params[0]
+    if index+1<window or index==len(df)-1:
+        return 0
+    err=params[1]
+    col = f'kq_ma{window}'  # df 에서 가져올 col 이름 
+    kq_ma = df.iloc[1][col] 
+    kq_err = (1 + err/100) * kq_ma  # 오차범위 값 지정
+    if (df.iloc[1]['kq_open'] > df.iloc[1]['kq_close']):  # 양봉이어야함
+        if(kq_err > df.iloc[1]['kq_open']):
+            return params[2]
+    return 0
