@@ -130,7 +130,7 @@ def test_start(request):
         request.user.save()
         buy_condition = make_condition(result, True, buy_strategy, buy_standard, buy_ratio)
         sell_condition = make_condition(result, False, sell_strategy, sell_standard, sell_ratio)
-        backtest.delay(account, company_code, start_date, end_date, buy_condition, sell_condition) # 비동기로 백테스트 진행
+        backtest.delay(account, company_code, start_date, end_date, buy_condition, sell_condition, result, request.user) # 비동기로 백테스트 진행
     except Exception as e:
         result.delete()
         request.user.is_backtest = False
