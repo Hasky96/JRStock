@@ -9,6 +9,7 @@ module.exports = {
         primary: "#18216d",
         active: "#ff825c",
         third: "#FE7624",
+        secondary: "rgba(255, 130, 92, 0.9)",
       },
 
       grayscale: {

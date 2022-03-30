@@ -3,6 +3,8 @@ import BasicCondition from "./BasicCondition";
 import TradeCondition from "./TradeCondition";
 import { paramConstructor, getParamDefault } from "../../config/backtestConfig";
 import "./BackTestCreateForm.css";
+import { toast } from "react-toastify";
+import { startBacktest } from "../../api/backtest";
 
 export default function BackTestCreateForm() {
   const valueDefault = {
@@ -41,6 +43,7 @@ export default function BackTestCreateForm() {
   });
 
   const handleInputChange = (e) => {
+    e.stopPropagation();
     const { name, value } = e.target;
     handleStateChange(name, value);
   };
@@ -52,11 +55,19 @@ export default function BackTestCreateForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("--------------------");
-    console.log("values: ");
-    console.log(values);
+    if (!isStockSelected) {
+      toast.warning("종목을 선택해주세요!");
+    }
+
+    const data = { ...values, asset: values.asset.replace(/,/gi, "") };
+
+    startBacktest(data)
+      .then((res) => console.log(res))
+      .catch((err) => console.log("err: ", err));
+
+    console.log("hello");
   };
 
   const types = {
@@ -68,9 +79,10 @@ export default function BackTestCreateForm() {
       onSubmit={(e) => handleSubmit(e)}
       className="bactestcreateform-container mx-auto flex flex-col justify-center items-center"
     >
-      {/* 기본 조건 handleStateChange 는 StockSelectModal 에서 사용 */}
+      {/* setIsStockSelected, handleStateChange 는 StockSelectModal 에서 사용 */}
       <BasicCondition
         values={values}
+        setIsStockSelected={setIsStockSelected}
         handleInputChange={handleInputChange}
         handleStateChange={handleStateChange}
       />
@@ -78,6 +90,7 @@ export default function BackTestCreateForm() {
         <TradeCondition
           type="buy"
           name="매수"
+          color="red"
           values={values}
           setValues={setValues}
           handleInputChange={handleInputChange}
@@ -85,6 +98,7 @@ export default function BackTestCreateForm() {
         <TradeCondition
           type="sell"
           name="매도"
+          color="blue"
           values={values}
           setValues={setValues}
           handleInputChange={handleInputChange}
