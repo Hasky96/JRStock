@@ -737,11 +737,9 @@ def get_predict_data(request, code_number):
     today = datetime.now()
     
     # 0 월요일, 6 일요일
-    # 오늘이 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
-    if today.weekday() == 6:
-        today = today - timedelta(days=2)
-    if today.weekday() == 5:
-        today = today - timedelta(days=1)
+    # 오늘이 일요일이거나 토요일일 때는 날짜만 리턴
+    if today.weekday() == 5 or today.weekday() == 6:
+        return Response({'date' : today.strftime('%Y-%m-%d')}, status=status.HTTP_200_OK)
     
     today = today.strftime('%Y-%m-%d')
     
