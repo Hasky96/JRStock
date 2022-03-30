@@ -33,11 +33,11 @@ export default function BackTestList() {
   };
 
   // 개별 체크 클릭 시
-  const onChecked = (e, index) => {
+  const onChecked = (e, checkedId) => {
     if (e.target.checked) {
-      setcheckedList([...checkedList, index]);
+      setcheckedList([...checkedList, checkedId]);
     } else {
-      setcheckedList(checkedList.filter((id) => id !== index));
+      setcheckedList(checkedList.filter((id) => id !== checkedId));
     }
   };
 
@@ -55,7 +55,7 @@ export default function BackTestList() {
         key={index}
         item={newItem}
         index={index}
-        checked={checkedList.includes(index) ? true : false}
+        checked={checkedList.includes(item.id) ? true : false}
         onChecked={onChecked}
       />
     );
@@ -94,7 +94,7 @@ export default function BackTestList() {
             <div className="col-span-2 my-auto">백테스트 생성</div>
           </button>
         </Link>
-        <div className="w-40">
+        <div className="w-56">
           <SearchBar onSearch={onSearch} />
         </div>
       </div>

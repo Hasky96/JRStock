@@ -66,7 +66,7 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute left-0 top-0 w-full h-full bg-primary z-[-1] polygon-top"></div>
         <div className="absolute left-0 bottom-0 w-full h-full bg-secondary z-[-1] polygon-bottom"></div>
-        <div className="flex border-2 p-12 shadow-lg rounded-md bg-white">
+        <div className="flex border-2 p-12 shadow-lg rounded-md bg-white h-[640px] items-center">
           <div className="hidden lg:inline-block min-w-[400px] w-1/2 my-auto mr-32">
             <ABtest />
           </div>

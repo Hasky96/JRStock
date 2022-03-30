@@ -118,7 +118,8 @@ export default function TradeCondition({
           name={`${i}_${param}`}
           type="number"
           required
-          value={getParamDefaultValue(i, strategy, param)}
+          minValue={1}
+          defaultValue={configDefault["params"][strategy][param]}
           onChange={(e) => handleParamChange(e, i, param)}
           className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
         />

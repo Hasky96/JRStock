@@ -69,6 +69,9 @@ export default function BackTestCreateForm() {
       .then((res) => console.log("res", res))
       .catch((err) => console.log("err: ", err));
 
+    toast.success(
+      "백테스트가 성공적으로 시작되었습니다.. 설정 기간에 따라 최대 30초 이상 소요됩니다."
+    );
     // if (res.status === 201) {
     //   navigate(`/backtest/${res.id}`);
     // }

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { userDetail } from "../api/user";
 import { getStockItemList } from "../api/stock";
 import { API_MEDIA_URL } from "../config";
+import { DotsVerticalIcon } from "@heroicons/react/solid";
 
 export default function Header({ category }) {
   const nameMap = new Map([
@@ -164,8 +165,8 @@ export default function Header({ category }) {
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
-      <div className="fixed  w-full pl-4 pr-24 z-30">
-        <div className="grid grid-cols-12 mt-6 mx-6 rounded-xl bg-primary">
+      <div className="fixed w-full pl-4 pr-24 z-30">
+        <div className="grid grid-cols-12 mt-6 mx-6 rounded-xl bg-primary h-[60px]">
           {/* 카테고리 그리드 */}
           <div className="col-span-7 text-3xl my-auto ml-5 text-indigo-50">
             {nameMap.get(category)}
@@ -194,7 +195,7 @@ export default function Header({ category }) {
                 name="price"
                 id="header-search-input"
                 autoComplete="off"
-                className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-10 pl-10 pr-12 border-white rounded-lg"
+                className="hover:border-primary focus:ring-primary focus:border-primary block w-full h-10 pl-10 pr-12 border-white rounded-lg duration-300 hover:shadow-inner"
                 placeholder="Search..."
                 onKeyUp={onKeyUp}
                 // 검색창 포커스 사라졌을 때
@@ -240,13 +241,9 @@ export default function Header({ category }) {
               </button>
             ) : (
               // 비로그인 시
-              <button className="w-14 p-1 group duration-300 relative">
-                <img
-                  className="rounded-full w-[50px] h-[50px]"
-                  src={require("../assets/profile1.jpg")}
-                  alt="profile"
-                />
-                <div className="absolute top-full invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
+              <button className="p-1 group duration-300 relative">
+                <DotsVerticalIcon className="w-5 fill-white cursor-pointer" />
+                <div className="absolute -left-5 top-[50px] invisible opacity-0 group-focus:visible group-focus:opacity-100 min-w-full w-max bg-white shadow-md mt-1 rounded duration-300">
                   <ul className="text-left border rounded ">
                     <li className="px-4 py-1 hover:bg-primary hover:text-white border-b duration-300">
                       <Link to="/login">로그인</Link>
