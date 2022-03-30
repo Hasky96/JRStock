@@ -8,22 +8,57 @@ import { ReactComponent as Rocket } from "../assets/rocket.svg";
 import "./background.css";
 
 export default function Login() {
-  const [email, setEmail] = useState(null);
+  // 쿠키에서 아이디 조회
+  const getCookie = () => {
+    const el = document.cookie.split(";");
+    let x, y;
+    for (let i = 0; i < el.length; i++) {
+      x = el[i].substr(0, el[i].indexOf("="));
+      y = el[i].substr(el[i].indexOf("=") + 1);
+      x = x.replace(/^\s+|\s+$/g, "");
+      if (x === "userId") {
+        return unescape(y);
+      } else {
+        return "";
+      }
+    }
+  };
+
+  // 쿠키에 아이디 저장
+  const setCookie = (value) => {
+    document.cookie = "userId=" + value;
+  };
+
+  // 쿠키에서 아이디 삭제
+  const deleteCookie = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 1);
+    document.cookie = "userId=; expires=" + date.toGMTString();
+  };
+
+  const [email, setEmail] = useState(getCookie() ? getCookie() : "");
   const [password, setPassword] = useState(null);
   const [isError, setIsError] = useState(false);
+  const [isSave, setIsSave] = useState(getCookie() ? true : false);
   const clientId =
     "138234037090-qflbfgu5st5hfj7v7v2pc6qp2i5ugt5r.apps.googleusercontent.com";
   let navigate = useNavigate();
   let location = useLocation();
 
-  let { from } = location.state || { from: { pathname: "/" } };
+  let { from } = location.state || { from: { pathname: "/market" } };
 
   // 로그인 요청 시 실행
   const tryLogin = async () => {
     try {
       const result = await login({ email, password });
       sessionStorage.setItem("access_token", result.data.access_token);
-      console.log(from);
+
+      if (isSave) {
+        setCookie(email);
+      } else {
+        deleteCookie();
+      }
+
       navigate(from);
     } catch (e) {
       console.log(e);
@@ -41,8 +76,8 @@ export default function Login() {
     setPassword(e.target.value);
   };
 
-  const rememberMe = (e) => {
-    console.log(e.target.checked);
+  const rememberId = (e) => {
+    setIsSave(e.target.checked);
   };
 
   // 소셜 로그인 성공 시 실행
@@ -111,6 +146,7 @@ export default function Login() {
                     className="appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                     placeholder="Email address"
                     onChange={inputEmail}
+                    value={email}
                   />
                 </div>
                 <div className="my-5">
@@ -131,17 +167,18 @@ export default function Login() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
-                    id="remember-me"
-                    name="remember-me"
+                    id="remember-id"
+                    name="remember-id"
                     type="checkbox"
-                    onChange={rememberMe}
+                    onChange={rememberId}
                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                    checked={isSave}
                   />
                   <label
-                    htmlFor="remember-me"
+                    htmlFor="remember-id"
                     className="ml-2 block text-sm text-gray-900"
                   >
-                    Remember me
+                    아이디 저장
                   </label>
                 </div>
 
