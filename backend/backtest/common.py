@@ -341,7 +341,7 @@ def create_database(account):
 
 def end_calculate(account, result_data, result): 
     # 마지막 날을 기준으로 마지막 연도 평균 계산
-    result_data = year_calculate(account, result_data, account['end_date'])
+    result_data = year_calculate(account, result_data, account['end_date'], result)
     
     result_data['my_profit_loss'] = int(account['pre_price']) - int(account['start_price'])
     result_data['my_final_rate'] = round(result_data['my_profit_loss'] / int(account['start_price']) * 100, 3)

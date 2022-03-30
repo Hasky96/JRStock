@@ -22,9 +22,11 @@ import sys
     # 후행스팬 (Lagging Span) : 현재의 주가를 26일 후행시켜 연결한 선, 한 달 전의 주가와 현재 주가 비교 가능
     # 선행스팬1 (Leading Span1) : 전환선과 기준선의 중간값을 26일 앞으로 선행해서 그린 선
     # 선행스팬2 (Leading Span2) : 최근 52일 간의 최고점과 최저점의 중간값을 그린 선
-    # 구름층 (Cloud) : 선행스팬1과 후행스팬2 사이 구간
-        # 양운 : 선행스팬1>후행스팬2
-        # 음운 : 선행스팬1<후행스팬1
+    # 구름대 (Cloud) : 선행스팬1과 선행스팬2 사이 구간
+        # 양운 : 선행스팬1>선행스팬2
+        # 음운 : 선행스팬1<선행스팬1
+# 코스피지수
+# 코스닥지수
 
 # 상향돌파(up_pass) : 종가가 period를 걸쳐 상향돌파하는 상황, 매수
 # 하향돌파(up_pass) : 종가가 period를 걸쳐 하향돌파하는 상황, 매도
@@ -50,9 +52,13 @@ import sys
 # 408 : obv_low  (period, weight)            # obv<ovb_ema, 매도
 # 507 : mfi_high (period, index, weight)     # mfi>index, 과매수 됐다고 평가 -> 매도
 # 508 : mfi_low  (period, index, weight)     # mfi<index, 과매도 됐다고 평가 -> 매수
-# 605 : ikh_straight (count, weight)   # 3: 주가>전환선>기준선, 4: 후행스팬>주가>전환선>기준선, 5: 후행스팬>주가>전환선>기준선>구름층(양운)
-# 606 : ikh_reverse (count, weight)   # 3: 주가<전환선<기준선,  4: 후행스팬<주가<전환선<기준선, 5: 후행스팬<주가<전환선<기준선<구름층(음운)
-# count: 비교하는 변수 개수 (3: 주가, 전환선, 기준선, 4: 후행스팬, 주가, 전환선, 기준선, 5: 후행스팬, 주가, 전환선, 기준선, 구름층)
+# 605 : ikh_straight (count, weight)   # 1: 양운, 2: 전환선>기준선, 3: 주가>전환선>기준선, 4: 후행스팬>주가>전환선>기준선, 5: 후행스팬>주가>전환선>기준선>구름대(양운)
+# 606 : ikh_reverse (count, weight)   # 1: 음운, 2: 전환선<기준선, 3: 주가<전환선<기준선, 4: 후행스팬<주가<전환선<기준선, 5: 후행스팬<주가<전환선<기준선<구름대(음운)
+    # count: 비교하는 변수 개수 (1: 구름대, 2:전환선, 기준선 3: 주가, 전환선, 기준선, 4: 후행스팬, 주가, 전환선, 기준선, 5: 후행스팬, 주가, 전환선, 기준선, 구름층)
+# 707 : ks_high (period, err, weight)   # 코스피지수>코스피지수 이평선, 매수
+# 708 : ks_low (period, err, weight)   # 코스피지수<코스피지수 이평선, 매도
+# 807 : kq_high (period, err, weight)   # 코스닥지수>코스닥지수 이평선, 매수
+# 808 : kq_low (period, err, weight)   # 코스닥지수<코스닥지수 이평선, 매도
 
 strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
@@ -61,8 +67,23 @@ strategy_name_dict={
     407: 'obv_high', 408: 'obv_low',
     507: 'mfi_high', 508: 'mfi_low',
     605: 'ikh_straight', 606: 'ikh_reverse',
-    705: 'ks_straight', 706: 'ks_reverse',
-    805: 'kq_straight', 806: 'kq_reverse',
+    707: 'ks_high', 708: 'ks_low',
+    807: 'kq_high', 808: 'kq_low'
+
+}
+
+strategy_korean_name_dict={
+    101: '이동평균선(MA) 상향돌파', 102: '이동평균선(MA) 상향돌파', 103: '이동평균선(MA) 골든크로스', 104: '이동평균선(MA) 데드크로스', 
+    105: '이동평균선(MA) 정배열', 106: '이동평균선(MA) 역배열',
+    203: '이동평균수렴/확산지수(MACD) 골든크로스', 204: '이동평균수렴/확산지수(MACD) 데드크로스', 
+    205: '이동평균수렴/확산지수(MACD) 정배열', 206: '이동평균수렴/확산지수(MACD) 역배열',
+    307: '상대적강도지수(RSI) 높음', 308: '상대적강도지수(RSI) 낮음',
+    407: '누적평균거래량(OBV) 높음', 408: '누적평균거래량(OBV) 낮음',
+    507: '자름흐름지표(MFI) 높음', 508: '자름흐름지표(MFI) 낮음',
+    605: '일목균형표 매수조건', 606: '일목균형표 매도조건',
+    707: '코스피지수 높음', 708: '코스피지수 낮음',
+    807: '코스피지수 높음', 808: '코스닥지수 낮음'
+
 }
 
 strategy_indicator_dict={
@@ -72,8 +93,8 @@ strategy_indicator_dict={
     407: 'OBV', 408: 'OBV',
     507: 'MFI', 508: 'MFI',
     605: 'IKH', 606: 'IKH',
-    705: 'KS', 706: 'KS', 
-    805: 'KQ', 806: 'KQ'
+    707: 'KS', 708: 'KS',
+    807: 'KQ', 808: 'KQ'
 }
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
@@ -188,10 +209,12 @@ account = {
 
 # buy_condition=[ [105, 20, 120, 30], [407, 20, 40], [205, 12, 26, 9, 20], 90, 100 ]
 # sell_condition=[ [206, 12, 26, 9, 30], 30, 100 ]
-# buy_condition=[ [105, 20, 120, 30], [508, 14, 20, 40], 40, 80 ]
-# sell_condition=[ [106, 20, 120, 30], [507, 14, 80, 40], 40, 80 ]
-buy_condition=[ [605, 3, 40], 40, 80 ]
-sell_condition=[ [606, 3, 40], 40, 80 ]
+# buy_condition=[ [103, 20, 120, 30], [508, 14, 20, 40], 40, 80 ]
+# sell_condition=[ [104, 20, 120, 30], [507, 14, 80, 40], 40, 80 ]
+buy_condition=[ [807, 5, 1, 30], 30, 80 ]
+sell_condition=[ [808, 5, 1, 30], 30, 80 ]
+# buy_condition=[ [605, 5, 40], 40, 80 ]
+# sell_condition=[ [606, 5, 40], 40, 80 ]
 backtest(account, code_number, start_date, end_date, buy_condition, sell_condition)
 print(account)
 current_stock_price=get_stock_price(code_number, end_date)

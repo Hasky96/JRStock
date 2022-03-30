@@ -4,6 +4,8 @@ FROM node:16.13.2
 # set working directory
 WORKDIR /app
 
+EXPOSE 3000
+
 # permission
 RUN chmod -R 777 /app
 
