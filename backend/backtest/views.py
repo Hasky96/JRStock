@@ -102,7 +102,6 @@ def test_start(request):
         result = serializer.save(user=request.user, basic_info=basic_info)
 
     account = {
-        "user" : request.user,
         "balance" : asset,
         "start_price" : asset,
         "pre_price" : asset,
