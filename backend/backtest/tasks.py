@@ -24,7 +24,7 @@ strategy_indicator_dict={
 }
 
 @shared_task
-def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition):
+def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result, user):
     """백테스트
 
     Args:
@@ -83,12 +83,12 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         # 최종 계산
         create_database(account)
         end_calculate(account, result_data)
-        account['user'].is_backtest = False
-        account['user'].save()
+        user.is_backtest = False
+        user.save()
     except Exception as e:
-        account['result'].delete()
-        account['user'].is_backtest = False
-        account['user'].save()
+        result.delete()
+        user.is_backtest = False
+        user.save()
         
         message = account['user'].name + '님이 요청한 백테스트 진행 중 에러 : ' + str(e)
         return message
