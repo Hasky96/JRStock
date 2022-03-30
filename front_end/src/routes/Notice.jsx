@@ -5,40 +5,20 @@ import PageContainer from "../components/PageContainer";
 import Pagenation from "../components/Pagenation";
 import { getItems } from "../api/notice";
 import Tooltip from "../components/commons/Tooltip";
+import Tooltip2 from "../components/commons/Tooltip2";
 import { ReactComponent as NoticeWriteIcon } from "../assets/noticeWriteIcon.svg";
 import useIsAdmin from "../util/useIsAdmin";
+import ToolContent1 from "../components/commons/ToolContent1";
 
 // const contents = [
 //   {
-//     title: "제목1",
-//     src: "https://source.unsplash.com/random/400x400",
+//     // title: "이동평균수렴확산지수\n(골든크로스)",
+//     title: "이동평균선(상향돌파)",
+//     src: "ma_high_graph.png",
 //     alt: "content1",
 //     content:
-//       "paragraph1/nparagraph2/nparagraph3/nparagraph4ㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
-//   },
-//   {
-//     title: "제목2",
-//     src: "https://source.unsplash.com/random/400x400",
-//     alt: "content2",
-//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
-//   },
-//   {
-//     title: "제목3",
-//     src: "https://source.unsplash.com/random/400x400",
-//     alt: "content3",
-//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
-//   },
-//   {
-//     title: "제목4",
-//     src: "https://source.unsplash.com/random/400x400",
-//     alt: "content4",
-//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
-//   },
-//   {
-//     title: "제목5",
-//     src: "https://source.unsplash.com/random/400x400",
-//     alt: "content5",
-//     content: "paragraph1/nparagraph2/nparagraph3/nparagraph4",
+//       "이동평균선은 일정기간 동안의 주가를 산술 평균한 값이다. 주식에서는 주로 장기(120일), 중기(60일), 단기(5, 20일)의 이동평균선이 있다. 종가 기준으로 날짜를 합산하여 평균값을 구한다./n" +
+//       "period: 이동평균선 기간 변수\nerr: 이동평균선 허용 오차 범위 변수\nweight: 가중치 변수",
 //   },
 // ];
 
@@ -203,10 +183,17 @@ export default function Announcement() {
         onClickNumber={onClickNumber}
       ></Pagenation>
       {/* <div className="relative float-right">
-        <Tooltip contents={contents} pos={"-left-9"} right={false}></Tooltip>
-        <span>공지사항</span>
-        <Tooltip contents={contents} pos={"left-16"} right={true}></Tooltip>
+        <Tooltip iPos={"bottom-0 -left-6"} cPos={"bottom-[25px] -left-[400px]"}>
+          <ToolContent1 contents={contents} />
+        </Tooltip>
+        <Tooltip2 title={"공지사항"} cPos={"-left-[200px]"}>
+          <span>공지사항 내용 입니다.</span>
+        </Tooltip2>
+        <Tooltip iPos={"-bottom-[2px] left-[58px]"} cPos={"-left-[250px]"}>
+          <ToolContent1 contents={contents} />
+        </Tooltip>
       </div> */}
+      {/* <div className="ml-20 relative">이동평균선</div> */}
     </PageContainer>
   );
 }
