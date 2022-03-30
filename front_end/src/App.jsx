@@ -25,51 +25,24 @@ import Ranking from "./routes/Ranking";
 import NoticeCreate from "./components/notice/NoticeCreate";
 import AdminRoute from "./components/AdminRoute";
 import NoticeUpdate from "./components/notice/NoticeUpdate";
+import NotFound from "./routes/NotFound";
+import Layout from "./routes/Layout";
 // import useIsLoggedIn from "./util/useIsLoggedIn";
 
 function App() {
-  // pathname 을 확인하여, Sidebar 렌더링 여부를 결정
-  const [showSideBar, setShowSideBar] = useState(true);
-  const [category, setCategory] = useState("");
-
-  const location = useLocation();
-
-  useEffect(() => {
-    const noSideBarURL = ["/", "/login", "/signup", "/login/help"];
-
-    if (noSideBarURL.includes(location.pathname)) {
-      setShowSideBar(false);
-    } else {
-      setShowSideBar(true);
-    }
-
-    // 카테고리 셋팅
-    setCategory(location.pathname.split("/")[1]);
-  }, [location.pathname]);
-
   return (
     <>
       <ToastContainer hideProgressBar={true} />
-      {showSideBar && (
-        <div>
-          <SideBar />
-        </div>
-      )}
-      <div
-        className={
-          showSideBar ? "ml-20 bg-gray-50 min-h-screen" : "scroll-wrapper-box"
-        }
-      >
-        {showSideBar && (
-          <div>
-            <Header category={category}></Header>
-          </div>
-        )}
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login/help" element={<PasswordReset />} />
-          <Route path="/signup" element={<Signup />} />
+
+      <Routes>
+        <Route path="*" element={<NotFound />} />
+
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/login/help" element={<PasswordReset />} />
+        <Route path="/signup" element={<Signup />} />
+
+        <Route path="" element={<Layout />}>
           <Route path="/market" element={<Market />} />
           <Route path="/stock" element={<StockItemList />} />
           <Route path="/stock/:id/:stockTab" element={<StockItemDetail />} />
@@ -104,8 +77,8 @@ function App() {
             }
           />
           <Route path="/ranking" element={<Ranking />} />
-        </Routes>
-      </div>
+        </Route>
+      </Routes>
     </>
   );
 }

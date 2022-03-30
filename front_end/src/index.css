@@ -27,3 +27,11 @@
   background-color: lightgray;
   /* outline: 1px solid black; */
 }
+
+.polygon-top {
+  clip-path: polygon(0 0, 100% 0, 100% 33%, 0 66%);
+}
+
+.polygon-bottom {
+  clip-path: polygon(0 100%, 100% 100%, 100% 33%, 0 66%);
+}

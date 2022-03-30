@@ -18,7 +18,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
     return elementArray;
   };
   const handleOnClick = () => {
-    navigate(`${index}`);
+    navigate(`${item.id}`);
   };
   return (
     <tr

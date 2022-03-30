@@ -123,7 +123,7 @@ export default function Header({ category }) {
         <button
           key={index}
           type="button"
-          className={`result-item w-full grid grid-cols-5 my-2 h-8 justify-between items-center text-center border-b rounded p-1 ${
+          className={`result-item w-full flex flex-col xl:flex-row py-2 justify-between items-center text-center rounded p-1 ${
             selectedNum === index ? "bg-indigo-100" : null
           }`}
           onClick={(e) => {
@@ -143,10 +143,10 @@ export default function Header({ category }) {
           <div
             className={
               changes > 0
-                ? "col-span-3 my-auto text-red-500"
+                ? "col-span-3 text-red-500"
                 : changes < 0
-                ? "col-span-3 my-auto text-blue-600"
-                : "col-span-3 my-auto text-gray-600"
+                ? "col-span-3 text-blue-600"
+                : "col-span-3 text-gray-600"
             }
           >
             {changes > 0
@@ -165,7 +165,7 @@ export default function Header({ category }) {
     <div className="relative">
       {/* Header 상단 고정 */}
       <div className="fixed  w-full pl-4 pr-24 z-30">
-        <div className="grid grid-cols-12 mt-6 rounded-xl bg-primary">
+        <div className="grid grid-cols-12 mt-6 mx-6 rounded-xl bg-primary">
           {/* 카테고리 그리드 */}
           <div className="col-span-7 text-3xl my-auto ml-5 text-indigo-50">
             {nameMap.get(category)}
@@ -202,7 +202,7 @@ export default function Header({ category }) {
                 onFocus={onFocus}
               />
               <div
-                className="absolute top-full w-full hidden"
+                className="mt-1 absolute top-full w-full hidden bg-white rounded shadow-xl border border-primary p-2"
                 id="search-result"
               >
                 {paintSearchResult()}

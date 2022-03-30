@@ -19,7 +19,7 @@ ChartJS.register(
   Legend
 );
 
-export function AnnualProfit({ labels }) {
+export function AnnualProfit({ labels, market, backtest }) {
   const options = {
     responsive: true,
     plugins: {
@@ -34,17 +34,13 @@ export function AnnualProfit({ labels }) {
     datasets: [
       {
         label: "시장 수익률",
-        data: labels.map(
-          () => Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1)
-        ),
-        backgroundColor: "rgba(251, 191, 36, 1)",
+        data: market,
+        backgroundColor: "rgba(24, 33, 109, 0.8)",
       },
       {
         label: "수익률",
-        data: labels.map(
-          () => Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1)
-        ),
-        backgroundColor: "rgba(14, 24, 95, 0.8)",
+        data: backtest,
+        backgroundColor: "#ff825c",
       },
     ],
   };

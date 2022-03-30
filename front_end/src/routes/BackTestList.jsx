@@ -1,37 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getItems } from "../api/notice";
+import { getBacktestList } from "../api/backtest";
 import PageContainer from "../components/PageContainer";
-import ListHeader from "../components/ListHeader";
 import ListTitle from "../components/BackTestList/ListTitle";
 import ListItem from "../components/BackTestList/ListItem";
 import Pagenation from "../components/Pagenation";
+import SearchBar from "../components/BackTestList/SearchBar";
 import { ReactComponent as Create } from "../assets/create.svg";
 
 export default function BackTestList() {
-  const data = [
-    {
-      id: 0,
-      title: "나만의 전략1",
-      created_at: "2022-03-08",
-    },
-    {
-      id: 1,
-      title: "나만의 전략2",
-      created_at: "2022-03-09",
-    },
-  ];
-
-  const [backTestItems, setbackTestItems] = useState(data);
+  const [backTestItems, setbackTestItems] = useState([]);
   const [checkedList, setcheckedList] = useState([]);
+  const [totalCount, setTotalCount] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const pageSize = 10;
+
+  useEffect(() => {
+    async function fetchAndSetBacktestList() {
+      const res = await getBacktestList({ page: pageNo, size: pageSize });
+      setTotalCount(res.data.count);
+      setbackTestItems(res.data.results);
+    }
+    fetchAndSetBacktestList();
+  }, [pageNo]);
 
   const onCheckedAll = (e) => {
     if (e.target.checked) {
-      const checkedListArray = [];
-
-      backTestItems.forEach((item) => checkedListArray.push(item.id));
-
-      setcheckedList(checkedListArray);
+      setcheckedList(backTestItems.map((item) => item.id));
     } else {
       setcheckedList([]);
     }
@@ -47,10 +42,18 @@ export default function BackTestList() {
   };
 
   const paintBackTestItems = backTestItems.map((item, index) => {
+    const { id, title, created_at, final_asset } = item;
+    const status = final_asset ? "완료" : "테스트 중";
+    const newItem = {
+      id,
+      title,
+      status: status,
+      created_at: created_at.slice(0, 10),
+    };
     return (
       <ListItem
         key={index}
-        item={item}
+        item={newItem}
         index={index}
         checked={checkedList.includes(index) ? true : false}
         onChecked={onChecked}
@@ -58,117 +61,90 @@ export default function BackTestList() {
     );
   });
 
-  const [totalCount, setTotalCount] = useState(1);
-  const [pageNo, setPageNo] = useState(1);
-  const pageSize = 10;
-
   const onClickFirst = async () => {
     setPageNo(1);
-    const data = await getItems(1, pageSize);
-    // 첫페이지 공지사항 아이템들
-    setbackTestItems(data.results);
   };
 
   const onClickLeft = async () => {
     setPageNo((cur) => cur - 1);
-    const data = await getItems(pageNo - 1, pageSize);
-    setbackTestItems(data.results);
   };
 
   const onClickRight = async () => {
     setPageNo((cur) => cur + 1);
-    const data = await getItems(pageNo + 1, pageSize);
-    setbackTestItems(data.results);
   };
 
   const onClickLast = async () => {
     const lastPageNum =
       parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
     setPageNo(lastPageNum);
-    const data = await getItems(lastPageNum, pageSize);
-    // 마지막 페이지 공지사항 아이템들
-    setbackTestItems(data.results);
   };
 
   const onClickNumber = async (num) => {
     setPageNo(num);
-    const data = await getItems(num, pageSize);
-    setbackTestItems(data.results);
   };
 
-  const onClickFilter = (filter) => {
-    console.log(filter);
-    // 필터 state를 filter 로 변경
-    // 전반적인 notice item 검색 api에 filter 조건 추가
-    // pageNo 1로 초기화
-  };
-
-  const onSearch = (word) => {
-    console.log(word);
-    // 검색어 state을 word로 변경
-    // 전반적으로 notice item 검색 api에 word 조건 추가
-    // pageNo 1로 초기화
-  };
-
-  // const handleCreateButtonClick = () => {
-  //   if (sessionStorage.getItem("access_token")) {
-  //     navigate("create");
-  //   } else {
-  //     navigate("/login");
-  //   }
-  // };
+  const onSearch = (word) => {};
 
   return (
     <PageContainer>
-      <div className="flex">
+      <div className="flex justify-between">
         <Link to="create">
-          <button
-            className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300"
-            // onClick={() => handleCreateButtonClick()}
-          >
+          <button className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300">
             <Create />
             <div className="col-span-2 my-auto">백테스트 생성</div>
           </button>
         </Link>
-        <ListHeader
-          optionKind={["aaa", "bbb", "ccc"]}
-          onClickFilter={onClickFilter}
-          onSearch={onSearch}
-        />
+        <div className="w-40">
+          <SearchBar onSearch={onSearch} />
+        </div>
       </div>
 
-      <div className="mt-5">
-        <table className="table-auto w-full text-left">
-          <colgroup>
-            <col span="1" style={{ width: 5 + "%" }} />
-            <col span="1" style={{ width: 5 + "%" }} />
-            <col span="1" style={{ width: 70 + "%" }} />
-            <col span="1" style={{ width: 15 + "%" }} />
-          </colgroup>
-          <ListTitle
-            onCheckedAll={onCheckedAll}
-            checked={
-              checkedList.length && checkedList.length === backTestItems.length
-                ? true
-                : false
-            }
-            titles={["No", "테스트 이름", "생성일"]}
-          />
-          <tbody>{backTestItems.length && paintBackTestItems}</tbody>
-        </table>
-      </div>
-      <div className="relative w-full flex justify-center">
-        <Pagenation
-          selectedNum={pageNo}
-          totalCnt={totalCount}
-          pageSize={pageSize}
-          onClickFirst={onClickFirst}
-          onClickLeft={onClickLeft}
-          onClickRight={onClickRight}
-          onClickLast={onClickLast}
-          onClickNumber={onClickNumber}
-        ></Pagenation>
-      </div>
+      <table className="table-auto w-full text-left mt-5">
+        <colgroup>
+          <col span="1" style={{ width: 5 + "%" }} />
+          <col span="1" style={{ width: 5 + "%" }} />
+          <col span="1" style={{ width: 60 + "%" }} />
+          <col span="1" style={{ width: 10 + "%" }} />
+          <col span="1" style={{ width: 15 + "%" }} />
+        </colgroup>
+        <ListTitle
+          onCheckedAll={onCheckedAll}
+          checked={
+            checkedList.length && checkedList.length === backTestItems.length
+              ? true
+              : false
+          }
+          titles={["No", "테스트 이름", "상태", "생성일"]}
+        />
+        {backTestItems.length ? (
+          <tbody>{paintBackTestItems}</tbody>
+        ) : (
+          <tbody>
+            <tr>
+              <td colSpan="4" className="text-center py-5">
+                생성된 백테스트가 없습니다.
+              </td>
+            </tr>
+          </tbody>
+        )}
+      </table>
+
+      {backTestItems.length ? (
+        <div className="relative w-full flex justify-center">
+          <Pagenation
+            selectedNum={pageNo}
+            totalCnt={totalCount}
+            pageSize={pageSize}
+            onClickFirst={onClickFirst}
+            onClickLeft={onClickLeft}
+            onClickRight={onClickRight}
+            onClickLast={onClickLast}
+            onClickNumber={onClickNumber}
+          ></Pagenation>
+        </div>
+      ) : (
+        ""
+      )}
     </PageContainer>
   );
 }

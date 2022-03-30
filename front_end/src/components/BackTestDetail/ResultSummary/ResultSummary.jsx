@@ -1,50 +1,82 @@
-import { useState } from "react";
-import { ProfitLineChart } from "./ProfitLineChart";
-import { PortfolioChart } from "../Portfolio/PortfolioChart";
-// import { PortfolioProfitChart } from "./PortfolioProfitChart";
-
+import { useEffect, useState } from "react";
 import {
-  dayData,
-  weekData,
-  monthData,
-  yearData,
-  dayData2,
-  weekData2,
-  monthData2,
-  yearData2,
-  assetData,
-  profitData,
-} from "../data.js";
+  getBacktestAnnually,
+  getBacktestDaily,
+  getBacktestTradeRecord,
+} from "../../../api/backtest";
+import { trimAnnually, trimDaily } from "../../../util/trimResult";
+import { ProfitLineChart } from "./ProfitLineChart";
+import { assetKey, profitKey } from "../../../config/backtestConfig";
+import { AnnualProfit } from "../Profit/AnnualProfit";
 
-export default function ResultSummary() {
-  const portfolio = ["삼성전자", "SK하이닉스", "네이버"];
-  const [data1, setData1] = useState(dayData);
-  const [data2, setData2] = useState(dayData2);
-  const [period, setPeriod] = useState("1D");
+export default function ResultSummary({ resultSummary, isLoading, id }) {
+  const [isDailyData, setIsDailyData] = useState(false);
+  const [isAnnualData, setIsAnnualData] = useState(false);
+  const [assetResult, setAssetResult] = useState(resultSummary.assetResult);
+  const [profitResult, setProfitResult] = useState(resultSummary.profitResult);
+  const [lineData, setLineData] = useState([]);
+  const [barData, setBarData] = useState([]);
+  const [period, setPeriod] = useState("1Y");
 
-  var seriesesData = new Map([
-    ["1D", dayData],
-    ["1W", weekData],
-    ["1M", monthData],
-    ["1Y", yearData],
-  ]);
+  const [labels, setLabels] = useState([]);
+  const [marketAnnual, setMarketAnnual] = useState([]);
+  const [backTestAnnual, setBackTestAnnual] = useState([]);
 
-  var seriesesData2 = new Map([
-    ["1D", dayData2],
-    ["1W", weekData2],
-    ["1M", monthData2],
-    ["1Y", yearData2],
-  ]);
+  const fetchBacktestDaily = async (backtestId) => {
+    const res = await getBacktestDaily(backtestId);
+    return res.data;
+  };
+
+  const fetchBacktestAnnually = async (backtestId) => {
+    const res = await getBacktestAnnually(backtestId);
+    return res.data;
+  };
+
+  const fetchBacktestTradeRecord = async (backtestId) => {
+    const res = await getBacktestTradeRecord(backtestId);
+    return res.data;
+  };
+
+  useEffect(() => {
+    async function fetchAndSetDaily() {
+      const data = await fetchBacktestDaily(id);
+      const { lineChartData, barChartData } = await trimDaily(data);
+
+      setLineData(lineChartData);
+      setBarData(barChartData);
+      setIsDailyData(true);
+    }
+
+    async function fetchAndSetAnnually() {
+      const data = await fetchBacktestAnnually(id);
+      const { labels, marketData, backtestData } = await trimAnnually(data);
+
+      setLabels(labels);
+      setMarketAnnual(marketData);
+      setBackTestAnnual(backtestData);
+      setIsAnnualData(true);
+    }
+
+    async function fetchAndSetTradeRecord() {
+      const data = await fetchBacktestTradeRecord(id);
+      console.log("trade record:", data);
+
+      // setTradeRecord()
+    }
+
+    if (!isLoading) {
+      fetchAndSetDaily();
+      fetchAndSetAnnually();
+      fetchAndSetTradeRecord();
+    }
+  }, [isLoading]);
 
   const intervals = ["1D", "1W", "1M", "1Y"];
   const paintSwitcher = intervals.map((el, idx) => (
     <button
       key={idx}
       onClick={(e) => {
-        setData1(seriesesData.get(e.target.innerText));
-        setData2(seriesesData2.get(e.target.innerText));
         setPeriod(e.target.innerText);
-        console.log("trigger resize");
         window.dispatchEvent(new Event("resize"));
       }}
       className={
@@ -55,45 +87,73 @@ export default function ResultSummary() {
     </button>
   ));
 
-  const paintAssets = assetData.map((result, index) => (
-    <div key={index} className="col-span-1 mx-auto my-auto">
-      <h2 className="text-xs text-gray-500">{result.key}</h2>
-      <p>{result.value}</p>
+  const paintAssetKey = assetKey.map((key, index) => (
+    <div key={index} className="col-span-1 mx-auto">
+      <h2 className="text-xs text-gray-500">{key}</h2>
     </div>
   ));
 
-  const paintProfits = profitData.map((result, index) => (
-    <div key={index} className="col-span-1 mx-auto my-auto">
-      <h2 className="text-xs text-gray-500">{result.key}</h2>
-      <p>{result.value}</p>
+  const paintProfitKey = profitKey.map((key, index) => (
+    <div key={index} className="col-span-1 mx-auto">
+      <h2 className="text-xs text-gray-500">{key}</h2>
+    </div>
+  ));
+
+  const paintAssetValue = assetResult.map((value, index) => (
+    <div key={index} className="col-span-1 mx-auto">
+      <p>{value}</p>
+    </div>
+  ));
+
+  const paintProfitValue = profitResult.map((value, index) => (
+    <div key={index} className="col-span-1 mx-auto">
+      <p>{value}</p>
     </div>
   ));
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
       <div className="flex flex-col xl:flex-row gap-3">
-        <div className="relative h-30 grid grid-cols-5 border-0 border-b-1 border-gray-200 shadow rounded gap-2 text-center p-3">
-          <div className="col-span-5 text-left text-lg">운용자산</div>
-          {paintAssets}
+        <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
+          <div className="col-span-6 text-left text-lg pb-2">운용자산</div>
+          {paintAssetKey}
+          {paintAssetValue}
         </div>
-        <div className="relative h-30 grid grid-cols-5 border-0 border-b-1 border-gray-200 shadow rounded gap-2 text-center p-3">
-          <div className="col-span-5 text-left text-lg">수익률</div>
-          {paintProfits}
+        <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
+          <div className="col-span-6 text-left text-lg pb-2">
+            수익률 <span className="text-sm text-gray-500">(%)</span>
+          </div>
+          {paintProfitKey}
+          {paintProfitValue}
         </div>
       </div>
 
-      <div className="w-full flex flex-col 2xl:flex-row items-center justify-center gap-3">
+      <div className="w-full flex flex-col items-center justify-center gap-3">
         <div className="chart-container rounded shadow-lg p-3 mt-5 text-lg">
           <div>자산 운용 차트</div>
-          <ProfitLineChart marketData={data1} testData={data2} />
-          <div className="switcher">{paintSwitcher}</div>
+          {isDailyData && (
+            <>
+              <ProfitLineChart
+                priceData={lineData}
+                dayEarnData={barData}
+                period={period}
+              />
+              {paintSwitcher}
+            </>
+          )}
         </div>
-        {/* <div className="rounded shadow-lg p-3 mt-5">
-          <div className="portfolio-chart-container text-lg">
-            <div>포트폴리오 구성</div>
-            <PortfolioChart labels={portfolio} />
+        <div className="chart-container rounded shadow-lg p-3 mt-5">
+          <div className="text-lg">
+            <div>연도별 수익률</div>
+            {isAnnualData && (
+              <AnnualProfit
+                labels={labels}
+                market={marketAnnual}
+                backtest={backTestAnnual}
+              />
+            )}
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );
