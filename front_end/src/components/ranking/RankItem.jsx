@@ -42,12 +42,12 @@ export default function RankItem({ item }) {
           />
         </div>
       </td>
-      <td>{item.user.name}</td>
-      <td>{item.final_rate}</td>
-      <td>{item.asset}</td>
-      <td>{item.final_earn}</td>
-      <td>{item.final_asset}</td>
-      <td>{item.trading_days}</td>
+      <td>{item.user.name ? item.user.name : "-"}</td>
+      <td>{item.final_rate ? item.final_rate : "-"}</td>
+      <td>{item.asset ? item.asset : "-"}</td>
+      <td>{item.final_earn ? item.final_earn : "-"}</td>
+      <td>{item.final_asset ? item.final_asset : "-"}</td>
+      <td>{item.trading_days ? item.trading_days : "-"}</td>
     </tr>
   );
 }

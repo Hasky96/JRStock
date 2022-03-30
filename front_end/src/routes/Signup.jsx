@@ -13,10 +13,10 @@ import { toast } from "react-toastify";
 import Dialog2 from "../components/signup/Dialog2";
 
 export default function Signup() {
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [password2, setPassword2] = useState(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [passwordErr, setPasswordErr] = useState(false);
   const [emailErr, setEmailErr] = useState(false);
   const [duplicateCheck, setDuplicateCheck] = useState(false);

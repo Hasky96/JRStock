@@ -9,7 +9,7 @@ export default function Dialog({ message, leftBtn, rightBtn, onClickBtn }) {
   return (
     <>
       <div
-        className="fixed inset-0 flex justify-center items-center z-50 py-20"
+        className="fixed inset-0 flex justify-center items-center z-[500] py-20"
         id="overlay"
       >
         <div className="shadow-xl rounded-lg bg-white border-2 border-slate-200">
