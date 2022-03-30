@@ -219,10 +219,13 @@ def get_backtest_buysell(request, backtest_id):
     page_size = request.GET.get('size')
     if not page_size == None:
         paginator.page_size = page_size
+        result = paginator.paginate_queryset(buysell_list, request)
+        serializer = BuySellSerializer(result, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
-    result = paginator.paginate_queryset(buysell_list, request)
-    serializer = BuySellSerializer(result, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    serializer = BuySellSerializer(buysell_list, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
 @swagger_auto_schema(
     method='get',
