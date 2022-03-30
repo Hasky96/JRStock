@@ -45,7 +45,7 @@ export default function Login() {
   let navigate = useNavigate();
   let location = useLocation();
 
-  let { from } = location.state || { from: { pathname: "/" } };
+  let { from } = location.state || { from: { pathname: "/market" } };
 
   // 로그인 요청 시 실행
   const tryLogin = async () => {
