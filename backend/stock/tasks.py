@@ -2,6 +2,8 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 
+from django.shortcuts import get_object_or_404
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -16,8 +18,8 @@ import pandas as pd
 import io
 from datetime import datetime, timedelta
 from pandas_datareader import data
-from .serializers import DayStockSerializer, DayStockInfoSerializer
-from .models import FinancialInfo
+from .serializers import DayStockSerializer, DayStockInfoSerializer, PredictSerializer
+from .models import FinancialInfo, Predict
 
 # 시간 계산 및 Mattermost 연동
 import time
@@ -202,6 +204,17 @@ def add_day_stocks():
 
 @shared_task
 def add_predict_kospi():
+    today = datetime.now()
+    start_mm_message = today.strftime('%Y-%m-%d') + ' 날짜의 Kospi 종가를 예측합니다.'
+    mm_message = {
+        'text': start_mm_message
+    }
+    mm_message = json.dumps(mm_message)
+    r = requests.post(
+        mm_url,
+        data=mm_message
+    )
+    
     df = pd.DataFrame([['Min',1745.250000, 1794.189941, 1742.670044, 375400.000000, 1791.880005, 1736.455981]
                     ,['Max', 3.305460e+03, 3.316080e+03, 3.295440e+03, 3.455500e+06, 3.305210e+03, 3.294838e+03]
                     ],columns=['index' ,'Open', 'High', 'Low', 'Volume', 'Close', 'ma_5' ])
@@ -209,7 +222,6 @@ def add_predict_kospi():
     
     model = tf.keras.models.load_model('stock/predict_models/RNN_Model.h5')
     
-    today = datetime.now()
     end = (today - timedelta(days=1)).date()
     start = (today- timedelta(days=30)).date()
     
@@ -228,5 +240,28 @@ def add_predict_kospi():
     result_ma5 = result.mean() * (denominator + 1e-7) + df.loc['Min']['ma_5']
 
     result_close = result_ma5*5 - sum(test_case.iloc[-4:].Close)
-    # print(f'{today.date()} predicted close : {result_close}')
-    return result_close
+    today = today.strftime('%Y-%m-%d')
+    financial_info = get_object_or_404(FinancialInfo, pk='kospi')
+    
+    predict = {
+        'financial_info' : financial_info,
+        'date' : today,
+        'result_close' : round(result_close, 3),
+    }
+    serializer = PredictSerializer(data=predict)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+    
+    message = 'Kospi data predict completed today'
+    end_mm_message = 'Kospi 종가 예측이 종료되어 DB에 저장합니다. 예측 종가 : ' + str(round(result_close, 3)) + '원'
+    
+    mm_message = {
+        'text': end_mm_message
+    }
+    mm_message = json.dumps(mm_message)
+    r = requests.post(
+        mm_url,
+        data=mm_message
+    )
+    
+    return message
