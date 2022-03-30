@@ -110,7 +110,7 @@ export default function StockItemList() {
       result.push(
         <li
           key={"stock" + i}
-          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer duration-200"
         >
           <div className="col-span-1 my-auto grid grid-cols-2">
             <p className="col-span-1">

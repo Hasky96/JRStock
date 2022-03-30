@@ -77,17 +77,29 @@ export default function TradingRecord({ id, isLoading }) {
             <col span="1" style={{ width: 15 + "%" }} />
           </colgroup>
           <thead className="bg-gray-200 h-12">
-            <th>No</th>
-            <th>일시</th>
-            <th>구분</th>
-            <th>조건</th>
-            <th>수량(주)</th>
-            <th>매매가(원)</th>
-            <th>승패</th>
-            <th>수익률(%)</th>
-            <th>현재 자산(원)</th>
+            <tr>
+              <th>No</th>
+              <th>일시</th>
+              <th>구분</th>
+              <th>매매 조건</th>
+              <th>수량(주)</th>
+              <th>매매가(원)</th>
+              <th>승패</th>
+              <th>수익률(%)</th>
+              <th>현재 자산(원)</th>
+            </tr>
           </thead>
-          <tbody>{paintRecords}</tbody>
+          {currentRecords.length ? (
+            <tbody>{paintRecords}</tbody>
+          ) : (
+            <tbody>
+              <tr>
+                <td colSpan="10" className="text-center py-5">
+                  거래 내역이 존재하지 않습니다.
+                </td>
+              </tr>
+            </tbody>
+          )}
         </table>
       </div>
       <Pagenation2

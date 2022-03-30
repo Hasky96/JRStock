@@ -16,6 +16,7 @@ export default function BackTestDetail() {
   const tabInfo = ["결과 요약", "거래 내역", "전략 상세"];
   const [isLoading, setIsLoading] = useState(true);
   const [backtestResult, setBacktestResult] = useState("");
+  const [basicCondition, setBasicCondition] = useState("");
 
   const fetchBacktestDetail = async (backtestId) => {
     const res = await getBacktestDetail(backtestId);
@@ -24,7 +25,7 @@ export default function BackTestDetail() {
 
   useEffect(() => {
     const fetching = setInterval(async () => {
-      // 로딩이 끝난 경우 ()
+      // 로딩이 끝난 경우
       if (!isLoading) {
         clearInterval(fetching);
         return;
@@ -32,10 +33,11 @@ export default function BackTestDetail() {
 
       const result = await fetchBacktestDetail(id);
       if (result.final_asset) {
-        setBacktestResult(result);
+        const { resultSummary, conditions } = await trimResultSummary(result);
+        setBacktestResult(resultSummary);
+        setBasicCondition(conditions);
         setIsLoading(false);
         console.log("@loading over");
-        console.log("set backtest result");
         clearInterval(fetching);
       } else {
         console.log("@loading");
@@ -53,7 +55,7 @@ export default function BackTestDetail() {
           <div className="mt-5 w-full">
             {currentTab === "결과 요약" && (
               <ResultSummary
-                resultSummary={trimResultSummary(backtestResult)}
+                resultSummary={backtestResult}
                 isLoading={isLoading}
                 id={id}
               />
@@ -62,7 +64,13 @@ export default function BackTestDetail() {
             {currentTab === "거래 내역" && (
               <TradingRecord isLoading={isLoading} id={id} />
             )}
-            {currentTab === "전략 상세" && <Strategy isLoading={isLoading} />}
+            {currentTab === "전략 상세" && (
+              <Strategy
+                conditions={basicCondition}
+                isLoading={isLoading}
+                id={id}
+              />
+            )}
           </div>
         </div>
       )}

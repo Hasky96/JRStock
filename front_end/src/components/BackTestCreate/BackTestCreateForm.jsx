@@ -61,20 +61,22 @@ export default function BackTestCreateForm() {
     e.preventDefault();
     if (!isStockSelected) {
       toast.warning("종목을 선택해주세요!");
+      return;
     }
 
     const data = { ...values, asset: values.asset.replace(/,/gi, "") };
 
-    // const res = startBacktest(data)
-    //   .then((res) => console.log("res", res))
-    //   .catch((err) => console.log("err: ", err));
+    const res = await startBacktest(data).catch((err) =>
+      console.log("err: ", err)
+    );
 
     toast.success(
       "백테스트가 성공적으로 시작되었습니다. 설정 기간에 따라 최대 30초 이상 소요됩니다."
     );
-    // if (res.status === 201) {
-    //   navigate(`/backtest/${res.id}`);
-    // }
+    console.log(res);
+    if (res.status === 201) {
+      navigate(`/backtest/${res.data.id}`);
+    }
   };
 
   const types = {

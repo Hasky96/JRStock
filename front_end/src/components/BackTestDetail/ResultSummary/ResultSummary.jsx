@@ -16,8 +16,8 @@ function date_ascending(a, b) {
 }
 
 export default function ResultSummary({ resultSummary, isLoading, id }) {
-  const [assetResult, setAssetResult] = useState(resultSummary.assetResult);
-  const [profitResult, setProfitResult] = useState(resultSummary.profitResult);
+  const [assetResult, setAssetResult] = useState([]);
+  const [profitResult, setProfitResult] = useState([]);
 
   const [lineData, setLineData] = useState([]);
   const [barData, setBarData] = useState([]);
@@ -62,7 +62,6 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     async function fetchAndSetAnnually() {
       const data = await fetchBacktestAnnually(id);
       const { labels, marketData, backtestData } = await trimAnnually(data);
-
       setLabels(labels);
       setMarketAnnual(marketData);
       setBackTestAnnual(backtestData);
@@ -87,7 +86,12 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       fetchAndSetAnnually();
       fetchAndSetTradeRecord();
     }
-  }, [isLoading]);
+
+    if (resultSummary.assetResult) {
+      setAssetResult(resultSummary.assetResult);
+      setProfitResult(resultSummary.profitResult);
+    }
+  }, [isLoading, resultSummary]);
 
   const intervals = ["1D", "1W", "1M", "1Y"];
   const paintSwitcher = intervals.map((el, idx) => (
@@ -167,12 +171,21 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
         <div className="chart-container rounded shadow-lg p-3 mt-5">
           <div className="text-lg">
             <div className="font-semibold">연도별 수익률</div>
-            {isAnnualData && (
-              <AnnualProfit
-                labels={labels}
-                market={marketAnnual}
-                backtest={backTestAnnual}
-              />
+            {labels.length ? (
+              isAnnualData && (
+                <AnnualProfit
+                  labels={labels}
+                  market={marketAnnual}
+                  backtest={backTestAnnual}
+                />
+              )
+            ) : (
+              <div className="w-full flex justify-center text-center">
+                <div>
+                  <p className="text-xl">연도별 데이터가 존재하지 않습니다.</p>
+                  <p>설정한 기간이 너무 짧거나, 조건 설정이 잘못되었습니다.</p>
+                </div>
+              </div>
             )}
           </div>
         </div>

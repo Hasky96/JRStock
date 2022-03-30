@@ -1,4 +1,11 @@
-export const trimResultSummary = ({
+import {
+  nameDict,
+  paramDict,
+  parameters,
+  nameToId,
+} from "../config/backtestConfig";
+
+export const trimResultSummary = async ({
   test_start_date,
   test_end_date,
   asset,
@@ -11,29 +18,42 @@ export const trimResultSummary = ({
   mdd,
   trading_days,
   win_lose_rate,
+  buy_standard,
+  buy_ratio,
+  sell_standard,
+  sell_ratio,
 }) => {
-  if (final_earn) {
+  if (final_asset) {
     return {
-      assetResult: [
-        parseInt(asset).toLocaleString(),
-        parseInt(final_asset).toLocaleString(),
-        parseInt(final_earn).toLocaleString(),
-        test_start_date,
-        test_end_date,
-        trading_days,
-      ],
-      profitResult: [
-        final_rate,
-        market_over_rate,
-        win_lose_rate,
-        avg_day_earn_rate,
-        avg_year_earn_rate,
-        mdd,
-      ],
+      resultSummary: {
+        assetResult: [
+          parseInt(asset).toLocaleString(),
+          parseInt(final_earn).toLocaleString(),
+          parseInt(final_asset).toLocaleString(),
+          test_start_date,
+          test_end_date,
+          trading_days,
+        ],
+        profitResult: [
+          final_rate,
+          market_over_rate,
+          win_lose_rate,
+          avg_day_earn_rate,
+          avg_year_earn_rate,
+          mdd,
+        ],
+      },
+      conditions: {
+        buy_standard,
+        buy_ratio,
+        sell_standard,
+        sell_ratio,
+      },
     };
   }
   return {
-    assetResult: {},
+    assetResult: [],
+    profitResult: [],
   };
 };
 
@@ -102,4 +122,37 @@ export const trimRecords = async (data) => {
   );
 
   return { records, markers };
+};
+
+export const trimStrategy = async (data) => {
+  const buyStrategy = [];
+  const sellStrategy = [];
+
+  await data.forEach(({ buy_sell_option, isBuy, params, weight }, index) => {
+    const paramValue = params.split(" ");
+    const paramObj = {};
+    const paramIds = parameters[nameToId[buy_sell_option]];
+    paramIds.forEach((id, index) => {
+      paramObj[id] = paramValue[index];
+    });
+    const strategy = nameDict[buy_sell_option].split(" ");
+    const condition = {
+      strategyId: nameToId[buy_sell_option],
+      strategy: strategy[0],
+      strategyDetail: strategy[1],
+      params: paramObj,
+      weight: weight,
+    };
+
+    if (isBuy) {
+      buyStrategy.push(condition);
+    } else {
+      sellStrategy.push(condition);
+    }
+  });
+
+  return {
+    buyStrategy,
+    sellStrategy,
+  };
 };

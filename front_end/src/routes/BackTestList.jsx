@@ -4,7 +4,7 @@ import { getBacktestList } from "../api/backtest";
 import PageContainer from "../components/PageContainer";
 import ListTitle from "../components/BackTestList/ListTitle";
 import ListItem from "../components/BackTestList/ListItem";
-import Pagenation from "../components/Pagenation";
+import Pagenation2 from "../components/Pagenation2";
 import SearchBar from "../components/BackTestList/SearchBar";
 import { ReactComponent as Create } from "../assets/create.svg";
 
@@ -18,6 +18,7 @@ export default function BackTestList() {
   useEffect(() => {
     async function fetchAndSetBacktestList() {
       const res = await getBacktestList({ page: pageNo, size: pageSize });
+
       setTotalCount(res.data.count);
       setbackTestItems(res.data.results);
     }
@@ -60,28 +61,6 @@ export default function BackTestList() {
       />
     );
   });
-
-  const onClickFirst = async () => {
-    setPageNo(1);
-  };
-
-  const onClickLeft = async () => {
-    setPageNo((cur) => cur - 1);
-  };
-
-  const onClickRight = async () => {
-    setPageNo((cur) => cur + 1);
-  };
-
-  const onClickLast = async () => {
-    const lastPageNum =
-      parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
-    setPageNo(lastPageNum);
-  };
-
-  const onClickNumber = async (num) => {
-    setPageNo(num);
-  };
 
   const onSearch = (word) => {};
 
@@ -131,16 +110,12 @@ export default function BackTestList() {
 
       {backTestItems.length ? (
         <div className="relative w-full flex justify-center">
-          <Pagenation
+          <Pagenation2
+            setPageNo={setPageNo}
             selectedNum={pageNo}
             totalCnt={totalCount}
             pageSize={pageSize}
-            onClickFirst={onClickFirst}
-            onClickLeft={onClickLeft}
-            onClickRight={onClickRight}
-            onClickLast={onClickLast}
-            onClickNumber={onClickNumber}
-          ></Pagenation>
+          ></Pagenation2>
         </div>
       ) : (
         ""

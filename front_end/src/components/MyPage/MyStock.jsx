@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getInterest, addInterest, deleteInterest } from "../../api/stock";
-import Pagenation from "../Pagenation";
+import Pagenation2 from "../Pagenation2";
 import CheckBoxGrid from "../FilterModal/CheckBoxGrid";
 import CheckedList from "../FilterModal/CheckedList";
 import costMap from "../../util/costMap";
 
 import { ReactComponent as ModalCancle } from "../../assets/modalCancle.svg";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import OnOffToggle from "../OnOffToggle";
 import { toast } from "react-toastify";
 
@@ -77,29 +76,6 @@ export default function StockItemList() {
   useEffect(() => {
     init();
   }, [sortBy, search, filterData, filterToggle, pageNo]);
-
-  // 페이지네이션 동작
-  const onClickFirst = async () => {
-    setPageNo(1);
-  };
-
-  const onClickLeft = async () => {
-    setPageNo((cur) => cur - 1);
-  };
-
-  const onClickRight = async () => {
-    setPageNo((cur) => cur + 1);
-  };
-
-  const onClickLast = async () => {
-    const lastPageNum =
-      parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
-    setPageNo(lastPageNum);
-  };
-
-  const onClickNumber = async (num) => {
-    setPageNo(num);
-  };
 
   // 주식 데이터로 html 리스트를 만듬
   const stockList = () => {
@@ -711,16 +687,12 @@ export default function StockItemList() {
           {stockList()}
         </ul>
       </div>
-      <Pagenation
+      <Pagenation2
+        setPageNo={setPageNo}
         selectedNum={pageNo}
         totalCnt={totalCount}
         pageSize={pageSize}
-        onClickFirst={onClickFirst}
-        onClickLeft={onClickLeft}
-        onClickRight={onClickRight}
-        onClickLast={onClickLast}
-        onClickNumber={onClickNumber}
-      ></Pagenation>
+      ></Pagenation2>
       {/* 모달창 */}
       {isShowModal && (
         <div
