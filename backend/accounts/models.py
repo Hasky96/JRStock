@@ -53,6 +53,7 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_google = models.BooleanField(default=False)
+    is_backtest = models.BooleanField(default=False)
 
     objects = UserManager()
 
