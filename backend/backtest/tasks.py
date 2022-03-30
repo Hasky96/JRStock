@@ -1,11 +1,16 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+
+from django.shortcuts import get_object_or_404
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 
 import django
 django.setup()
 
+from .models import Result
+from accounts.models import User
 from celery import shared_task
 from .common import *
 
@@ -24,7 +29,7 @@ strategy_indicator_dict={
 }
 
 @shared_task
-def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result, user):
+def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result_id, user_email):
     """백테스트
 
     Args:
@@ -37,6 +42,8 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
     """
     # 정해진 기간의 백테스트 자료 가져오기
     try:
+        result = get_object_or_404(Result, pk=result_id)
+        user = get_object_or_404(User, pk=user_email)
         df = get_day_stock(code_number, start_date, end_date)
 
         # =====필요한 결과값들 init
