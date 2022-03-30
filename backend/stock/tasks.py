@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import django
 django.setup()
@@ -21,7 +22,13 @@ from .models import FinancialInfo
 # 시간 계산 및 Mattermost 연동
 import time
 import json
+
+# 예측
 import datetime as dt_mm
+import numpy as np
+import tensorflow as tf
+
+
 
 mm_url = "https://meeting.ssafy.com/hooks/71cbfy7fdir6tnops9c7pwscuo"
 
@@ -192,3 +199,34 @@ def add_day_stocks():
         
     message = str(t_date) + ' stock data added'
     return message
+
+@shared_task
+def add_predict_kospi():
+    df = pd.DataFrame([['Min',1745.250000, 1794.189941, 1742.670044, 375400.000000, 1791.880005, 1736.455981]
+                    ,['Max', 3.305460e+03, 3.316080e+03, 3.295440e+03, 3.455500e+06, 3.305210e+03, 3.294838e+03]
+                    ],columns=['index' ,'Open', 'High', 'Low', 'Volume', 'Close', 'ma_5' ])
+    df = df.set_index('index')
+    
+    model = tf.keras.models.load_model('stock/predict_models/RNN_Model.h5')
+    
+    today = datetime.now()
+    end = (today - timedelta(days=1)).date()
+    start = (today- timedelta(days=30)).date()
+    
+    test_case = data.get_data_yahoo("^KS11", start=start, end=end)
+    test_case = test_case[['Open', "High", "Low",  "Volume", "Close"]]
+    test_case['ma_5'] = test_case["Close"].rolling(window=5).mean()
+    test_x = test_case[-10:]
+    
+    numerator = test_x - df.loc['Min']
+    denominator = df.loc['Max'] - df.loc['Min']
+    test_x = numerator / (denominator + 1e-7)   
+    
+    result = model.predict([test_x.values.tolist()])
+    
+    denominator = df.loc['Max']['ma_5'] - df.loc['Min']['ma_5']
+    result_ma5 = result.mean() * (denominator + 1e-7) + df.loc['Min']['ma_5']
+
+    result_close = result_ma5*5 - sum(test_case.iloc[-4:].Close)
+    # print(f'{today.date()} predicted close : {result_close}')
+    return result_close

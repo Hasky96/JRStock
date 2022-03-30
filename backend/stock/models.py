@@ -132,3 +132,11 @@ class MonthStock(models.Model):
         managed = False
         ordering = ['date']
         db_table = 'month_stock'
+        
+class Predict(models.Model):
+    financial_info = models.ForeignKey(FinancialInfo, on_delete=models.CASCADE, null=True, db_column='code_number')
+    date = models.CharField(max_length=20)
+    result_close = models.FloatField()
+    
+    class Meta:
+        ordering = ['-id']
