@@ -15,7 +15,8 @@ from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistoryS
 
 from stock.models import BasicInfo
 
-from .common import backtest, make_condition
+from .common import make_condition
+from .tasks import backtest
 from .parser import get_serializer
 
 from datetime import datetime, timedelta
@@ -114,7 +115,6 @@ def test_start(request):
             #     },
         },
         "commission" : commission,
-        "result" : result,
         "win_cnt" : 0,
         "buy_sell_list" : [],
         "day_history_list" : [],
@@ -128,9 +128,7 @@ def test_start(request):
         request.user.save()
         buy_condition = make_condition(result, True, buy_strategy, buy_standard, buy_ratio)
         sell_condition = make_condition(result, False, sell_strategy, sell_standard, sell_ratio)
-        serializer = backtest(account, company_code, start_date, end_date, buy_condition, sell_condition)
-        request.user.is_backtest = False
-        request.user.save()
+        backtest.delay(account, company_code, start_date, end_date, buy_condition, sell_condition, result, request.user) # 비동기로 백테스트 진행
     except Exception as e:
         result.delete()
         request.user.is_backtest = False

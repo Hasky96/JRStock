@@ -2,6 +2,8 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 
+from django.shortcuts import get_object_or_404
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 
 import django
@@ -15,13 +17,19 @@ import pandas as pd
 import io
 from datetime import datetime, timedelta
 from pandas_datareader import data
-from .serializers import DayStockSerializer, DayStockInfoSerializer
-from .models import FinancialInfo
+from .serializers import DayStockSerializer, DayStockInfoSerializer, PredictSerializer
+from .models import FinancialInfo, Predict
 
 # 시간 계산 및 Mattermost 연동
 import time
 import json
+
+# 예측
 import datetime as dt_mm
+import numpy as np
+import tensorflow as tf
+
+
 
 mm_url = "https://meeting.ssafy.com/hooks/71cbfy7fdir6tnops9c7pwscuo"
 
@@ -191,4 +199,131 @@ def add_day_stocks():
     # MM 알림 종료
         
     message = str(t_date) + ' stock data added'
+    return message
+
+@shared_task
+def add_predict_kospi():
+    today = datetime.now()
+    start_mm_message = today.strftime('%Y-%m-%d') + ' 날짜의 Kospi 종가를 예측합니다.'
+    mm_message = {
+        'text': start_mm_message
+    }
+    mm_message = json.dumps(mm_message)
+    r = requests.post(
+        mm_url,
+        data=mm_message
+    )
+    
+    df = pd.DataFrame([['Min',1745.250000, 1794.189941, 1742.670044, 375400.000000, 1791.880005, 1736.455981]
+                    ,['Max', 3.305460e+03, 3.316080e+03, 3.295440e+03, 3.455500e+06, 3.305210e+03, 3.294838e+03]
+                    ],columns=['index' ,'Open', 'High', 'Low', 'Volume', 'Close', 'ma_5' ])
+    df = df.set_index('index')
+    
+    model = tf.keras.models.load_model('stock/predict_models/kospi_model.h5')
+    
+    end = (today - timedelta(days=1)).date()
+    start = (today- timedelta(days=30)).date()
+    
+    test_case = data.get_data_yahoo("^KS11", start=start, end=end)
+    test_case = test_case[['Open', "High", "Low",  "Volume", "Close"]]
+    test_case['ma_5'] = test_case["Close"].rolling(window=5).mean()
+    test_x = test_case[-10:]
+    
+    numerator = test_x - df.loc['Min']
+    denominator = df.loc['Max'] - df.loc['Min']
+    test_x = numerator / (denominator + 1e-7)   
+    
+    result = model.predict([test_x.values.tolist()])
+    
+    denominator = df.loc['Max']['ma_5'] - df.loc['Min']['ma_5']
+    result_ma5 = result.mean() * (denominator + 1e-7) + df.loc['Min']['ma_5']
+
+    result_close = result_ma5*5 - sum(test_case.iloc[-4:].Close)
+    today = today.strftime('%Y-%m-%d')
+    financial_info = get_object_or_404(FinancialInfo, pk='kospi')
+    
+    predict = {
+        'financial_info' : financial_info,
+        'date' : today,
+        'result_close' : round(result_close, 3),
+    }
+    serializer = PredictSerializer(data=predict)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+    
+    message = today + ' Kospi data predict completed today'
+    end_mm_message = today + ' Kospi 종가 예측이 종료되어 DB에 저장합니다. 예측 종가 : ' + str(round(result_close, 3)) + '원'
+    
+    mm_message = {
+        'text': end_mm_message
+    }
+    mm_message = json.dumps(mm_message)
+    r = requests.post(
+        mm_url,
+        data=mm_message
+    )
+    
+    return message
+
+def add_predict_kosdaq():
+    today = datetime.now()
+    start_mm_message = today.strftime('%Y-%m-%d') + ' 날짜의 Kosdaq 종가를 예측합니다.'
+    mm_message = {
+        'text': start_mm_message
+    }
+    mm_message = json.dumps(mm_message)
+    r = requests.post(
+        mm_url,
+        data=mm_message
+    )
+    
+    df = pd.DataFrame([['Min',579.250000, 597.210022, 577.830017, 0.0, 596.710022, 571.766016]
+                    ,['Max', 1.061320e+03, 1.062030e+03, 1.055640e+03, 1.522800e+06, 1.060000e+03, 1.056666e+03]
+                    ],columns=['index' ,'Open', 'High', 'Low', 'Volume', 'Close', 'ma_5' ])
+    df = df.set_index('index')
+    
+    model = tf.keras.models.load_model('stock/predict_models/kosdaq_model.h5')
+    
+    end = (today - timedelta(days=1)).date()
+    start = (today- timedelta(days=30)).date()
+    
+    test_case = data.get_data_yahoo("^KQ11", start=start, end=end)
+    test_case = test_case[['Open', "High", "Low",  "Volume", "Close"]]
+    test_case['ma_5'] = test_case["Close"].rolling(window=5).mean()
+    test_x = test_case[-10:]
+    
+    numerator = test_x - df.loc['Min']
+    denominator = df.loc['Max'] - df.loc['Min']
+    test_x = numerator / (denominator + 1e-7)   
+    
+    result = model.predict([test_x.values.tolist()])
+    
+    denominator = df.loc['Max']['ma_5'] - df.loc['Min']['ma_5']
+    result_ma5 = result.mean() * (denominator + 1e-7) + df.loc['Min']['ma_5']
+
+    result_close = result_ma5*5 - sum(test_case.iloc[-4:].Close)
+    today = today.strftime('%Y-%m-%d')
+    financial_info = get_object_or_404(FinancialInfo, pk='kosdaq')
+    
+    predict = {
+        'financial_info' : financial_info,
+        'date' : today,
+        'result_close' : round(result_close, 3),
+    }
+    serializer = PredictSerializer(data=predict)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+    
+    message = today + ' Kosdaq data predict completed'
+    end_mm_message = today + ' Kosdaq 종가 예측이 종료되어 DB에 저장합니다. 예측 종가 : ' + str(round(result_close, 3)) + '원'
+    
+    mm_message = {
+        'text': end_mm_message
+    }
+    mm_message = json.dumps(mm_message)
+    r = requests.post(
+        mm_url,
+        data=mm_message
+    )
+    
     return message
