@@ -10,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .serializers import BasicInfoSerializer, DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer, InterestSerializer, MonthStockSerializer, WeekStockSerializer
+from .serializers import BasicInfoSerializer, DayStockInfoSerializer, DayStockSerializer, FinancialInfoSerializer, InterestSerializer, MonthStockSerializer, PredictSerializer, WeekStockSerializer
 
-from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest, MonthStock, WeekStock
+from .models import BasicInfo, DayStock, DayStockInfo, FinancialInfo, Interest, MonthStock, Predict, WeekStock
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -723,3 +723,30 @@ def get_start_end_date(request, code_number):
     
     return Response({'start_date' : start_date,
                     'end_date' : end_date}, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='오늘 종가 예측 데이터(모두)',
+    operation_description='해당 종목의 종가를 예측한 데이터를 조회합니다',
+    tags=['주식'],
+    responses={status.HTTP_200_OK: PredictSerializer}
+)      
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_predict_data(request, code_number):
+    today = datetime.now()
+    
+    # 0 월요일, 6 일요일
+    # 오늘이 일요일이거나 토요일일 때 금요일 데이터를 가져오게끔 변경
+    if today.weekday() == 6:
+        today = today - timedelta(days=2)
+    if today.weekday() == 5:
+        today = today - timedelta(days=1)
+    
+    today = today.strftime('%Y-%m-%d')
+    
+    financial_info = get_object_or_404(FinancialInfo, pk=code_number)
+    predict = Predict.objects.get(date=today, financial_info=financial_info)
+    serializer = PredictSerializer(predict)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
