@@ -60,22 +60,10 @@ function App() {
           </Route>
           <Route path="/notice" element={<Notice />} />
           <Route path="/notice/:id" element={<NoticeDetail />} />
-          <Route
-            path="/notice/create"
-            element={
-              <AdminRoute>
-                <NoticeCreate />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/notice/:id/update"
-            element={
-              <AdminRoute>
-                <NoticeUpdate />
-              </AdminRoute>
-            }
-          />
+          <Route element={<AdminRoute />}>
+            <Route path="/notice/create" element={<NoticeCreate />} />
+            <Route path="/notice/:id/update" element={<NoticeUpdate />} />
+          </Route>
           <Route path="/ranking" element={<Ranking />} />
         </Route>
       </Routes>
