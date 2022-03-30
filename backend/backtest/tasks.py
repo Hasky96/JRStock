@@ -29,7 +29,7 @@ strategy_indicator_dict={
 }
 
 @shared_task
-def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result_id, user_email):
+def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result_id, user_id):
     """백테스트
 
     Args:
@@ -41,9 +41,10 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         sell_condition (list): 매도 조건 (매도 전략들, 기준점수, 매매비율)   [ [102, 5, 4, 20], 20, 90 ]
     """
     # 정해진 기간의 백테스트 자료 가져오기
+    result = get_object_or_404(Result, pk=result_id)
+    user = get_object_or_404(User, pk=user_id)
     try:
-        result = get_object_or_404(Result, pk=result_id)
-        user = get_object_or_404(User, pk=user_email)
+        account['company_name'] = get_stock_name_by_code(code_number)
         df = get_day_stock(code_number, start_date, end_date)
 
         # =====필요한 결과값들 init
