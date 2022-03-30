@@ -1,6 +1,7 @@
-import { getInterest, getLive } from "../../api/stock";
-import { useEffect, useState } from "react";
+import { getInterest, getLive, deleteInterest } from "../../api/stock";
+import { useEffect, useState, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
+import { Menu, Transition } from "@headlessui/react";
 
 export default function Interested() {
   const [stocks, setStocks] = useState([]);
@@ -54,7 +55,20 @@ export default function Interested() {
 
   // 종목 상세 페이지로
   const goStockDetail = (codeNumber) => {
-    navigate(`/stock/${codeNumber}/detail`)
+    navigate(`/stock/${codeNumber}/detail`);
+  };
+
+  // 관심 종목 삭제
+  const clickDelete = async (codeNumber) => {
+    if (window.confirm("관심 종목에서 삭제하시겠습니까?")) {
+      try {
+        await deleteInterest(codeNumber);
+        alert("삭제되었습니다.");
+        init();
+      } catch (e) {
+        console.log(e);
+      }
+    }
   };
 
   // 실시간 데이터로 html 구성
@@ -64,13 +78,13 @@ export default function Interested() {
       result.push(
         <div
           key={live.company_name}
-          className="shadow-lg border-0 rounded-xl p-10 my-10"
+          className="shadow-lg border-0 rounded-xl p-10 my-10 cursor-pointer hover:scale-[1.02] duration-300"
+          onClick={goStockDetail.bind(this, live.code_number)}
         >
           <div>
             <div className="grid grid-cols-11">
               <div
-                className="col-span-2 my-auto text-xl font-bold cursor-pointer"
-                onClick={goStockDetail.bind(this, live.code_number)}
+                className="col-span-2 my-auto text-xl font-bold"
               >
                 {live.company_name}
               </div>
@@ -200,6 +214,76 @@ export default function Interested() {
                     {live.isError ? "-" : live.low}
                   </div>
                 </div>
+              </div>
+
+              <div className="col-span-1 flex justify-end items-start">
+                <Menu
+                  as="div"
+                  className="relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div>
+                    <Menu.Button>
+                      <svg
+                        version="1.1"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 hover:border-2 hover:border-white cursor-pointer"
+                      >
+                        <style type="text/css"></style>
+                        <g id="grid_system" />
+                        <g id="_icons">
+                          <circle cx="12" cy="5" r="2" />
+                          <circle cx="12" cy="19" r="2" />
+                          <circle cx="12" cy="12" r="2" />
+                        </g>
+                      </svg>
+                    </Menu.Button>
+                  </div>
+
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="origin-top-right absolute right-0 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className={
+                                "flex flex-row hover:cursor-pointer " +
+                                (active
+                                  ? "bg-indigo-50 text-gray-900"
+                                  : "text-gray-700")
+                              }
+                              onClick={clickDelete.bind(this, live.code_number)}
+                            >
+                              <svg
+                                id="Layer_1"
+                                version="1.1"
+                                viewBox="0 0 512 512"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="ml-1 w-4 my-auto fill-red-600"
+                              >
+                                <g>
+                                  <path d="M256,32C132.3,32,32,132.3,32,256s100.3,224,224,224s224-100.3,224-224S379.7,32,256,32z M384,272H128v-32h256V272z" />
+                                </g>
+                              </svg>
+                              <p className="block pl-1 py-2 text-sm">
+                                관심종목에서 삭제
+                              </p>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
               </div>
             </div>
           </div>

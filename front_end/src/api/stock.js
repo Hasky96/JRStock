@@ -152,6 +152,12 @@ async function getInterest({ page, size, sort, company_name }) {
   );
 }
 
+// 관심 종목 제거
+async function deleteInterest(code_number) {
+  const authApi = loginApiInstance();
+  return await authApi.post(`stock/interest/delete/`, { code_number });
+}
+
 export {
   getStockItemList,
   getBoardList,
@@ -171,4 +177,5 @@ export {
   getNews,
   addInterest,
   getInterest,
+  deleteInterest,
 };
