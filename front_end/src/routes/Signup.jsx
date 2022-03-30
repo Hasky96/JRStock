@@ -10,6 +10,7 @@ import { ReactComponent as ABtest } from "../assets/landing_page/abtest.svg";
 import { ReactComponent as Rocket } from "../assets/rocket.svg";
 import Loading from "../components/commons/Loading";
 import { toast } from "react-toastify";
+import Dialog2 from "../components/signup/Dialog2";
 
 export default function Signup() {
   const [name, setName] = useState(null);
@@ -21,7 +22,14 @@ export default function Signup() {
   const [duplicateCheck, setDuplicateCheck] = useState(false);
   const [passwordValid, setPasswordValid] = useState(true);
   const [lookPassword, setLookPassword] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
   const navigate = useNavigate();
+
+  const onClickBtn = () => {
+    setShowDialog(false);
+    // 화면 이동
+    navigate(`/`);
+  };
 
   return (
     <div>
@@ -76,8 +84,7 @@ export default function Signup() {
                   // 로딩화면 off
                   loading.style.display = "none";
 
-                  // 화면 이동
-                  navigate(`/`);
+                  setShowDialog(true);
                 }
               }}
             >
@@ -259,6 +266,13 @@ export default function Signup() {
           message={"회원가입 진행 중 입니다.\n잠시만 기다려주시기 바랍니다."}
         />
       </div>
+      {showDialog && (
+        <Dialog2
+          message={`가입시 입력한 이메일\n${email}\n로 인증 메일을 전송하였습니다.\n전송된 메일의 인증 버튼을 클릭하여\n회원가입을 완료해주시기 바랍니다.`}
+          Btn={"확인"}
+          onClickBtn={onClickBtn}
+        />
+      )}
     </div>
   );
 }
