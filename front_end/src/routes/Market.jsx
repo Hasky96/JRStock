@@ -183,7 +183,7 @@ export default function Market() {
           <span
             id="kospi"
             className={classNames(
-              "text-2xl font-bold",
+              "text-2xl font-bold cursor-pointer",
               selectedChart === "kospi" ? "text-primary" : "text-gray-300"
             )}
             onClick={() => {
@@ -199,7 +199,7 @@ export default function Market() {
           <span
             id="kosdaq"
             className={classNames(
-              "text-2xl font-bold",
+              "text-2xl font-bold cursor-pointer",
               selectedChart === "kosdaq" ? "text-primary" : "text-gray-300"
             )}
             onClick={() => {
