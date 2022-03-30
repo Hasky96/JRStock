@@ -82,7 +82,7 @@ def contact_email(name, email, message):
     smtp.sendmail(email, DEFAULT_FROM_EMAIL, msg.as_string())
     smtp.quit()
     
-    message = f'Received suggestions email from [{name}({email}]'
+    message = f'Received suggestions email from [{email}]'
     return message 
 
 @shared_task
