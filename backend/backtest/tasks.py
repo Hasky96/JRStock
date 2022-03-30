@@ -1,11 +1,16 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+
+from django.shortcuts import get_object_or_404
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
 
 import django
 django.setup()
 
+from .models import Result
+from accounts.models import User
 from celery import shared_task
 from .common import *
 
@@ -24,7 +29,7 @@ strategy_indicator_dict={
 }
 
 @shared_task
-def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result, user):
+def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result_id, user_id):
     """백테스트
 
     Args:
@@ -36,7 +41,10 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         sell_condition (list): 매도 조건 (매도 전략들, 기준점수, 매매비율)   [ [102, 5, 4, 20], 20, 90 ]
     """
     # 정해진 기간의 백테스트 자료 가져오기
+    result = get_object_or_404(Result, pk=result_id)
+    user = get_object_or_404(User, pk=user_id)
     try:
+        account['company_name'] = get_stock_name_by_code(code_number)
         df = get_day_stock(code_number, start_date, end_date)
 
         # =====필요한 결과값들 init
@@ -90,8 +98,8 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         user.is_backtest = False
         user.save()
         
-        message = user.name + '님이 요청한 백테스트 진행 중 에러 : ' + str(e)
+        message = 'User Number' + user.id + ' Backtest Request Reject by : ' + str(e)
         return message
 
-    message = user.name + '님이 요청한 백테스트 완료'
+    message = 'User Number' + user.id + ' Backtest Request Finished'
     return message
