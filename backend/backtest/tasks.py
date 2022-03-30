@@ -98,8 +98,8 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         user.is_backtest = False
         user.save()
         
-        message = user.name + '님이 요청한 백테스트 진행 중 에러 : ' + str(e)
+        message = 'User Number' + user.id + ' Backtest Request Reject by : ' + str(e)
         return message
 
-    message = user.name + '님이 요청한 백테스트 완료'
+    message = 'User Number' + user.id + ' Backtest Request Finished'
     return message
