@@ -60,7 +60,9 @@ strategy_name_dict={
     307: 'rsi_high', 308: 'rsi_low',
     407: 'obv_high', 408: 'obv_low',
     507: 'mfi_high', 508: 'mfi_low',
-    605: 'ikh_straight', 606: 'ikh_reverse'
+    605: 'ikh_straight', 606: 'ikh_reverse',
+    705: 'ks_straight', 706: 'ks_reverse',
+    805: 'kq_straight', 806: 'kq_reverse',
 }
 
 strategy_indicator_dict={
@@ -69,7 +71,9 @@ strategy_indicator_dict={
     307: 'RSI', 308: 'RSI',
     407: 'OBV', 408: 'OBV',
     507: 'MFI', 508: 'MFI',
-    605: 'IKH', 606: 'IKH'
+    605: 'IKH', 606: 'IKH',
+    705: 'KS', 706: 'KS', 
+    805: 'KQ', 806: 'KQ'
 }
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
