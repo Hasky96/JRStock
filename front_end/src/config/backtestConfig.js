@@ -12,8 +12,8 @@ export const details = {
   4: "데드크로스(dead cross)",
   5: "정배열",
   6: "역배열",
-  7: "high",
-  8: "low",
+  7: "높음",
+  8: "낮음",
 };
 
 export const options = [
@@ -158,3 +158,19 @@ export const profitKey = [
   "연평균 수익률(CAGR)",
   "최대 손실폭(MDD)",
 ];
+
+export const nameDict = {
+  ma_up_pass: "이동평균선(MA) 상향돌파",
+  ma_down_pass: "이동평균선(MA) 하향돌파",
+  ma_golden_cross: "이동평균선(MA) 골든크로스",
+  ma_dead_cross: "이동평균선(MA) 데드크로스",
+  ma_straight: "이동평균선(MA) 정배열",
+  macd_golden_cross: "이동평균수렴확산지수(MACD) 골든크로스",
+  macd_dead_cross: "이동평균수렴확산지수(MACD) 데드크로스",
+  macd_straight: "이동평균수렴확산지수(MACD) 역배열",
+  macd_reverse: "이동평균수렴확산지수(MACD) 역배열",
+  rsi_high: "상대적강도지수(RSI) 높음",
+  rsi_low: "상대적강도지수(RSI) 낮음",
+  obv_high: "누적평균거래량(OBV) 높음",
+  obv_low: "누적평균거래량(OBV) 낮음",
+};

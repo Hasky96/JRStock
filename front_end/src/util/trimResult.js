@@ -95,7 +95,8 @@ export const trimRecords = async (data) => {
         position: isBuy ? "belowBar" : "aboveBar",
         color: isBuy ? "#3b82f6" : "#ef4444",
         shape: isBuy ? "arrowUp" : "arrowDown",
-        text: isBuy ? `Buy @${stock_amount}` : `Sell @${stock_amount}` + win,
+        text: isBuy ? `buy` : win,
+        // text: isBuy ? `buy` : `sell @` + win,
       });
     }
   );

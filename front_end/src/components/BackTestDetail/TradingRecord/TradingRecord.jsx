@@ -1,96 +1,101 @@
 import { useEffect, useState, Fragment } from "react";
-import Pagenation from "../../Pagenation";
+import { getBacktestTradeRecord } from "../../../api/backtest";
+import Pagenation2 from "../../Pagenation2";
+import { nameDict } from "../../../config/backtestConfig";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-export default function TradingRecord({ records, id, isLoading }) {
-  const [totalRecords, setTotalRecords] = useState(records);
-  const [currentRecords, setCurrentRecords] = useState(records.slice(0, 10));
-  const [totalCount, setTotalCount] = useState(records.length);
+export default function TradingRecord({ id, isLoading }) {
+  const [currentRecords, setCurrentRecords] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
 
-  const onClickFirst = async () => {
-    setPageNo(1);
-  };
-
-  const onClickLeft = async () => {
-    setPageNo((cur) => cur - 1);
-  };
-
-  const onClickRight = async () => {
-    setPageNo((cur) => cur + 1);
-  };
-
-  const onClickLast = async () => {
-    const lastPageNum =
-      parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
-    setPageNo(lastPageNum);
-  };
-
-  const onClickNumber = async (num) => {
-    setPageNo(num);
+  const fetchBacktestTradeRecord = async (backtestId, params) => {
+    const res = await getBacktestTradeRecord(backtestId, params);
+    return res.data;
   };
 
   useEffect(() => {
-    setCurrentRecords(
-      totalRecords.slice((pageNo - 1) * pageSize, pageNo * pageSize)
-    );
+    async function fetchAndSetTradeRecord() {
+      const data = await fetchBacktestTradeRecord(id, {
+        page: pageNo,
+        size: pageSize,
+      });
+      const { count, results } = data;
+      setTotalCount(count);
+      setCurrentRecords(results);
+      console.log("set trade records details");
+    }
+
+    if (!isLoading) {
+      fetchAndSetTradeRecord();
+    }
   }, [pageNo]);
 
   const paintRecords = currentRecords.map(
     (
-      { id, time, buy, type, stock, stockCode, price, quantity, asset, profit },
+      {
+        id,
+        date,
+        isBuy,
+        isWin,
+        stock_amount,
+        stock_price,
+        current_rate,
+        current_asset,
+        company_name,
+        company_code,
+        buy_sell_option,
+      },
       index
     ) => (
       <tr key={index} className="h-12 border-b hover:bg-indigo-50">
-        <td>{id}</td>
-        <td>{time}</td>
-        <td>{buy}</td>
-        <td>{type}</td>
-        <td>{stock}</td>
-        <td>{stockCode}</td>
-        <td>{price}</td>
-        <td>{quantity}</td>
-        <td>{asset}</td>
-        <td>{profit + "%"}</td>
+        <td>{index + 1 + (pageNo - 1) * 10}</td>
+        <td>{date}</td>
+        <td>{isBuy ? "매수" : "매도"}</td>
+        <td>{nameDict[buy_sell_option.slice(0, -1)]}</td>
+        <td>{stock_amount}</td>
+        <td>{stock_price.toLocaleString()}</td>
+        <td
+          className={!isBuy ? (isWin ? "text-red-600" : "text-blue-600") : ""}
+        >
+          {!isBuy ? (isWin ? "승" : "패") : ""}
+        </td>
+        <td className={current_rate >= 0 ? "text-red-600" : "text-blue-600"}>
+          {current_rate}
+        </td>
+        <td>{current_asset.toLocaleString()}</td>
       </tr>
     )
   );
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
-      <table className="table-auto w-full text-center">
-        <colgroup>
-          <col span="1" style={{ width: 5 + "%" }} />
-          <col span="1" style={{ width: 15 + "%" }} />
-        </colgroup>
-        <thead className="bg-gray-200 h-12">
-          <th>No</th>
-          <th>일시</th>
-          <th>구분</th>
-          <th>조건</th>
-          <th>종목</th>
-          <th>종목코드</th>
-          <th>매매가(원)</th>
-          <th>매매수량(주)</th>
-          <th>현재자산(원)</th>
-          <th>수익률</th>
-        </thead>
-        <tbody>{paintRecords}</tbody>
-      </table>
-      <Pagenation
+      <div className="w-full overflow-x-scroll">
+        <table className="table-auto w-full text-center min-w-[1000px]">
+          <colgroup>
+            <col span="1" style={{ width: 5 + "%" }} />
+            <col span="1" style={{ width: 15 + "%" }} />
+          </colgroup>
+          <thead className="bg-gray-200 h-12">
+            <th>No</th>
+            <th>일시</th>
+            <th>구분</th>
+            <th>조건</th>
+            <th>수량(주)</th>
+            <th>매매가(원)</th>
+            <th>승패</th>
+            <th>수익률(%)</th>
+            <th>현재 자산(원)</th>
+          </thead>
+          <tbody>{paintRecords}</tbody>
+        </table>
+      </div>
+      <Pagenation2
+        setPageNo={setPageNo}
         selectedNum={pageNo}
         totalCnt={totalCount}
         pageSize={pageSize}
-        onClickFirst={onClickFirst}
-        onClickLeft={onClickLeft}
-        onClickRight={onClickRight}
-        onClickLast={onClickLast}
-        onClickNumber={onClickNumber}
-      ></Pagenation>
+      ></Pagenation2>
     </div>
   );
 }

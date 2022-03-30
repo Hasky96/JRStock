@@ -1,6 +1,6 @@
 import { apiInstance, loginApiInstance } from "./index.js";
 
-const getParamURL = (params) => {
+const getParamURL = async (params) => {
   let paramURL = "";
   if (params) {
     paramURL += "?";
@@ -34,7 +34,7 @@ async function getBacktestCondition(backtestId) {
 }
 async function getBacktestTradeRecord(backtestId, params) {
   const api = apiInstance();
-  const paramURL = getParamURL(params);
+  const paramURL = await getParamURL(params);
   return await api.get(`backtest/buysell/${backtestId}` + paramURL);
 }
 async function getBacktestDaily(backtestId) {

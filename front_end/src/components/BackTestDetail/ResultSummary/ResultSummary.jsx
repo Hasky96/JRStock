@@ -133,12 +133,14 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     <div className="w-full flex flex-col justify-center items-center">
       <div className="flex flex-col xl:flex-row gap-3">
         <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
-          <div className="col-span-6 text-left text-lg pb-2">운용자산</div>
+          <div className="col-span-6 text-left text-lg pb-2 font-semibold">
+            운용자산
+          </div>
           {paintAssetKey}
           {paintAssetValue}
         </div>
         <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
-          <div className="col-span-6 text-left text-lg pb-2">
+          <div className="col-span-6 text-left text-lg pb-2 font-semibold">
             수익률 <span className="text-sm text-gray-500">(%)</span>
           </div>
           {paintProfitKey}
@@ -148,7 +150,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
 
       <div className="w-full flex flex-col items-center justify-center gap-3">
         <div className="chart-container rounded shadow-lg p-3 mt-5 text-lg">
-          <div>자산 운용 차트</div>
+          <div className="font-semibold">자산 운용 차트</div>
           {isDailyData && isTradeRecord && (
             <>
               <ProfitLineChart
@@ -164,7 +166,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
         </div>
         <div className="chart-container rounded shadow-lg p-3 mt-5">
           <div className="text-lg">
-            <div>연도별 수익률</div>
+            <div className="font-semibold">연도별 수익률</div>
             {isAnnualData && (
               <AnnualProfit
                 labels={labels}
