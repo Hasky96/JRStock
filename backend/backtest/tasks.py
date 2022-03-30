@@ -66,23 +66,23 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
                     # =============== 이름을 한글화한 목록을 추가해서 그걸 넣기
                     
                 if total_weight >= buy_condition[-2]:      # 기준선 이상이면 매수
-                    account = buy(account, code_number, df.loc[i]['current_price'], buy_condition[-1], df.loc[i]["date"], buy_option)  
+                    account = buy(account, code_number, df.loc[i]['current_price'], buy_condition[-1], df.loc[i]["date"], buy_option, result)  
                     flag = False    # 매수, 매도 번갈아가며
 
             else:       # 매도
                 for cond in sell_condition[0:-2]:
                     total_weight += call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
                 if total_weight >= sell_condition[-2]:      # 기준선 이상이면 매도
-                    account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option)
+                    account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option, result)
                     result_data['win_lose_cnt'] += 1
                     flag = True
 
             # =====매일마다 계산
-            result_data = day_calculate(account, result_data, df.loc[i])
+            result_data = day_calculate(account, result_data, df.loc[i], result)
 
         # 최종 계산
         create_database(account)
-        end_calculate(account, result_data)
+        end_calculate(account, result_data, result)
         user.is_backtest = False
         user.save()
     except Exception as e:
@@ -90,8 +90,8 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         user.is_backtest = False
         user.save()
         
-        message = account['user'].name + '님이 요청한 백테스트 진행 중 에러 : ' + str(e)
+        message = user.name + '님이 요청한 백테스트 진행 중 에러 : ' + str(e)
         return message
 
-    message = account['user'].name + '님이 요청한 백테스트 완료'
+    message = user.name + '님이 요청한 백테스트 완료'
     return message
