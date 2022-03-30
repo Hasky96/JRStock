@@ -14,7 +14,16 @@ app.conf.beat_schedule = {
       'task': 'stock.tasks.add_day_stocks',
       'schedule' : crontab(minute=0, hour=4, day_of_week='2-6'),
    },
+   'add-predict-kospi-weekday' : {
+      'task': 'stock.tasks.add_predict_kospi',
+      'schedule' : crontab(minute=10, hour=4, day_of_week='1-5'),
+   },
+   'add-predict-kosdaq-weekday' : {
+      'task': 'stock.tasks.add_predict_kosdaq',
+      'schedule' : crontab(minute=15, hour=4, day_of_week='1-5'),
+   },
 }
+
 
 
 @app.task(bind=True)

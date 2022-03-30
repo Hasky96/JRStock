@@ -267,7 +267,7 @@ def ma_up_pass(params, df, index):
     err=params[1]
     col = f'sma{window}'  # df 에서 가져올 col 이름 
     sma = df.iloc[1][col] 
-    sma_err = (1-err/100)* sma  # 오차범위 값 지정
+    sma_err = (1+err/100)* sma  # 오차범위 값 지정
     if (df.iloc[1]['start_price'] < df.iloc[1]['current_price']):  # 양봉이어야함
         if(sma > df.iloc[1]['start_price'] and sma_err < df.iloc[1]['current_price']):
             return params[2]
