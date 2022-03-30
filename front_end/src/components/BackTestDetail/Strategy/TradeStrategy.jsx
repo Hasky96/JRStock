@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { paramDict, parameters } from "../../../config/backtestConfig";
 
 export default function TradeStrategy({ condition, name, color, strategies }) {
-  console.log(condition);
   const paintParamInput = (strategy, i) => {
     const params = parameters[strategy];
-    console.log(params);
+
     return params.map((param, index) => (
       <div key={index} className="flex flex-col w-20 text-xs">
         <label htmlFor={`${name}_${i}_${param}`} className="text-gray-500">

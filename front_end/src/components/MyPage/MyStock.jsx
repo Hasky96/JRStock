@@ -438,8 +438,8 @@ export default function StockItemList() {
                 type="text"
                 name="price"
                 id="price"
-                className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
-                placeholder="Search..."
+                className="hover:border-primary focus:ring-primary focus:border-primary text-xs block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                placeholder="search..."
                 onChange={(e) => {
                   e.preventDefault();
                   onSearch(e.target.value);
@@ -684,15 +684,25 @@ export default function StockItemList() {
               )}
             </p>
           </li>
-          {stockList()}
+
+          {totalCount ? (
+            stockList()
+          ) : (
+            <div className="py-5">관심 종목이 없습니다.</div>
+          )}
         </ul>
       </div>
-      <Pagenation2
-        setPageNo={setPageNo}
-        selectedNum={pageNo}
-        totalCnt={totalCount}
-        pageSize={pageSize}
-      ></Pagenation2>
+      {totalCount ? (
+        <Pagenation2
+          setPageNo={setPageNo}
+          selectedNum={pageNo}
+          totalCnt={totalCount}
+          pageSize={pageSize}
+        ></Pagenation2>
+      ) : (
+        ""
+      )}
+
       {/* 모달창 */}
       {isShowModal && (
         <div

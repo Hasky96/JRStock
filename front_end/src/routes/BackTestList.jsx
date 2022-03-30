@@ -7,8 +7,10 @@ import ListItem from "../components/BackTestList/ListItem";
 import Pagenation2 from "../components/Pagenation2";
 import SearchBar from "../components/BackTestList/SearchBar";
 import { ReactComponent as Create } from "../assets/create.svg";
+import { ReactComponent as Spinner } from "../assets/spinner.svg";
 
 export default function BackTestList() {
+  const [isLoading, setIsLoading] = useState(true);
   const [backTestItems, setbackTestItems] = useState([]);
   const [checkedList, setcheckedList] = useState([]);
   const [totalCount, setTotalCount] = useState(1);
@@ -21,6 +23,7 @@ export default function BackTestList() {
 
       setTotalCount(res.data.count);
       setbackTestItems(res.data.results);
+      setIsLoading(false);
     }
     fetchAndSetBacktestList();
   }, [pageNo]);
@@ -66,59 +69,68 @@ export default function BackTestList() {
 
   return (
     <PageContainer>
-      <div className="flex justify-between">
-        <Link to="create">
-          <button className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300">
-            <Create />
-            <div className="col-span-2 my-auto">백테스트 생성</div>
-          </button>
-        </Link>
-        <div className="w-56">
-          <SearchBar onSearch={onSearch} />
-        </div>
-      </div>
-
-      <table className="table-auto w-full text-left mt-5">
-        <colgroup>
-          <col span="1" style={{ width: 5 + "%" }} />
-          <col span="1" style={{ width: 5 + "%" }} />
-          <col span="1" style={{ width: 60 + "%" }} />
-          <col span="1" style={{ width: 10 + "%" }} />
-          <col span="1" style={{ width: 15 + "%" }} />
-        </colgroup>
-        <ListTitle
-          onCheckedAll={onCheckedAll}
-          checked={
-            checkedList.length && checkedList.length === backTestItems.length
-              ? true
-              : false
-          }
-          titles={["No", "테스트 이름", "상태", "생성일"]}
-        />
-        {backTestItems.length ? (
-          <tbody>{paintBackTestItems}</tbody>
-        ) : (
-          <tbody>
-            <tr>
-              <td colSpan="4" className="text-center py-5">
-                생성된 백테스트가 없습니다.
-              </td>
-            </tr>
-          </tbody>
-        )}
-      </table>
-
-      {backTestItems.length ? (
-        <div className="relative w-full flex justify-center">
-          <Pagenation2
-            setPageNo={setPageNo}
-            selectedNum={pageNo}
-            totalCnt={totalCount}
-            pageSize={pageSize}
-          ></Pagenation2>
+      {isLoading ? (
+        <div className="w-full h-[80vh] flex justify-center items-center">
+          <Spinner />
         </div>
       ) : (
-        ""
+        <>
+          <div className="flex justify-between">
+            <Link to="create">
+              <button className="flex gap-1 px-2 py-1.5 mr-2 border border-slate-300 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 hover:fill-indigo-600 rounded-lg duration-300">
+                <Create />
+                <div className="col-span-2 my-auto">백테스트 생성</div>
+              </button>
+            </Link>
+            <div className="w-56">
+              <SearchBar onSearch={onSearch} />
+            </div>
+          </div>
+
+          <table className="table-auto w-full text-left mt-5">
+            <colgroup>
+              <col span="1" style={{ width: 5 + "%" }} />
+              <col span="1" style={{ width: 5 + "%" }} />
+              <col span="1" style={{ width: 60 + "%" }} />
+              <col span="1" style={{ width: 10 + "%" }} />
+              <col span="1" style={{ width: 15 + "%" }} />
+            </colgroup>
+            <ListTitle
+              onCheckedAll={onCheckedAll}
+              checked={
+                checkedList.length &&
+                checkedList.length === backTestItems.length
+                  ? true
+                  : false
+              }
+              titles={["No", "테스트 이름", "상태", "생성일"]}
+            />
+            {backTestItems.length ? (
+              <tbody>{paintBackTestItems}</tbody>
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan="4" className="text-center py-5">
+                    생성된 백테스트가 없습니다.
+                  </td>
+                </tr>
+              </tbody>
+            )}
+          </table>
+
+          {backTestItems.length ? (
+            <div className="relative w-full flex justify-center">
+              <Pagenation2
+                setPageNo={setPageNo}
+                selectedNum={pageNo}
+                totalCnt={totalCount}
+                pageSize={pageSize}
+              ></Pagenation2>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
       )}
     </PageContainer>
   );

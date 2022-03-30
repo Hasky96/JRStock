@@ -70,12 +70,13 @@ export default function BackTestCreateForm() {
       console.log("err: ", err)
     );
 
-    toast.success(
-      "백테스트가 성공적으로 시작되었습니다. 설정 기간에 따라 최대 30초 이상 소요됩니다."
-    );
-    console.log(res);
     if (res.status === 201) {
+      toast.success(
+        "백테스트가 성공적으로 시작되었습니다. 설정 기간에 따라 최대 30초 이상 소요됩니다."
+      );
       navigate(`/backtest/${res.data.id}`);
+    } else {
+      toast.error("백테스트 신청에 실패하였습니다.");
     }
   };
 

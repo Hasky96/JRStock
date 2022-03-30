@@ -21,7 +21,6 @@ export default function Strategy({ conditions, isLoading, id }) {
       const { buyStrategy, sellStrategy } = await trimStrategy(data);
       setBuyStrategy(buyStrategy);
       setSellStrategy(sellStrategy);
-      console.log(buyStrategy, sellStrategy);
       setIsStrategy(true);
     }
 
