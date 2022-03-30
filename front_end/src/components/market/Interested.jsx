@@ -2,6 +2,7 @@ import { getInterest, getLive, deleteInterest } from "../../api/stock";
 import { useEffect, useState, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, Transition } from "@headlessui/react";
+import { toast } from "react-toastify";
 
 export default function Interested() {
   const [stocks, setStocks] = useState([]);
@@ -53,16 +54,19 @@ export default function Interested() {
     navigate(`/stock/${codeNumber}/detail`);
   };
 
+  const deleteBookMark = async (codeNumber) => {
+    const res = await deleteInterest([codeNumber]);
+    return res.status === 200 ? true : false;
+  };
+
   // 관심 종목 삭제
   const clickDelete = async (codeNumber) => {
-    if (window.confirm("관심 종목에서 삭제하시겠습니까?")) {
-      try {
-        await deleteInterest([codeNumber]);
-        alert("삭제되었습니다.");
-        init();
-      } catch (e) {
-        console.log(e);
-      }
+    const status = deleteBookMark(codeNumber);
+    if (status) {
+      await init();
+      toast.success("관심종목 삭제에 성공하였습니다.");
+    } else {
+      toast.error("관심종목 삭제에 실패하였습니다.");
     }
   };
 
