@@ -15,15 +15,13 @@ export default function BackTestList() {
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 10;
 
-  const fetchBackTestItems = async () => {
-    const res = await getBacktestList({ page: pageNo, size: pageSize });
-    return res.data;
-  };
-
-  useEffect(async () => {
-    const { count, results } = await fetchBackTestItems();
-    setTotalCount(count);
-    setbackTestItems(results);
+  useEffect(() => {
+    async function fetchAndSetBacktestList() {
+      const res = await getBacktestList({ page: pageNo, size: pageSize });
+      setTotalCount(res.data.count);
+      setbackTestItems(res.data.results);
+    }
+    fetchAndSetBacktestList();
   }, [pageNo]);
 
   const onCheckedAll = (e) => {
@@ -44,9 +42,10 @@ export default function BackTestList() {
   };
 
   const paintBackTestItems = backTestItems.map((item, index) => {
-    const { title, created_at, final_asset } = item;
+    const { id, title, created_at, final_asset } = item;
     const status = final_asset ? "완료" : "테스트 중";
     const newItem = {
+      id,
       title,
       status: status,
       created_at: created_at.slice(0, 10),

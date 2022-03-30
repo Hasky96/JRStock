@@ -3,17 +3,30 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, FilterIcon } from "@heroicons/react/solid";
 import Pagenation from "../../Pagenation";
 import { records } from "../data.js";
+import { getBacktestTradeRecord } from "../../../api/backtest";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function TradingRecord() {
+export default function TradingRecord({ id, isLoading }) {
   const pageSize = 10;
   const [totalRecords, setTotalRecords] = useState(records);
   const [currentRecords, setCurrentRecords] = useState(records.slice(0, 10));
   const [totalCount, setTotalCount] = useState(records.length);
   const [pageNo, setPageNo] = useState(1);
+
+  const fetchTradeRecord = async (backtestId) => {
+    const res = await getBacktestTradeRecord(backtestId);
+    return res.data;
+  };
+
+  useEffect(() => {
+    const fetchAndSetTradeRecord = async () => {
+      const data = fetchTradeRecord(id);
+    };
+    const result = fetchTradeRecord(id);
+  }, [isLoading]);
 
   // const handleFilterClick = (e) => {
   //   e.preventDefault();
