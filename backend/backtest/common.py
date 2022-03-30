@@ -1,3 +1,11 @@
+from __future__ import absolute_import, unicode_literals
+
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JRstock.settings')
+
+import django
+django.setup()
+
 import pandas as pd
 from datetime import datetime, timedelta
 
@@ -22,65 +30,6 @@ strategy_indicator_dict={
     307: 'RSI', 308: 'RSI',
     407: 'OBV', 408: 'OBV'
 }
-
-def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition):
-    """백테스트
-
-    Args:
-        account (dict)): 잔액, 보유 주식    {"balance":1000000, "stocks":{}}
-        code_number (string): 주식 종목 코드    '005930'
-        start_date (string): 시작 날짜  '1995-05-02'
-        end_date (string): 종료 날짜    '2022-03-24' 
-        buy_condition (list): 매수 조건 (매수 전략들, 기준점수, 매매비율)   [ [101, 5, 5, 30], [307, 20, 30, 10, 40], 60, 100 ]
-        sell_condition (list): 매도 조건 (매도 전략들, 기준점수, 매매비율)   [ [102, 5, 4, 20], 20, 90 ]
-    """
-    # 정해진 기간의 백테스트 자료 가져오기
-    df = get_day_stock(code_number, start_date, end_date)
-
-    # =====필요한 결과값들 init
-    result_data = init_result_data(account, len(df))
-    
-    # 조건확인하여 필요한 Column 갱신
-    buy_option = ""
-    sell_option = ""
-    for cond in buy_condition[0:-2]:  # 매수
-        buy_option += strategy_name_dict[cond[0]] + " "
-        df = add_indicator_by_code(cond[0], cond[1:], df)
-
-    for cond in buy_condition[0:-2]:  # 매도
-        sell_option += strategy_name_dict[cond[0]] + " "
-        df = add_indicator_by_code(cond[0], cond[1:], df)
-
-
-    flag = True     # 매수 먼저
-    # 백테스트 시작
-    for i in range(0, len(df)):
-        total_weight = 0
-        if flag:  # 매수
-            for cond in buy_condition[0:-2]:    # 마지막 파라미터 2개 제외, 전략들만
-                total_weight += call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
-                
-                # =============== 해당되는 전략들의 이름만 넣기
-                # =============== 이름을 한글화한 목록을 추가해서 그걸 넣기
-                
-            if total_weight >= buy_condition[-2]:      # 기준선 이상이면 매수
-                account = buy(account, code_number, df.loc[i]['current_price'], buy_condition[-1], df.loc[i]["date"], buy_option)  
-                flag = False    # 매수, 매도 번갈아가며
-
-        else:       # 매도
-            for cond in sell_condition[0:-2]:
-                total_weight += call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
-            if total_weight >= sell_condition[-2]:      # 기준선 이상이면 매도
-                account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option)
-                result_data['win_lose_cnt'] += 1
-                flag = True
-
-        # =====매일마다 계산
-        result_data = day_calculate(account, result_data, df.loc[i])
-
-    # 최종 계산
-    create_database(account)
-    return end_calculate(account, result_data)
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
     """ 코드로 전략 실행하는 함수 : 동적으로 함수 호출, 호출할 함수 이름과 일치해야함
@@ -441,4 +390,3 @@ def end_calculate(account, result_data):
     # print('총 거래일수 :' + str(result_data['trading_days']) + '||내 손익 : ' + str(result_data['my_profit_loss']) + '|| 내 수익률 : ' + str(result_data['my_final_rate']) + '|| MDD : ' + str(result_data['mdd']))
     # print('시장 수익률 : ' + str(result_data['market_rate']) + '|| 시장초과수익률 : ' + str(result_data['market_over_price']) + '|| 최고자산 : ' + str(result_data['max_earn']) + '|| 최저자산 : ' + str(result_data['min_earn']))
     # print('최고수익률 : ' + str(max_earn_rate) + '|| 최저수익률 : ' + str(min_earn_rate))
-    return serializer
