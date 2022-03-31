@@ -138,7 +138,7 @@ export default function BoardList() {
         />
       </div>
       <div className="border-collapse w-full text-center my-5">
-        <ul>
+        <ul className="xl:text-base lg:text-sm text-xs">
           <li className="grid grid-cols-12 h-12 bg-slate-100">
             <p className="col-span-2 my-auto">글쓴이</p>
             <p className="col-span-6 my-auto">제목</p>
