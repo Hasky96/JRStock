@@ -21,14 +21,33 @@ strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
     203: 'macd_golden_cross', 204: 'macd_dead_cross', 205: 'macd_straight', 206: 'macd_reverse',
     307: 'rsi_high', 308: 'rsi_low',
-    407: 'obv_high', 408: 'obv_low'
+    407: 'obv_high', 408: 'obv_low',
+    507: 'mfi_high', 508: 'mfi_low',
+    605: 'ikh_straight', 606: 'ikh_reverse',
+    707: 'ks_high', 708: 'ks_low',
+    807: 'kq_high', 808: 'kq_low'
+}
+
+strategy_korean_name_dict={
+    101: 'SMA', 102: 'SMA', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
+    203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
+    307: 'RSI', 308: 'RSI',
+    407: 'OBV', 408: 'OBV',
+    507: '자름흐름지표(MFI) 높음', 508: '자름흐름지표(MFI) 낮음',
+    605: '일목균형표 매수조건', 606: '일목균형표 매도조건',
+    707: '코스피지수 높음', 708: '코스피지수 낮음',
+    807: '코스피지수 높음', 808: '코스닥지수 낮음'
 }
 
 strategy_indicator_dict={
     101: 'SMA', 102: 'SMA', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
     203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
     307: 'RSI', 308: 'RSI',
-    407: 'OBV', 408: 'OBV'
+    407: 'OBV', 408: 'OBV',
+    507: 'MFI', 508: 'MFI',
+    605: 'IKH', 606: 'IKH',
+    707: 'KS', 708: 'KS',
+    807: 'KQ', 808: 'KQ'
 }
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
