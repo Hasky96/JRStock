@@ -1,9 +1,4 @@
-import {
-  nameDict,
-  paramDict,
-  parameters,
-  nameToId,
-} from "../config/backtestConfig";
+import { nameDict, parameters, nameToId } from "../config/backtestConfig";
 
 export const trimResultSummary = async ({
   basic_info,

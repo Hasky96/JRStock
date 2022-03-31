@@ -2,6 +2,7 @@ import { useEffect, useState, Fragment } from "react";
 import { getBacktestTradeRecord } from "../../../api/backtest";
 import Pagenation2 from "../../Pagenation2";
 import { nameDict } from "../../../config/backtestConfig";
+import ReactTooltip from "react-tooltip";
 
 export default function TradingRecord({ id, isLoading }) {
   const [currentRecords, setCurrentRecords] = useState([]);
@@ -30,6 +31,25 @@ export default function TradingRecord({ id, isLoading }) {
     }
   }, [pageNo]);
 
+  const applyTruncate = (content, index) => {
+    return (
+      <>
+        <a data-tip data-for={`${content}-${index}`}>
+          <div className="block truncate m-auto xl:w-96 w-48">{content}</div>
+        </a>
+        <ReactTooltip
+          className="tooltipExtra"
+          id={`${content}-${index}`}
+          type="dark"
+          effect="solid"
+          backgroundColor="#E69A8DFF"
+        >
+          <span>{content}</span>
+        </ReactTooltip>
+      </>
+    );
+  };
+
   const paintRecords = currentRecords.map(
     (
       {
@@ -41,8 +61,6 @@ export default function TradingRecord({ id, isLoading }) {
         stock_price,
         current_rate,
         current_asset,
-        company_name,
-        company_code,
         buy_sell_option,
       },
       index
@@ -51,7 +69,7 @@ export default function TradingRecord({ id, isLoading }) {
         <td>{index + 1 + (pageNo - 1) * 10}</td>
         <td>{date}</td>
         <td>{isBuy ? "매수" : "매도"}</td>
-        <td>{nameDict[buy_sell_option.slice(0, -1)]}</td>
+        <td>{applyTruncate(buy_sell_option, index)}</td>
         <td>{stock_amount}</td>
         <td>{stock_price.toLocaleString()}</td>
         <td

@@ -234,9 +234,9 @@ export const profitKey = [
     content: "연 수익률을 전체 년도수로 나눈 값",
   },
   {
-    title: "최대 손실폭(MDD)",
+    title: "최대 손실폭",
     isToolTip: true,
-    content: "Maximum DrawDown, 최고점 대비 낙폭의 크기",
+    content: "Maximum DrawDown(MDD), 최고점 대비 낙폭의 크기",
   },
 ];
 

@@ -73,7 +73,6 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       const data = await fetchBacktestTradeRecord(id);
       const timeSortedData = data.sort(date_ascending);
       const { records, markers } = await trimRecords(timeSortedData);
-
       setTradeRecord(records);
       setMarkers(markers);
       setIsTradeRecord(true);
@@ -159,7 +158,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
   return (
     <div className="w-full flex flex-col justify-center items-center">
       <div className="flex flex-col xl:flex-row gap-3">
-        <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
+        <div className="relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3 gap-x-2">
           <div className="col-span-6 text-left text-lg pb-2 font-semibold flex">
             {resultSummary.basicInfo[0]} ({resultSummary.basicInfo[1]})
           </div>
@@ -167,7 +166,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
           {paintAssetKey}
           {paintAssetValue}
         </div>
-        <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
+        <div className="relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3 gap-x-2">
           <div className="col-span-6 text-left text-lg pb-2 font-semibold">
             수익률 <span className="text-sm text-gray-500">(%)</span>
           </div>

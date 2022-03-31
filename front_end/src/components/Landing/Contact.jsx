@@ -27,7 +27,6 @@ export default function Contact() {
   const handleInputChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
-    console.log(name, value);
     handleStateChange(name, value);
   };
 
@@ -49,7 +48,11 @@ export default function Contact() {
         </div>
       </Fade>
       <Fade direction="right">
-        <form className="w-full" onSubmit={(e) => handleSubmit(e)}>
+        <form
+          className="w-full"
+          onSubmit={(e) => handleSubmit(e)}
+          acceptCharset="utf-8"
+        >
           <div className="input-container">
             <label htmlFor="name">Name</label>
             <input
