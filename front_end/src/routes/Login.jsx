@@ -11,7 +11,6 @@ export default function Login() {
   // 쿠키에서 아이디 조회
   const getCookie = () => {
     const el = document.cookie.split(";");
-    console.log(el);
     let x, y;
     for (let i = 0; i < el.length; i++) {
       x = el[i].substr(0, el[i].indexOf("="));
