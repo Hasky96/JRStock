@@ -53,6 +53,9 @@ export default function StockItemDetail() {
 
   const updateLive = async () => {
     setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
     try {
       const resLive = await getLive(id);
       setLive(resLive.data);
@@ -62,7 +65,6 @@ export default function StockItemDetail() {
       setIsLive(false);
       setIsError(true);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -340,7 +342,9 @@ export default function StockItemDetail() {
                     <Spinner />
                   </div>
                 )}
-                <div className={isFinInit ? "opacity-50 pointer-events-none" : ""}>
+                <div
+                  className={isFinInit ? "opacity-50 pointer-events-none" : ""}
+                >
                   <div className="font-extrabold mb-2 text-lg">
                     {detail.basic_info.company_name}
                   </div>
