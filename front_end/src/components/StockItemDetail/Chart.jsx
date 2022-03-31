@@ -9,6 +9,7 @@ import {
   transCandleData,
   transVolumeData,
 } from "../../util/stockDataUtil";
+import { ReactComponent as Spinner } from "../../assets/spinner.svg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -21,6 +22,7 @@ export default function Chart({ title }) {
   const [monthData, setMonthData] = useState();
   const [period, setPeriod] = useState("1D");
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
 
   const init = async () => {
     let candleData;
@@ -31,6 +33,7 @@ export default function Chart({ title }) {
     volumeData = transVolumeData(resDay.data);
     setData(lineData);
     setDayData({ candleData, volumeData });
+    setIsLoading(false);
 
     const resWeek = await getWeekStock(id);
     candleData = transCandleData(resWeek.data);
@@ -81,30 +84,37 @@ export default function Chart({ title }) {
   };
 
   return (
-    <div className="pt-1 grid grid-cols-1">
-      <div className="grid border-2 my-h-45 grid-rows-6 rounded-xl m-2 p-3">
-        {"1D1W1M1Y".includes(period) && (
-          <div className="grid row-span-5">
-            <div className="relative w-full h-96">
-              {data && <LineChart data={data} period={period} />}
-            </div>
-          </div>
-        )}
-        {"일봉주봉월봉".includes(period) && (
-          <div className="grid row-span-5">
-            {seriesesData.get(period) && (
+    <div className="pt-1 grid grid-cols-1 relative">
+      {isLoading && (
+        <div className="absolute top-[45%] right-[45%]">
+          <Spinner />
+        </div>
+      )}
+      <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
+        <div className="grid border-2 my-h-45 grid-rows-6 rounded-xl m-2 p-3">
+          {"1D1W1M1Y".includes(period) && (
+            <div className="grid row-span-5">
               <div className="relative w-full h-96">
-                <CandleChart
-                  title={title}
-                  candleData={seriesesData.get(period).candleData}
-                  volumeData={seriesesData.get(period).volumeData}
-                  period={period}
-                />
+                {data && <LineChart data={data} period={period} />}
               </div>
-            )}
-          </div>
-        )}
-        <div className="switcher row-span-1 pt-8">{btnList()}</div>
+            </div>
+          )}
+          {"일봉주봉월봉".includes(period) && (
+            <div className="grid row-span-5">
+              {seriesesData.get(period) && (
+                <div className="relative w-full h-96">
+                  <CandleChart
+                    title={title}
+                    candleData={seriesesData.get(period).candleData}
+                    volumeData={seriesesData.get(period).volumeData}
+                    period={period}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          <div className="switcher row-span-1 pt-8">{btnList()}</div>
+        </div>
       </div>
     </div>
   );
