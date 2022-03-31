@@ -1,0 +1,45 @@
+.result-switcher {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  margin-top: 8px;
+  color: #2196f3;
+}
+
+.result-switcher-item {
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #ff825c;
+  background-color: transparent;
+  margin-right: 8px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  transition-duration: 300ms;
+}
+
+.result-switcher-item:hover {
+  background-color: #ff825c;
+  color: white;
+}
+
+.result-switcher-active-item {
+  text-decoration: none;
+  cursor: default;
+  color: white;
+}
+
+.result-switcher-active-item,
+.result-switcher-active-item:hover {
+  background-color: #ff825c;
+}
+
+.tooltipExtra {
+  background: rgba(255, 130, 92, 0.9) !important;
+  font-size: 10px !important;
+  padding: 5px !important;
+  pointer-events: auto !important;
+}

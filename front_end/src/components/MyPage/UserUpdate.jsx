@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import UserUpdateForm from "./UserUpdateForm";
 import PasswordCheck from "./PasswordCheck";
 import { userDetail } from "../../api/user";
+import GoogleUserUpdateForm from "./GoogleUserUpdateForm";
 
 export default function UserUpdate() {
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -22,7 +23,9 @@ export default function UserUpdate() {
 
   return (
     <div className="w-full flex flex-col items-center">
-      {isGoogle || isAuthorized ? (
+      {isGoogle ? (
+        <GoogleUserUpdateForm />
+      ) : isAuthorized ? (
         <UserUpdateForm />
       ) : (
         <PasswordCheck setIsAuthorized={setIsAuthorized} />

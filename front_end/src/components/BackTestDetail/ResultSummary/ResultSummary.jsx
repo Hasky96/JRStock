@@ -8,6 +8,8 @@ import { trimAnnually, trimDaily, trimRecords } from "../../../util/trimResult";
 import { ProfitLineChart } from "./ProfitLineChart";
 import { assetKey, profitKey } from "../../../config/backtestConfig";
 import { AnnualProfit } from "../Profit/AnnualProfit";
+import "./ResultSummary.css";
+import ReactTooltip from "react-tooltip";
 
 function date_ascending(a, b) {
   var dateA = new Date(a["time"]).getTime();
@@ -98,7 +100,9 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
         window.dispatchEvent(new Event("resize"));
       }}
       className={
-        period === el ? "switcher-item switcher-active-item" : "switcher-item"
+        period === el
+          ? "result-switcher-item result-switcher-active-item"
+          : "result-switcher-item"
       }
     >
       {el}
@@ -107,15 +111,38 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
 
   const paintAssetKey = assetKey.map((key, index) => (
     <div key={index} className="col-span-1 mx-auto">
-      <h2 className="text-xs text-gray-500">{key}</h2>
+      <a className="text-xs text-gray-500">{key}</a>
     </div>
   ));
 
-  const paintProfitKey = profitKey.map((key, index) => (
-    <div key={index} className="col-span-1 mx-auto">
-      <h2 className="text-xs text-gray-500">{key}</h2>
-    </div>
-  ));
+  const paintProfitKey = profitKey.map(
+    ({ title, isToolTip, content }, index) => (
+      <div key={index} className="col-span-1 mx-auto">
+        {isToolTip ? (
+          <>
+            <a
+              className="text-xs text-gray-500"
+              data-tip
+              data-for={`${title}-${index}`}
+            >
+              {title}
+            </a>
+            <ReactTooltip
+              className="tooltipExtra"
+              id={`${title}-${index}`}
+              type="dark"
+              effect="solid"
+              backgroundColor="#E69A8DFF"
+            >
+              <span>{content}</span>
+            </ReactTooltip>
+          </>
+        ) : (
+          <a className="text-xs text-gray-500">{title}</a>
+        )}
+      </div>
+    )
+  );
 
   const paintAssetValue = assetResult.map((value, index) => (
     <div key={index} className="col-span-1 mx-auto">
@@ -133,9 +160,10 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     <div className="w-full flex flex-col justify-center items-center">
       <div className="flex flex-col xl:flex-row gap-3">
         <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
-          <div className="col-span-6 text-left text-lg pb-2 font-semibold">
-            운용자산
+          <div className="col-span-6 text-left text-lg pb-2 font-semibold flex">
+            {resultSummary.basicInfo[0]} ({resultSummary.basicInfo[1]})
           </div>
+
           {paintAssetKey}
           {paintAssetValue}
         </div>

@@ -33,7 +33,7 @@ export default function ToolContent2({ sId }) {
     }
     list.push(
       <li key={0}>
-        <span className="font-bold">{"weight "}</span>
+        <span className="font-bold">{"점수 "}</span>
         <span>{`${params[0]}`}</span>
       </li>
     );
