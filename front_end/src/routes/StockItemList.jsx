@@ -11,6 +11,7 @@ import costMap from "../util/costMap";
 
 import { ReactComponent as ModalCancle } from "../assets/modalCancle.svg";
 import OnOffToggle from "../components/OnOffToggle";
+import { ReactComponent as Spinner } from "../assets/spinner.svg";
 
 export default function StockItemList() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function StockItemList() {
   const [search, setSearch] = useState("");
   const [timer, setTimer] = useState(null);
   const [filterData, setFilterData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const pageSize = 10;
 
   // 선택된 필터 지표
@@ -56,6 +58,7 @@ export default function StockItemList() {
         company_name: search,
       });
     }
+    setIsLoading(false);
     setStocks(res.data.results);
     setTotalCount(res.data.count);
     setCurrentList([]);
@@ -502,7 +505,7 @@ export default function StockItemList() {
                   type="text"
                   name="price"
                   id="price"
-                  className="hover:border-primary focus:ring-primary focus:border-primary block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                  className="hover:border-primary focus:ring-primary focus:border-primary text-xs block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
                   placeholder="Search..."
                   onChange={(e) => {
                     e.preventDefault();
@@ -748,6 +751,11 @@ export default function StockItemList() {
                 )}
               </p>
             </li>
+            {isLoading && (
+              <div className="flex justify-center my-10">
+                <Spinner />
+              </div>
+            )}
             {stockList()}
           </ul>
         </div>

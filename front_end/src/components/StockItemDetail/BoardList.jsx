@@ -4,6 +4,7 @@ import ListHeader from "../ListHeader";
 import Pagenation from "../Pagenation";
 import { getBoardList, getMyBoardList } from "../../api/stock";
 import { timeMark } from "../../config/datetime";
+import { ReactComponent as Spinner } from "../../assets/spinner.svg";
 
 export default function BoardList() {
   const [pageNo, setPageNo] = useState(1);
@@ -13,6 +14,7 @@ export default function BoardList() {
   const [filterState, setFilterState] = useState("전체 보기");
   const [search, setSearch] = useState("");
   const [timer, setTimer] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
   const pageSize = 14;
@@ -26,6 +28,8 @@ export default function BoardList() {
     }
     setBoards(res.data.results);
     setTotalCount(res.data.count);
+
+    setIsLoading(false);
 
     if (sessionStorage.getItem("access_token")) {
       setIsLogin(true);
@@ -138,13 +142,18 @@ export default function BoardList() {
         />
       </div>
       <div className="border-collapse w-full text-center my-5">
-        <ul>
+        <ul className="xl:text-base lg:text-sm text-xs">
           <li className="grid grid-cols-12 h-12 bg-slate-100">
             <p className="col-span-2 my-auto">글쓴이</p>
             <p className="col-span-6 my-auto">제목</p>
             <p className="col-span-2 my-auto">작성시간</p>
             <p className="col-span-2 my-auto">수정시간</p>
           </li>
+          {isLoading && (
+            <div className="flex justify-center my-10">
+              <Spinner />
+            </div>
+          )}
           {boardList()}
         </ul>
       </div>
