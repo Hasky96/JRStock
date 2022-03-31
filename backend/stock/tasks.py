@@ -265,6 +265,7 @@ def add_predict_kospi():
     
     return message
 
+@shared_task
 def add_predict_kosdaq():
     today = datetime.now()
     start_mm_message = today.strftime('%Y-%m-%d') + ' 날짜의 Kosdaq 종가를 예측합니다.'
