@@ -10,6 +10,7 @@ import { ReactComponent as NoticeWriteIcon } from "../assets/noticeWriteIcon.svg
 import useIsAdmin from "../util/useIsAdmin";
 import ToolContent1 from "../components/commons/ToolContent1";
 import NoticeListItem from "../components/notice/NoticeListItem";
+import { ReactComponent as Spinner } from "../assets/spinner.svg";
 
 // const contents = [
 //   {
@@ -32,11 +33,13 @@ export default function Announcement() {
   const isAdmin = useIsAdmin();
   const [timer, setTimer] = useState();
   const inputRef = useRef();
+  const [isLoading, setIsLoading] = useState(true);
 
   const getNotice = async (pN) => {
     const data = await getItems(pN, pageSize, inputRef.current.value);
     setNoticeItems(data.results);
     setTotalCount(data.count);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -98,6 +101,11 @@ export default function Announcement() {
             <p className="col-span-3 my-auto">작성자</p>
             <p className="col-span-3 my-auto">등록일</p>
           </li>
+          {isLoading && (
+            <div className="flex justify-center my-10">
+              <Spinner />
+            </div>
+          )}
           {noticeList()}
         </ul>
       </div>

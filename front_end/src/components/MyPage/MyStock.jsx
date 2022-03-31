@@ -9,19 +9,21 @@ import costMap from "../../util/costMap";
 import { ReactComponent as ModalCancle } from "../../assets/modalCancle.svg";
 import OnOffToggle from "../OnOffToggle";
 import { toast } from "react-toastify";
+import { ReactComponent as Spinner } from "../../assets/spinner.svg";
 
 export default function StockItemList() {
   const navigate = useNavigate();
   const [checkedList, setcheckedList] = useState([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [currentList, setCurrentList] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(-1);
   const [pageNo, setPageNo] = useState(1);
   const [stocks, setStocks] = useState([]);
   const [sortBy, setSortBy] = useState("-market_cap");
   const [search, setSearch] = useState("");
   const [timer, setTimer] = useState(null);
   const [filterData, setFilterData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const pageSize = 10;
 
   // 선택된 필터 지표
@@ -56,6 +58,7 @@ export default function StockItemList() {
     }
     setStocks(res.data.results);
     setTotalCount(res.data.count);
+    setIsLoading(false);
     setCurrentList([]);
     let temp = [];
     let isChecked = true;
@@ -684,7 +687,11 @@ export default function StockItemList() {
               )}
             </p>
           </li>
-
+          {isLoading && (
+            <div className="flex justify-center my-10">
+              <Spinner />
+            </div>
+          )}
           {totalCount ? (
             stockList()
           ) : (

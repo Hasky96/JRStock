@@ -1,10 +1,12 @@
 import { getNews } from "../../api/stock";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ReactComponent as Spinner } from "../../assets/spinner.svg";
 
 export default function News() {
   const [news, setNews] = useState([]);
   const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
 
   const init = async () => {
@@ -13,6 +15,7 @@ export default function News() {
     if (!res.data.length) {
       setIsError(true);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -54,6 +57,11 @@ export default function News() {
             <p className="col-span-1 my-auto">정보제공</p>
             <p className="col-span-1 my-auto">날짜</p>
           </li>
+          {isLoading && (
+            <div className="flex justify-center items-center my-10">
+              <Spinner />
+            </div>
+          )}
           {!isError ? (
             newsList()
           ) : (
