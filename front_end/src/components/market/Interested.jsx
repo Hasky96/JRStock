@@ -120,7 +120,9 @@ export default function Interested() {
                 )}
                 {!live.isError && (
                   <div className="flex mt-2">
-                    <div className="mr-3 xl:text-base lg:text-sm text-xs">전일대비</div>
+                    <div className="mr-3 xl:text-base lg:text-sm text-xs">
+                      전일대비
+                    </div>
                     <div
                       className={
                         "flex xl:text-base lg:text-sm text-xs " +
@@ -140,7 +142,9 @@ export default function Interested() {
                             ? "▼ " + live.changes.substr(1)
                             : "- " + live.changes)}
                       </div>
-                      <div className="text-gray-700 xl:text-base lg:text-sm text-xs">&nbsp;|&nbsp;</div>
+                      <div className="text-gray-700 xl:text-base lg:text-sm text-xs">
+                        &nbsp;|&nbsp;
+                      </div>
                       <div>
                         {live.changes &&
                           (parseInt(live.changes) > 0
