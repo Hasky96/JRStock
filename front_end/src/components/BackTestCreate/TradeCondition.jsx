@@ -9,6 +9,7 @@ import {
 } from "../../config/backtestConfig";
 import { ReactComponent as Delete } from "../../assets/remove_circle.svg";
 import Tooltip from "../commons/Tooltip";
+import Tooltip2 from "../commons/Tooltip2";
 import ToolContent from "../commons/ToolContent2";
 
 export default function TradeCondition({
@@ -179,9 +180,14 @@ export default function TradeCondition({
   return (
     <div className="w-full grid grid-cols-4 place-content-start border-0 border-b-1 border-gray-200 shadow-lg rounded text-center p-3 gap-2">
       <div
-        className={`col-span-4 text-left text-lg font-semibold cursor-default text-${color}-600`}
+        className={`relative col-span-4 text-left text-lg font-semibold cursor-default text-${color}-600`}
       >
-        {name} 조건
+        <Tooltip2 title={`${name} 조건`} cPos="left-[70px] bottom-[5px]">
+          <div className="text-black text-base font-normal">
+            {name} 전략들의 weight 총 합계가 <strong>매매 기준 점수</strong>{" "}
+            이상일 경우 {name}를 진행한다.
+          </div>
+        </Tooltip2>
       </div>
       <div className="col-span-2 text-left px-5">
         <label htmlFor={`${type}_standard`} className="pl-1">
