@@ -1,4 +1,5 @@
-from common import *
+from .common import *
+
 def SMA(params, df):
     """ 단순이동평균 (Simple Moving Average)
 

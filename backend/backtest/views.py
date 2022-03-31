@@ -78,7 +78,6 @@ def test_start(request):
     sell_strategy = request.data.get('sell_strategy')               # 매도조건
     sell_standard = request.data.get('sell_standard')               # 매수비중
     sell_ratio = request.data.get('sell_ratio')                     # 매수비율
-    commission = round((float(commission) / 100) + 1, 3)
     
     result_base = {
         'title' : title,
@@ -101,6 +100,7 @@ def test_start(request):
     if serializer.is_valid(raise_exception=True):
         result = serializer.save(user=request.user, basic_info=basic_info)
 
+    commission = (float(commission) / 100) + 1
     account = {
         "balance" : asset,
         "start_price" : asset,
@@ -336,4 +336,19 @@ def get_rank(request):
     
     serializer = RankResultSerializer(result, many=True)
     return paginator.get_paginated_response(serializer.data)
+
+@swagger_auto_schema(
+    method='delete',
+    operation_id='백테스트 제거(유저)',
+    operation_description='백테스트 결과를 제거합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: ""}
+)  
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def delete_backtest(request, pk):
+    backtest_result = get_object_or_404(Result, pk=pk)
+    backtest_result.delete()
     
+    return Response(status=status.HTTP_200_OK)
