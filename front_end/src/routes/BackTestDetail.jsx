@@ -60,14 +60,15 @@ export default function BackTestDetail() {
 
       const result = await fetchBacktestDetail(id);
       if (result.final_asset) {
+        clearInterval(fetching);
         const { resultSummary, conditions } = await trimResultSummary(result);
         setBacktestResult(resultSummary);
         setBasicCondition(conditions);
         setIsLoading(false);
         console.log("@loading over");
-        clearInterval(fetching);
       } else {
         console.log("@loading");
+        console.log(result);
         setIsTesting(true);
       }
     }, 3000);
