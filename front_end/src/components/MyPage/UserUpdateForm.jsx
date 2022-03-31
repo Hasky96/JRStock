@@ -74,6 +74,7 @@ export default function UserUpdate() {
   };
 
   const handleImageChange = (e) => {
+    e.preventDefault();
     handleValueChange("profile_img", e.target.files[0]);
 
     const reader = new FileReader();
@@ -83,7 +84,8 @@ export default function UserUpdate() {
     };
   };
 
-  const handleImageDelete = () => {
+  const handleImageDelete = (e) => {
+    e.preventDefault();
     handleValueChange("profile_img_preview", "");
     handleValueChange("profile_img", "");
   };
@@ -239,6 +241,7 @@ export default function UserUpdate() {
                 name="profile_img"
                 type="file"
                 className="hidden"
+                accept="image/*"
                 onChange={(e) => handleImageChange(e)}
               />
             </div>

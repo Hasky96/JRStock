@@ -97,7 +97,7 @@ export default function TradeCondition({
     return (
       <div
         onClick={() => handleDeleteButton(values[`${type}_strategy`][i]["id"])}
-        className="absolute -left-2 top-4 hover:cursor-pointer"
+        className="absolute -left-2 top-7 hover:cursor-pointer"
       >
         <Delete className="fill-active hover:fill-red-700 duration-300" />
       </div>
@@ -132,7 +132,7 @@ export default function TradeCondition({
         <div key={i} className="col-span-4">
           <div className="relative grid grid-cols-2 text-left pt-0">
             {i === 0 ? "" : paintDeleteButton(i)}
-            <Tooltip iPos={"left-5 top-7"} cPos={"top-6"}>
+            <Tooltip iPos={"-left-[8px] top-0"} cPos={"top-6"}>
               <ToolContent sId={strategies[i]["strategy"]}></ToolContent>
             </Tooltip>
             <div className="col-span-1 px-5">
@@ -147,7 +147,7 @@ export default function TradeCondition({
               {paintParamInput(strategies[i]["strategy"], i)}
               <div className="flex flex-col col-span-1">
                 <label htmlFor={`${i}_weight`} className="text-gray-500">
-                  weight
+                  점수
                 </label>
                 <input
                   id={`${i}_weight`}
@@ -176,16 +176,17 @@ export default function TradeCondition({
       <div
         className={`relative col-span-4 text-left text-lg font-semibold cursor-default text-${color}-600`}
       >
-        <Tooltip2 title={`${name} 조건`} cPos="left-[70px] bottom-[5px]">
-          <div className="text-black text-base font-normal">
-            {name} 전략들의 weight 총 합계가 <strong>매매 기준 점수</strong>{" "}
-            이상일 경우 {name}를 진행한다.
-          </div>
-        </Tooltip2>
+        {name} 조건
       </div>
       <div className="col-span-2 text-left px-5">
-        <label htmlFor={`${type}_standard`} className="pl-1">
+        <label htmlFor={`${type}_standard`} className="relative pl-1">
           매매 기준 점수
+          <Tooltip iPos={"-left-[28px] top-0"} cPos={"top-6"}>
+            <div className="text-black text-base font-normal">
+              {name} 전략들의 세부 설정 점수 총 합계가{" "}
+              <strong>매매 기준 점수</strong> 이상일 경우 {name}를 진행합니다.
+            </div>
+          </Tooltip>
         </label>
         <div className="flex items-center">
           <input

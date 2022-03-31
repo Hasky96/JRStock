@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { validPassword } from "../../regex";
 import { userDetail, userUpdate } from "../../api/user";
 import { API_MEDIA_URL } from "../../config";
 import { toast } from "react-toastify";
-import PasswordHide from "./PasswordHide";
 
-export default function UserUpdate() {
+export default function GoogleUserUpdateForm() {
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -52,6 +50,7 @@ export default function UserUpdate() {
   };
 
   const handleImageChange = (e) => {
+    e.preventDefault();
     handleValueChange("profile_img", e.target.files[0]);
 
     const reader = new FileReader();
@@ -61,7 +60,8 @@ export default function UserUpdate() {
     };
   };
 
-  const handleImageDelete = () => {
+  const handleImageDelete = (e) => {
+    e.preventDefault();
     handleValueChange("profile_img_preview", "");
     handleValueChange("profile_img", "");
   };
@@ -155,7 +155,7 @@ export default function UserUpdate() {
               </label>
               <button
                 type="button"
-                onClick={() => handleImageDelete()}
+                onClick={(e) => handleImageDelete(e)}
                 className="ml-3 w-30 h-10 rounded-lg shadow-lg p-2 text-primary border hover:bg-active hover:text-white duration-300 font-bold"
               >
                 삭제
@@ -165,6 +165,7 @@ export default function UserUpdate() {
                 name="profile_img"
                 type="file"
                 className="hidden"
+                accept="image/*"
                 onChange={(e) => handleImageChange(e)}
               />
             </div>

@@ -6,6 +6,7 @@ import {
 } from "../config/backtestConfig";
 
 export const trimResultSummary = async ({
+  basic_info,
   test_start_date,
   test_end_date,
   asset,
@@ -26,6 +27,7 @@ export const trimResultSummary = async ({
   if (final_asset) {
     return {
       resultSummary: {
+        basicInfo: [basic_info.company_name, basic_info.code_number],
         assetResult: [
           parseInt(asset).toLocaleString(),
           parseInt(final_earn).toLocaleString(),

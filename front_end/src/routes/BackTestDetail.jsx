@@ -68,7 +68,6 @@ export default function BackTestDetail() {
         console.log("@loading over");
       } else {
         console.log("@loading");
-        console.log(result);
         setIsTesting(true);
       }
     }, 3000);

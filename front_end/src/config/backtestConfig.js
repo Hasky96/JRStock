@@ -56,13 +56,13 @@ export const options = [
 ];
 
 export const paramDict = {
-  1: "period",
-  2: "err",
-  3: "short_period",
-  4: "long_period",
-  5: "signal",
-  6: "index",
-  7: "count",
+  1: "기간",
+  2: "오차",
+  3: "단기선",
+  4: "장기선",
+  5: "신호선",
+  6: "임계치",
+  7: "번호",
 };
 
 export const configParam = {
@@ -209,15 +209,35 @@ export const assetKey = [
   "최종 자산(원)",
   "시작일",
   "종료일",
-  "총 거래일 수(일)",
+  "총 기간(일)",
 ];
 export const profitKey = [
-  "누적 수익률",
-  "시장초과 수익률",
-  "승패율(%)",
-  "일평균 수익률",
-  "연평균 수익률(CAGR)",
-  "최대 손실폭(MDD)",
+  { title: "누적 수익률", isToolTip: false },
+  {
+    title: "시장초과 수익률",
+    isToolTip: true,
+    content: "내 수익률과 시장 수익률(KOSPI)의 차이",
+  },
+  {
+    title: "승률",
+    isToolTip: true,
+    content: "매수 금액보다 비싸게 매도한 거래의 비율",
+  },
+  {
+    title: "일평균 수익률",
+    isToolTip: true,
+    content: "일 수익률을 전체 거래일로 나눈 값",
+  },
+  {
+    title: "연평균 수익률",
+    isToolTip: true,
+    content: "연 수익률을 전체 년도수로 나눈 값",
+  },
+  {
+    title: "최대 손실폭(MDD)",
+    isToolTip: true,
+    content: "Maximum DrawDown, 최고점 대비 낙폭의 크기",
+  },
 ];
 
 export const nameDict = {
