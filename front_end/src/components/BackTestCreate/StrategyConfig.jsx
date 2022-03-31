@@ -9,6 +9,8 @@ import {
 } from "../../config/backtestConfig";
 import { ReactComponent as Dropdown } from "../../assets/dropdown.svg";
 import { ReactComponent as DropdownRight } from "../../assets/dropdown_right.svg";
+import Tooltip from "../commons/Tooltip";
+import ToolContent from "../commons/ToolContent2";
 
 export default function StrategyConfig({ values, setValues, type, index }) {
   const [strategy, setStrategy] = useState(
@@ -95,7 +97,16 @@ min-w-32
         className="w-full outline-none focus:outline-none border px-3 py-1 bg-white rounded-sm flex items-center min-w-32"
       >
         <div className="pr-1 flex flex-col flex-1 justify-center">
-          <div className="pr-1 font-semibold flex-1">{strategy}</div>
+          <div className="pr-1 m-auto font-semibold flex-1">
+            <span className="relative">
+              <Tooltip iPos={"-right-[2px] top-0"} cPos={"top-6"}>
+                <ToolContent
+                  sId={values[`${type}_strategy`][index]["strategy"]}
+                ></ToolContent>
+              </Tooltip>
+              {strategy}
+            </span>
+          </div>
           <div className="pr-1 font-semibold text-sm text-gray-500 flex-1 relative">
             {detail}
           </div>

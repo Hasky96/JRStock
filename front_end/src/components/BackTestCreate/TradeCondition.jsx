@@ -132,9 +132,6 @@ export default function TradeCondition({
         <div key={i} className="col-span-4">
           <div className="relative grid grid-cols-2 text-left pt-0">
             {i === 0 ? "" : paintDeleteButton(i)}
-            <Tooltip iPos={"-left-[8px] top-0"} cPos={"top-6"}>
-              <ToolContent sId={strategies[i]["strategy"]}></ToolContent>
-            </Tooltip>
             <div className="col-span-1 px-5">
               <StrategyConfig
                 type={type}
@@ -181,7 +178,7 @@ export default function TradeCondition({
       <div className="col-span-2 text-left px-5">
         <label htmlFor={`${type}_standard`} className="relative pl-1">
           매매 기준 점수
-          <Tooltip iPos={"-left-[28px] top-0"} cPos={"top-6"}>
+          <Tooltip iPos={"left-[100px] top-0"} cPos={"top-6"}>
             <div className="text-black text-base font-normal">
               {name} 전략들의 세부 설정 점수 총 합계가{" "}
               <strong>매매 기준 점수</strong> 이상일 경우 {name}를 진행합니다.
@@ -206,7 +203,7 @@ export default function TradeCondition({
       </div>
       <div className="col-span-2 text-left px-5">
         <label htmlFor={`${type}_ratio`} className="pl-1">
-          매매 비율 (%)
+          {name} 비율 (%)
         </label>
         <div className="flex items-center">
           <input
