@@ -36,6 +36,7 @@ export default function Announcement() {
   const [isLoading, setIsLoading] = useState(true);
 
   const getNotice = async (pN) => {
+    setIsLoading(true);
     const data = await getItems(pN, pageSize, inputRef.current.value);
     setNoticeItems(data.results);
     setTotalCount(data.count);

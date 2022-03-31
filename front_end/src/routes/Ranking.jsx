@@ -8,6 +8,7 @@ import { getBacktestRank } from "../api/ranking";
 import OnOffToggle from "../components/OnOffToggle";
 import Searchbar from "../components/ranking/Searchbar";
 import { RankingTable } from "../components/ranking/RankingTable";
+import { ReactComponent as Spinner } from "../assets/spinner.svg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -29,6 +30,7 @@ export default function Ranking() {
   const pageSize = 10;
   const [timer, setTimer] = useState();
   const inputRef = useRef();
+  const [isLoading, setIsLoading] = useState(true);
 
   // 탭, 토글, 검색어가 바뀌면 초기 데이터 다시 설정
   const init = async () => {
@@ -61,6 +63,7 @@ export default function Ranking() {
   }, [pageNo]);
 
   const getData = async (pN) => {
+    setIsLoading(true);
     let resData = await getBacktestRank(
       pN,
       pageSize,
@@ -70,6 +73,7 @@ export default function Ranking() {
     );
     setData(resData.results);
     setTotalCount(resData.count);
+    setIsLoading(false);
   };
 
   const onKeyUp = (e) => {
@@ -103,6 +107,11 @@ export default function Ranking() {
       <div className="text-black">
         <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
       </div>
+      {isLoading && (
+        <div className="flex justify-center my-10">
+          <Spinner />
+        </div>
+      )}
       {/* 랭킹 테이블 */}
       <div className="mt-5 overflow-y-scroll">
         <RankingTable data={data} />
