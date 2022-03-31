@@ -22,7 +22,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
   const [lineData, setLineData] = useState([]);
   const [barData, setBarData] = useState([]);
   const [isDailyData, setIsDailyData] = useState(false);
-  const [period, setPeriod] = useState("1Y");
+  const [period, setPeriod] = useState("1W");
 
   const [labels, setLabels] = useState([]);
   const [marketAnnual, setMarketAnnual] = useState([]);
@@ -56,7 +56,6 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       setLineData(lineChartData);
       setBarData(barChartData);
       setIsDailyData(true);
-      console.log("set daily data");
     }
 
     async function fetchAndSetAnnually() {
@@ -66,7 +65,6 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       setMarketAnnual(marketData);
       setBackTestAnnual(backtestData);
       setIsAnnualData(true);
-      console.log("set annual data");
     }
 
     async function fetchAndSetTradeRecord() {
@@ -77,8 +75,6 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       setTradeRecord(records);
       setMarkers(markers);
       setIsTradeRecord(true);
-
-      console.log("set trade records");
     }
 
     if (!isLoading) {

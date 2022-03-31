@@ -23,7 +23,6 @@ export default function TradingRecord({ id, isLoading }) {
       const { count, results } = data;
       setTotalCount(count);
       setCurrentRecords(results);
-      console.log("set trade records details");
     }
 
     if (!isLoading) {
