@@ -32,7 +32,7 @@ class Result(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        ordering = ['id']
+        ordering = ['-id']
     
 class BuySell(models.Model):
     result = models.ForeignKey(Result, on_delete=models.CASCADE)

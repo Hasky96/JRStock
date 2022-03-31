@@ -35,6 +35,10 @@ company_name = openapi.Parameter('company_name', openapi.IN_QUERY, default="삼�
                         description="검색할 회사 이름", type=openapi.TYPE_STRING)
 face_value = openapi.Parameter('face_value', openapi.IN_QUERY, default="-1000_5000",
                         description="액면가 0이상 5000이하", type=openapi.TYPE_STRING)
+start = openapi.Parameter('start', openapi.IN_QUERY, default='2015-02-12',
+                        description="시작 날짜", type=openapi.TYPE_STRING)
+end = openapi.Parameter('end', openapi.IN_QUERY, default='2016-03-03',
+                        description="종료 날짜", type=openapi.TYPE_STRING)
 
 # ====================================================================== 통합 ======================================================================
 @swagger_auto_schema(
@@ -721,9 +725,6 @@ def get_start_end_date(request, code_number):
     start_date = stock_list.aggregate(Min('date'))['date__min']
     end_date = stock_list.aggregate(Max('date'))['date__max']
     
-    if start_date < '1997-01-01':
-        start_date = '1997-01-01'
-    
     return Response({'start_date' : start_date,
                     'end_date' : end_date}, status=status.HTTP_200_OK)
 
@@ -749,5 +750,23 @@ def get_predict_data(request, code_number):
     financial_info = get_object_or_404(FinancialInfo, pk=code_number)
     predict = Predict.objects.get(date=today, financial_info=financial_info)
     serializer = PredictSerializer(predict)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(
+    method='get',
+    operation_id='해당 종목의 시작날짜와 종료날짜의 데이터를 조회(모두)',
+    operation_description='해당 종목의 시작날짜와 종료날짜의 데이터를 조회합니다',
+    tags=['주식_백테스트'],
+    responses={status.HTTP_200_OK: DayStockSerializer}
+)  
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_stock_data_with_startend(request, code_number):
+    start_date = request.GET.get('start')
+    end_date = request.GET.get('end')
+    
+    day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date__gte=start_date).filter(date__lte=end_date)
+    serializer = DayStockSerializer(day_stock_list, many=True)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
