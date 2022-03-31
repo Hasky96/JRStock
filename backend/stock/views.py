@@ -758,6 +758,7 @@ def get_predict_data(request, code_number):
     operation_id='해당 종목의 시작날짜와 종료날짜의 데이터를 조회(모두)',
     operation_description='해당 종목의 시작날짜와 종료날짜의 데이터를 조회합니다',
     tags=['주식_백테스트'],
+    manual_parameters=[start, end],
     responses={status.HTTP_200_OK: DayStockSerializer}
 )  
 @api_view(['GET'])
