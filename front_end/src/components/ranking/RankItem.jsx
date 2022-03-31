@@ -12,7 +12,7 @@ export default function RankItem({ item }) {
   };
 
   const applyTruncate = (content) => {
-    return <div className="block truncate m-auto xl:w-28 w-12">{content}</div>;
+    return <div className="block truncate m-auto xl:w-32 w-16">{content}</div>;
   };
 
   const rankElement = (rank) => {
