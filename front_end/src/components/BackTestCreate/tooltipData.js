@@ -18,9 +18,9 @@ const srcDict = {
   605: "ichimoku_cloud.png",
   606: "ichimoku_cloud.png",
   707: "ma_upward.png",
-  708: "ma_upward.png",
+  708: "ma_downward.png",
   807: "ma_upward.png",
-  808: "ma_upward.png",
+  808: "ma_downward.png",
 };
 
 const altDict = {
@@ -43,9 +43,9 @@ const altDict = {
   605: "ichimoku_cloud.png",
   606: "ichimoku_cloud.png",
   707: "ma_upward.png",
-  708: "ma_upward.png",
+  708: "ma_downward.png",
   807: "ma_upward.png",
-  808: "ma_upward.png",
+  808: "ma_downward.png",
 };
 
 const linkDict = {
