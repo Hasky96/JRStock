@@ -251,7 +251,7 @@ def make_condition(result, isBuy, strategies, standard, ratio):
     condition = []  # 리턴하기 위한 리스트
     for conditions in strategies:
         option = []
-        buy_sell_option = strategy_korean_name_dict[int(conditions.get('strategy'))]
+        buy_sell_option = strategy_name_dict[int(conditions.get('strategy'))]
         params = ""
         option.append(int(conditions.get('strategy')))
         for param in conditions.get('params').values():
