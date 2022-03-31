@@ -721,6 +721,9 @@ def get_start_end_date(request, code_number):
     start_date = stock_list.aggregate(Min('date'))['date__min']
     end_date = stock_list.aggregate(Max('date'))['date__max']
     
+    if start_date < '1996-12-12':
+        start_date = '1996-12-12'
+    
     return Response({'start_date' : start_date,
                     'end_date' : end_date}, status=status.HTTP_200_OK)
 
