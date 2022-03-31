@@ -43,6 +43,11 @@ export default function RankItem({ item }) {
         </div>
       </td>
       <td>{item.user.name ? item.user.name : "-"}</td>
+      <td>
+        <div className="block truncate m-auto xl:w-40 w-20">
+          {item.title ? item.title : "-"}
+        </div>
+      </td>
       <td>{item.final_rate ? item.final_rate : "-"}</td>
       <td>{item.asset ? item.asset : "-"}</td>
       <td>{item.final_earn ? item.final_earn : "-"}</td>

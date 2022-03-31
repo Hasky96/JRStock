@@ -9,19 +9,8 @@ import {
 } from "../../config/backtestConfig";
 import { ReactComponent as Delete } from "../../assets/remove_circle.svg";
 import Tooltip from "../commons/Tooltip";
-import ToolContent1 from "../commons/ToolContent1";
-
-const contents = [
-  {
-    // title: "이동평균수렴확산지수\n(골든크로스)",
-    title: "이동평균선(상향돌파)",
-    src: "ma_high_graph.png",
-    alt: "content1",
-    content:
-      "이동평균선은 일정기간 동안의 주가를 산술 평균한 값이다. 주식에서는 주로 장기(120일), 중기(60일), 단기(5, 20일)의 이동평균선이 있다. 종가 기준으로 날짜를 합산하여 평균값을 구한다./n" +
-      "period: 이동평균선 기간 변수\nerr: 이동평균선 허용 오차 범위 변수\nweight: 가중치 변수",
-  },
-];
+import Tooltip2 from "../commons/Tooltip2";
+import ToolContent from "../commons/ToolContent2";
 
 export default function TradeCondition({
   type,
@@ -144,7 +133,7 @@ export default function TradeCondition({
           <div className="relative grid grid-cols-2 text-left pt-0">
             {i === 0 ? "" : paintDeleteButton(i)}
             <Tooltip iPos={"left-5 top-7"} cPos={"top-6"}>
-              <ToolContent1 contents={contents}></ToolContent1>
+              <ToolContent sId={strategies[i]["strategy"]}></ToolContent>
             </Tooltip>
             <div className="col-span-1 px-5">
               <StrategyConfig
@@ -185,9 +174,14 @@ export default function TradeCondition({
   return (
     <div className="w-full grid grid-cols-4 place-content-start border-0 border-b-1 border-gray-200 shadow-lg rounded text-center p-3 gap-2">
       <div
-        className={`col-span-4 text-left text-lg font-semibold cursor-default text-${color}-600`}
+        className={`relative col-span-4 text-left text-lg font-semibold cursor-default text-${color}-600`}
       >
-        {name} 조건
+        <Tooltip2 title={`${name} 조건`} cPos="left-[70px] bottom-[5px]">
+          <div className="text-black text-base font-normal">
+            {name} 전략들의 weight 총 합계가 <strong>매매 기준 점수</strong>{" "}
+            이상일 경우 {name}를 진행한다.
+          </div>
+        </Tooltip2>
       </div>
       <div className="col-span-2 text-left px-5">
         <label htmlFor={`${type}_standard`} className="pl-1">

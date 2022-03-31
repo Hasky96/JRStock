@@ -3,6 +3,10 @@ export const strategies = {
   2: "이동평균수렴확산지수(MACD)",
   3: "상대적강도지수(RSI)",
   4: "누적평균거래량(OBV)",
+  5: "자금흐름지표(MFI)",
+  6: "일목균형표",
+  7: "코스피지수",
+  8: "코스닥지수",
 };
 
 export const details = {
@@ -33,6 +37,22 @@ export const options = [
     1: 4,
     2: [7, 8],
   },
+  {
+    1: 5,
+    2: [7, 8],
+  },
+  {
+    1: 6,
+    2: [5, 6],
+  },
+  {
+    1: 7,
+    2: [7, 8],
+  },
+  {
+    1: 8,
+    2: [7, 8],
+  },
 ];
 
 export const paramDict = {
@@ -42,6 +62,7 @@ export const paramDict = {
   4: "long_period",
   5: "signal",
   6: "index",
+  7: "count",
 };
 
 export const configParam = {
@@ -104,6 +125,36 @@ export const configParam = {
   408: {
     1: 20,
   },
+  507: {
+    1: 14,
+    6: 80,
+  },
+  508: {
+    1: 14,
+    6: 20,
+  },
+  605: {
+    7: 3,
+  },
+  606: {
+    7: 3,
+  },
+  707: {
+    1: 5,
+    2: 1,
+  },
+  708: {
+    1: 5,
+    2: 1,
+  },
+  807: {
+    1: 5,
+    2: 1,
+  },
+  808: {
+    1: 5,
+    2: 1,
+  },
 };
 
 export const configDefault = {
@@ -128,6 +179,14 @@ export const parameters = {
   308: [1, 6],
   407: [1],
   408: [1],
+  507: [1, 6],
+  508: [1, 6],
+  605: [7],
+  606: [7],
+  707: [1, 2],
+  708: [1, 2],
+  807: [1, 2],
+  808: [1, 2],
 };
 
 export const paramConstructor = {
@@ -137,6 +196,7 @@ export const paramConstructor = {
   4: "",
   5: "",
   6: "",
+  7: "",
 };
 
 export const getParamDefault = (s) => {
