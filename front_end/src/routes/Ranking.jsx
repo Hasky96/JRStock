@@ -104,7 +104,7 @@ export default function Ranking() {
         <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
       </div>
       {/* 랭킹 테이블 */}
-      <div className="mt-5">
+      <div className="mt-5 overflow-y-scroll">
         <RankingTable data={data} />
       </div>
       {/* 페이지 네이션 */}

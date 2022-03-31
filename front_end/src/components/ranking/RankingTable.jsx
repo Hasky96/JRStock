@@ -2,6 +2,10 @@ import styles from "./list.module.css";
 import RankItem from "./RankItem";
 import ListTitle from "./ListTitle";
 
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export function RankingTable({ data }) {
   const rankList = () => {
     const list = [];
@@ -12,13 +16,15 @@ export function RankingTable({ data }) {
   };
 
   return (
-    <table className={styles.table}>
+    <table
+      className={classNames(styles.table, "xl:min-w-[1200px] min-w-[800px]")}
+    >
       <colgroup>
         <col span="1" style={{ width: 7 + "%" }} />
         <col span="1" style={{ width: 7 + "%" }} />
         <col span="1" style={{ width: 10 + "%" }} />
-        <col span="1" style={{ width: 11 + "%" }} />
-        <col span="1" style={{ width: 9 + "%" }} />
+        <col span="1" style={{ width: 12 + "%" }} />
+        <col span="1" style={{ width: 12 + "%" }} />
         <col span="1" style={{ width: 14 + "%" }} />
         <col span="1" style={{ width: 14 + "%" }} />
         <col span="1" style={{ width: 14 + "%" }} />
@@ -29,12 +35,12 @@ export function RankingTable({ data }) {
           "순위",
           "프로필",
           "이름",
-          "제목",
-          "수익율",
-          "투자원금",
-          "총 손익",
-          "최종 자산",
-          "매매일수",
+          "테스트",
+          "수익율(%)",
+          "투자원금(원)",
+          "총 손익(원)",
+          "최종 자산(원)",
+          "매매일수(일)",
         ]}
       />
       <tbody>{data && rankList()}</tbody>
