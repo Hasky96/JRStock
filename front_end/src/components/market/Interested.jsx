@@ -98,15 +98,15 @@ export default function Interested() {
         >
           <div>
             <div className="grid grid-cols-11">
-              <div className="col-span-2 my-auto text-xl font-bold">
+              <div className="col-span-2 my-auto xl:text-xl lg:text-lg text-md font-bold">
                 {live.company_name}
               </div>
-              <div className="col-span-3">
+              <div className="col-span-3 xl:text-base lg:text-sm text-xs">
                 <div>현재가</div>
                 {!live.isError && (
                   <div
                     className={
-                      "text-5xl " +
+                      "xl:text-5xl lg:text-4xl text-3xl " +
                       (live.changes &&
                         (parseInt(live.changes) > 0
                           ? "text-red-500"
@@ -120,10 +120,10 @@ export default function Interested() {
                 )}
                 {!live.isError && (
                   <div className="flex mt-2">
-                    <div className="mr-3">전일대비</div>
+                    <div className="mr-3 xl:text-base lg:text-sm text-xs">전일대비</div>
                     <div
                       className={
-                        "flex " +
+                        "flex xl:text-base lg:text-sm text-xs " +
                         (live.changes &&
                           (parseInt(live.changes) > 0
                             ? "text-red-500"
@@ -140,7 +140,7 @@ export default function Interested() {
                             ? "▼ " + live.changes.substr(1)
                             : "- " + live.changes)}
                       </div>
-                      <div className="text-gray-700">&nbsp;|&nbsp;</div>
+                      <div className="text-gray-700 xl:text-base lg:text-sm text-xs">&nbsp;|&nbsp;</div>
                       <div>
                         {live.changes &&
                           (parseInt(live.changes) > 0
@@ -153,12 +153,12 @@ export default function Interested() {
                   </div>
                 )}
                 {live.isError && (
-                  <div className="text-gray-400">
+                  <div className="text-gray-400 xl:text-base lg:text-sm text-xs">
                     실시간 데이터가 없습니다..
                   </div>
                 )}
               </div>
-              <div className="col-start-6 col-end-8 font-bold">
+              <div className="col-start-6 col-end-8 font-bold xl:text-base lg:text-sm text-xs">
                 <div className="flex justify-between mb-2">
                   <div>전일</div>
                   <div>{live.isError ? "-" : live.prev}</div>
@@ -186,7 +186,7 @@ export default function Interested() {
                   </div>
                 </div>
               </div>
-              <div className="col-start-9 col-end-11 font-bold">
+              <div className="col-start-9 col-end-11 font-bold xl:text-base lg:text-sm text-xs">
                 <div className="flex justify-between mb-2">
                   <div>시가</div>
                   <div
