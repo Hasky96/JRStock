@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getInterest, addInterest, deleteInterest } from "../../api/stock";
-import Pagenation from "../Pagenation";
+import Pagenation2 from "../Pagenation2";
 import CheckBoxGrid from "../FilterModal/CheckBoxGrid";
 import CheckedList from "../FilterModal/CheckedList";
 import costMap from "../../util/costMap";
 
 import { ReactComponent as ModalCancle } from "../../assets/modalCancle.svg";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import OnOffToggle from "../OnOffToggle";
 import { toast } from "react-toastify";
 
@@ -77,29 +76,6 @@ export default function StockItemList() {
   useEffect(() => {
     init();
   }, [sortBy, search, filterData, filterToggle, pageNo]);
-
-  // 페이지네이션 동작
-  const onClickFirst = async () => {
-    setPageNo(1);
-  };
-
-  const onClickLeft = async () => {
-    setPageNo((cur) => cur - 1);
-  };
-
-  const onClickRight = async () => {
-    setPageNo((cur) => cur + 1);
-  };
-
-  const onClickLast = async () => {
-    const lastPageNum =
-      parseInt(totalCount / pageSize) + (totalCount % pageSize === 0 ? 0 : 1);
-    setPageNo(lastPageNum);
-  };
-
-  const onClickNumber = async (num) => {
-    setPageNo(num);
-  };
 
   // 주식 데이터로 html 리스트를 만듬
   const stockList = () => {
@@ -462,8 +438,8 @@ export default function StockItemList() {
                 type="text"
                 name="price"
                 id="price"
-                className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
-                placeholder="Search..."
+                className="hover:border-primary focus:ring-primary focus:border-primary text-xs block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                placeholder="search..."
                 onChange={(e) => {
                   e.preventDefault();
                   onSearch(e.target.value);
@@ -708,19 +684,25 @@ export default function StockItemList() {
               )}
             </p>
           </li>
-          {stockList()}
+
+          {totalCount ? (
+            stockList()
+          ) : (
+            <div className="py-5">관심 종목이 없습니다.</div>
+          )}
         </ul>
       </div>
-      <Pagenation
-        selectedNum={pageNo}
-        totalCnt={totalCount}
-        pageSize={pageSize}
-        onClickFirst={onClickFirst}
-        onClickLeft={onClickLeft}
-        onClickRight={onClickRight}
-        onClickLast={onClickLast}
-        onClickNumber={onClickNumber}
-      ></Pagenation>
+      {totalCount ? (
+        <Pagenation2
+          setPageNo={setPageNo}
+          selectedNum={pageNo}
+          totalCnt={totalCount}
+          pageSize={pageSize}
+        ></Pagenation2>
+      ) : (
+        ""
+      )}
+
       {/* 모달창 */}
       {isShowModal && (
         <div

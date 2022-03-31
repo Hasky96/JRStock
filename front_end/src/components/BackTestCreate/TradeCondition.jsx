@@ -104,25 +104,20 @@ export default function TradeCondition({
     );
   };
 
-  const getParamDefaultValue = (i, s, p) => {
-    const defaultValue = configDefault["params"][s][p];
-    return values[`${type}_strategy`][i]["params"][p] || defaultValue;
-  };
-
   const paintParamInput = (strategy, i) => {
     const params = parameters[strategy];
     return params.map((param, index) => (
       <div key={index} className="flex flex-col col-span-1">
-        <label htmlFor={`${i}_${param}`} className="text-gray-500">
+        <label htmlFor={`${type}_${i}_${param}`} className="text-gray-500">
           {paramDict[param]}
         </label>
         <input
-          id={`${i}_${param}`}
-          name={`${i}_${param}`}
+          id={`${type}_${i}_${param}`}
+          name={`${type}_${i}_${param}`}
           type="number"
           required
-          minValue={1}
-          defaultValue={configDefault["params"][strategy][param]}
+          min={1}
+          value={values[`${type}_strategy`][i]["params"][param]}
           onChange={(e) => handleParamChange(e, i, param)}
           className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
         />
@@ -159,10 +154,9 @@ export default function TradeCondition({
                   name={`${i}_weight`}
                   type="number"
                   required
-                  value={
-                    values[`${type}_strategy`][i]["weight"] ||
-                    configDefault.weight
-                  }
+                  min={1}
+                  max={values[`${type}_standard`]}
+                  value={values[`${type}_strategy`][i]["weight"]}
                   onChange={(e) => handleWeightChange(e, i)}
                   className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
                 />
@@ -200,7 +194,10 @@ export default function TradeCondition({
             type="number"
             required
             autoComplete="off"
-            value={values[`${type}_standard`] || configDefault.standard}
+            max={100}
+            min={1}
+            placeholder="1 ~ 100 "
+            defaultValue={configDefault.standard}
             className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
           />
@@ -217,7 +214,9 @@ export default function TradeCondition({
             type="number"
             required
             autoComplete="off"
-            value={values[`${type}_ratio`] || configDefault.percent}
+            max={100}
+            min={1}
+            defaultValue={configDefault.percent}
             className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
           />

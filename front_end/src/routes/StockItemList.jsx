@@ -110,7 +110,7 @@ export default function StockItemList() {
       result.push(
         <li
           key={"stock" + i}
-          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer"
+          className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer duration-200"
         >
           <div className="col-span-1 my-auto grid grid-cols-2">
             <p className="col-span-1">
@@ -502,7 +502,7 @@ export default function StockItemList() {
                   type="text"
                   name="price"
                   id="price"
-                  className="hover:border-primary focus:ring-primary focus:border-primary text-xl block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
+                  className="hover:border-primary focus:ring-primary focus:border-primary block w-full h-9 pl-9 pr-9 border-gray-100 bg-gray-100 rounded-lg"
                   placeholder="Search..."
                   onChange={(e) => {
                     e.preventDefault();

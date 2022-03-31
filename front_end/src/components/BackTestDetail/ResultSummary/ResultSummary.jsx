@@ -16,8 +16,8 @@ function date_ascending(a, b) {
 }
 
 export default function ResultSummary({ resultSummary, isLoading, id }) {
-  const [assetResult, setAssetResult] = useState(resultSummary.assetResult);
-  const [profitResult, setProfitResult] = useState(resultSummary.profitResult);
+  const [assetResult, setAssetResult] = useState([]);
+  const [profitResult, setProfitResult] = useState([]);
 
   const [lineData, setLineData] = useState([]);
   const [barData, setBarData] = useState([]);
@@ -62,7 +62,6 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     async function fetchAndSetAnnually() {
       const data = await fetchBacktestAnnually(id);
       const { labels, marketData, backtestData } = await trimAnnually(data);
-
       setLabels(labels);
       setMarketAnnual(marketData);
       setBackTestAnnual(backtestData);
@@ -87,7 +86,12 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       fetchAndSetAnnually();
       fetchAndSetTradeRecord();
     }
-  }, [isLoading]);
+
+    if (resultSummary.assetResult) {
+      setAssetResult(resultSummary.assetResult);
+      setProfitResult(resultSummary.profitResult);
+    }
+  }, [isLoading, resultSummary]);
 
   const intervals = ["1D", "1W", "1M", "1Y"];
   const paintSwitcher = intervals.map((el, idx) => (
@@ -133,12 +137,14 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     <div className="w-full flex flex-col justify-center items-center">
       <div className="flex flex-col xl:flex-row gap-3">
         <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
-          <div className="col-span-6 text-left text-lg pb-2">운용자산</div>
+          <div className="col-span-6 text-left text-lg pb-2 font-semibold">
+            운용자산
+          </div>
           {paintAssetKey}
           {paintAssetValue}
         </div>
         <div className="xl:w-1/2 relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3">
-          <div className="col-span-6 text-left text-lg pb-2">
+          <div className="col-span-6 text-left text-lg pb-2 font-semibold">
             수익률 <span className="text-sm text-gray-500">(%)</span>
           </div>
           {paintProfitKey}
@@ -148,7 +154,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
 
       <div className="w-full flex flex-col items-center justify-center gap-3">
         <div className="chart-container rounded shadow-lg p-3 mt-5 text-lg">
-          <div>자산 운용 차트</div>
+          <div className="font-semibold">자산 운용 차트</div>
           {isDailyData && isTradeRecord && (
             <>
               <ProfitLineChart
@@ -164,13 +170,22 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
         </div>
         <div className="chart-container rounded shadow-lg p-3 mt-5">
           <div className="text-lg">
-            <div>연도별 수익률</div>
-            {isAnnualData && (
-              <AnnualProfit
-                labels={labels}
-                market={marketAnnual}
-                backtest={backTestAnnual}
-              />
+            <div className="font-semibold">연도별 수익률</div>
+            {labels.length ? (
+              isAnnualData && (
+                <AnnualProfit
+                  labels={labels}
+                  market={marketAnnual}
+                  backtest={backTestAnnual}
+                />
+              )
+            ) : (
+              <div className="w-full flex justify-center text-center">
+                <div>
+                  <p className="text-xl">연도별 데이터가 존재하지 않습니다.</p>
+                  <p>설정한 기간이 너무 짧거나, 조건 설정이 잘못되었습니다.</p>
+                </div>
+              </div>
             )}
           </div>
         </div>

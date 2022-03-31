@@ -30,7 +30,7 @@ export default function Pagenation({
   const firstBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50 duration-200"
       onClick={(e) => {
         e.preventDefault();
         setPageNo(1);
@@ -45,7 +45,7 @@ export default function Pagenation({
   const leftBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50 duration-200"
       onClick={(e) => {
         e.preventDefault();
         if (selectedNum > 1) {
@@ -62,7 +62,7 @@ export default function Pagenation({
   const rightBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50 duration-200"
       onClick={(e) => {
         e.preventDefault();
         if (selectedNum < lastPageNum) {
@@ -79,7 +79,7 @@ export default function Pagenation({
   const LastBtn = (
     <a
       href="#"
-      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50"
+      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-900 hover:bg-indigo-50 duration-200"
       onClick={(e) => {
         e.preventDefault();
         setPageNo(lastPageNum);
@@ -98,10 +98,10 @@ export default function Pagenation({
     let cnt = 0;
     // 선택된 버튼 className
     const selectedItemClassName =
-      "z-10 bg-indigo-50 border-primary text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
+      "z-10 bg-indigo-50 border-gray-300 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
     // 선택 안된 버튼 className
     const notSelectedItemClassName =
-      "bg-white border-gray-300 text-gray-900 hover:bg-indigo-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium";
+      "bg-white border-gray-300 text-gray-900 hover:bg-indigo-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium duration-200";
     // 숫자 버튼 리스트에 담기
     while (cnt < 5 && pageNum <= lastPageNum) {
       list.push(

@@ -1,5 +1,6 @@
 import { createChart } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
+import { nameDict } from "../../../config/backtestConfig";
 
 export const ProfitLineChart = ({
   priceData,
@@ -196,7 +197,7 @@ export const ProfitLineChart = ({
       if (
         new Date(dateObjToString(newVisibleTimeRange.to)) -
           new Date(dateObjToString(newVisibleTimeRange.from)) <
-        10800000000
+        18067600000
       ) {
         priceSeries.setMarkers(markers);
       } else {
@@ -227,51 +228,51 @@ export const ProfitLineChart = ({
     <div className="parent-container">
       <div className="child-container" ref={chartContainerRef} />
       <div className="absolute z-10 top-0 left-0">
-        <span className="opacity-100 text-sm font-semibold text-gray-500">
-          <span className="mr-3">현재 자산</span>
-          <span className="mr-3">{legends.price.toLocaleString()}원</span>
-          <br></br>
-          <span className="mr-3 my-0">수익</span>
-          <span>{legends.earn.toLocaleString()}원</span>
-          <br></br>
-          <span className="mr-3 text-xs font-normal">{legends.dateStr}</span>
+        <div className="opacity-100 text-sm font-semibold text-gray-500">
+          <div className="flex my-1">
+            <p className="mr-3">현재 자산</p>
+            <p className="mr-3">{legends.price.toLocaleString()}원</p>
+          </div>
+          <div className="flex my-1">
+            <p className="mr-3 my-0">수익</p>
+            <p>{legends.earn.toLocaleString()}원</p>
+          </div>
+          <div>
+            <p className="mr-3 text-xs font-normal">{legends.dateStr}</p>
+          </div>
 
           {legends.buy_sell_option && (
-            <>
-              <span className="mr-1 text-xs font-normal">매수 전략</span>
-              <span className="mr-3 text-xs font-normal">
-                {legends.buy_sell_option}
-              </span>
-            </>
+            <div className="flex">
+              <p className="mr-1 text-xs font-normal">매수 전략:</p>
+              <p className="mr-3 text-xs font-normal">
+                {nameDict[legends.buy_sell_option.slice(0, -1)]}
+              </p>
+            </div>
           )}
 
-          <span className="mr-3 text-xs font-normal">
-            {typeof legends.isBuy === "boolean" &&
-              (legends.isBuy ? "매수" : "매도")}
-          </span>
-          {legends.stock_amount && (
-            <>
-              <span className="mr-1 text-xs font-normal">매매 수량</span>
-              <span className="mr-3 text-xs font-normal">
-                {legends.stock_amount}
-              </span>
-            </>
-          )}
-
+          <div className="flex">
+            <p className="mr-3 mt-0 text-xs font-normal">
+              {typeof legends.isBuy === "boolean" &&
+                (legends.isBuy ? "매수:" : "매도:") +
+                  " " +
+                  legends.stock_amount +
+                  "주"}{" "}
+            </p>
+          </div>
           {legends.stock_price && (
-            <>
-              <span className="mr-1 text-xs font-normal">매매가</span>
-              <span className="mr-3 text-xs font-normal">
-                {legends.stock_price}
-              </span>
-            </>
+            <div className="flex">
+              <p className="mr-1 text-xs font-normal">매매가:</p>
+              <p className="mr-3 text-xs font-normal">
+                {legends.stock_price.toLocaleString()}
+              </p>
+            </div>
           )}
 
-          <span className="mr-3 text-xs font-normal">
+          <p className="mr-3 text-xs font-normal">
             {typeof legends.isWin === "boolean" &&
-              (legends.isWin ? "승" : "패")}
-          </span>
-        </span>
+              (legends.isWin ? "@승" : "@패")}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -281,3 +282,12 @@ export const ProfitLineChart = ({
 //   color: "rgba(24, 33, 109, 0.8)",
 //   lineWidth: 1,
 // });
+
+{
+  /* {legends.stock_amount && (
+            <>
+              <span className="mr-1 text-xs font-normal">매매 수량</span>
+              <span className="mr-3 text-xs font-normal"></span>
+            </>
+          )} */
+}
