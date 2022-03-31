@@ -11,6 +11,7 @@ import { userDetail } from "../../api/user";
 import PageContainer from "../PageContainer";
 import Pagenation from "../Pagenation";
 import { timeMark } from "../../config/datetime";
+import { ReactComponent as Spinner } from "../../assets/spinner.svg";
 
 export default function BoardDetail() {
   const { id, boardId } = useParams();
@@ -20,6 +21,8 @@ export default function BoardDetail() {
   const [user, setUser] = useState();
   const [pageNo, setPageNo] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCommentLoading, setIsCommentLoading] = useState(true);
   const navigate = useNavigate();
   const pageSize = 10;
   const isLogin = !sessionStorage.getItem("access_token") ? false : true;
@@ -31,10 +34,12 @@ export default function BoardDetail() {
       setUser(userData);
     }
     setBoard(boardData.data);
+    setIsLoading(false);
 
     const commentData = await getCommentList(boardId, pageNo, pageSize);
     setComment(commentData.data.results);
     setTotalCount(commentData.data.count);
+    setIsCommentLoading(false);
   };
 
   useEffect(() => {
@@ -208,6 +213,11 @@ export default function BoardDetail() {
               {board?.created_at.substring(11, 19)}
             </p>
           </div>
+          {isLoading && (
+            <div className="flex justify-center my-10">
+              <Spinner />
+            </div>
+          )}
           <div className="text-xl py-10 px-5">{board?.content}</div>
           <button
             className="block mt-24 m-auto rounded-xl border-2 w-32 h-12 bg-indigo-100 text-xl font-bold text-indigo-500 border-indigo-800 bottom-5"
@@ -253,21 +263,30 @@ export default function BoardDetail() {
               </div>
             )}
           </form>
+          {isCommentLoading && (
+            <div className="flex justify-center my-10">
+              <Spinner />
+            </div>
+          )}
           {comment.length ? (
             commentList()
           ) : (
             <div className="text-gray-400">댓글이 없습니다..</div>
           )}
-          <Pagenation
-            selectedNum={pageNo}
-            totalCnt={totalCount}
-            pageSize={pageSize}
-            onClickFirst={onClickFirst}
-            onClickLeft={onClickLeft}
-            onClickRight={onClickRight}
-            onClickLast={onClickLast}
-            onClickNumber={onClickNumber}
-          />
+          {comment.length ? (
+            <Pagenation
+              selectedNum={pageNo}
+              totalCnt={totalCount}
+              pageSize={pageSize}
+              onClickFirst={onClickFirst}
+              onClickLeft={onClickLeft}
+              onClickRight={onClickRight}
+              onClickLast={onClickLast}
+              onClickNumber={onClickNumber}
+            />
+          ) : (
+            <div></div>
+          )}
         </div>
       </div>
     </PageContainer>
