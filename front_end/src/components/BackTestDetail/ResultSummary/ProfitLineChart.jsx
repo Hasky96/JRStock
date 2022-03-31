@@ -245,7 +245,7 @@ export const ProfitLineChart = ({
             <div className="flex">
               <p className="mr-1 text-xs font-normal">매수 전략:</p>
               <p className="mr-3 text-xs font-normal">
-                {nameDict[legends.buy_sell_option.slice(0, -1)]}
+                {legends.buy_sell_option}
               </p>
             </div>
           )}
