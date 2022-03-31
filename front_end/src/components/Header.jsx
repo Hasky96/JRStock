@@ -124,9 +124,9 @@ export default function Header({ category }) {
   const paintSearchResult = () => {
     if (data.length === 0) {
       return (
-        <button className="result-item w-full flex flex-col xl:flex-row justify-between items-center text-center rounded">
+        <div className="result-item w-full flex flex-col xl:flex-row justify-between items-center text-center rounded">
           검색 결과가 없습니다.
-        </button>
+        </div>
       );
     }
 
