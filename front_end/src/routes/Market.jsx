@@ -5,7 +5,12 @@ import TabBar from "../components/TabBar/TabBar";
 import LineChart from "../components/market/LineChart";
 import "../components/market/style.css";
 
-import { getDayStock, getWeekStock, getMonthStock } from "../api/market";
+import {
+  getDayStock,
+  getWeekStock,
+  getMonthStock,
+  getPredict,
+} from "../api/market";
 
 import { CandleChart } from "../components/market/CandleChart";
 import NewsTable from "../components/market/NewsTable";
@@ -42,6 +47,8 @@ export default function Market() {
     // 일봉
     // kospiSeriesData 초기화
     const kospiDayStock = await getDayStock("kospi");
+    // 코스피 예측 종가
+    const kospiPredict = await getPredict("kospi");
 
     // 코스피 카드 정보 초기화
     setKospiInfo({
@@ -53,6 +60,7 @@ export default function Market() {
       volume: kospiDayStock[kospiDayStock.length - 1].volume,
       tradePrice:
         kospiDayStock[kospiDayStock.length - 1].trade_price.toString(),
+      predict: kospiPredict,
     });
 
     setIsInit(false);
@@ -94,6 +102,8 @@ export default function Market() {
     // 일봉
     // kosdaqSeriesData 초기화
     const kosdaqDayStock = await getDayStock("kosdaq");
+    // 코스피 예측 종가
+    const kosdaqPredict = await getPredict("kosdaq");
 
     // 코스닥 카드 정보 초기화
     setKosdaqInfo({
@@ -107,6 +117,7 @@ export default function Market() {
       volume: kosdaqDayStock[kosdaqDayStock.length - 1].volume,
       tradePrice:
         kosdaqDayStock[kosdaqDayStock.length - 1].trade_price.toString(),
+      predict: kosdaqPredict,
     });
 
     const kosdaqLineData = transLineData(kosdaqDayStock);

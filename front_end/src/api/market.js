@@ -17,4 +17,9 @@ async function getMonthStock(codeNumber) {
   return (await api.get(`stock/month/${codeNumber}`)).data;
 }
 
-export { getDayStock, getWeekStock, getMonthStock };
+// 종가 지수 받아오기
+async function getPredict(codeNumber) {
+  return (await api.get(`stock/predict/${codeNumber}`)).data;
+}
+
+export { getDayStock, getWeekStock, getMonthStock, getPredict };
