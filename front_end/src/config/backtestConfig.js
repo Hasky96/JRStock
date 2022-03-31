@@ -213,13 +213,25 @@ export const assetKey = [
 ];
 export const profitKey = [
   { title: "누적 수익률", isToolTip: false },
-  { title: "시장초과 수익률", isToolTip: false },
-  { title: "승패율", isToolTip: true, content: "" },
-  { title: "일평균 수익률", isToolTip: true, content: "" },
+  {
+    title: "시장초과 수익률",
+    isToolTip: true,
+    content: "내 수익률과 시장 수익률(KOSPI)의 차이",
+  },
+  {
+    title: "승률",
+    isToolTip: true,
+    content: "매수 금액보다 비싸게 매도한 거래의 비율",
+  },
+  {
+    title: "일평균 수익률",
+    isToolTip: true,
+    content: "일 수익률을 전체 거래일로 나눈 값",
+  },
   {
     title: "연평균 수익률",
     isToolTip: true,
-    content: "",
+    content: "연 수익률을 전체 년도수로 나눈 값",
   },
   {
     title: "최대 손실폭(MDD)",
