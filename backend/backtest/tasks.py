@@ -18,14 +18,35 @@ strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
     203: 'macd_golden_cross', 204: 'macd_dead_cross', 205: 'macd_straight', 206: 'macd_reverse',
     307: 'rsi_high', 308: 'rsi_low',
-    407: 'obv_high', 408: 'obv_low'
+    407: 'obv_high', 408: 'obv_low',
+    507: 'MFI', 508: 'MFI',
+    605: 'IKH', 606: 'IKH',
+    707: 'KS', 708: 'KS',
+    807: 'KQ', 808: 'KQ'
 }
 
 strategy_indicator_dict={
     101: 'SMA', 102: 'SMA', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
     203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
     307: 'RSI', 308: 'RSI',
-    407: 'OBV', 408: 'OBV'
+    407: 'OBV', 408: 'OBV',
+    507: 'MFI', 508: 'MFI',
+    605: 'IKH', 606: 'IKH',
+    707: 'KS', 708: 'KS',
+    807: 'KQ', 808: 'KQ'
+}
+
+strategy_korean_name_dict={
+    101: '이동평균선(MA) 상향돌파', 102: '이동평균선(MA) 상향돌파', 103: '이동평균선(MA) 골든크로스', 104: '이동평균선(MA) 데드크로스', 
+    105: '이동평균선(MA) 정배열', 106: '이동평균선(MA) 역배열',
+    203: '이동평균수렴/확산지수(MACD) 골든크로스', 204: '이동평균수렴/확산지수(MACD) 데드크로스', 
+    205: '이동평균수렴/확산지수(MACD) 정배열', 206: '이동평균수렴/확산지수(MACD) 역배열',
+    307: '상대적강도지수(RSI) 높음', 308: '상대적강도지수(RSI) 낮음',
+    407: '누적평균거래량(OBV) 높음', 408: '누적평균거래량(OBV) 낮음',
+    507: '자금흐름지표(MFI) 높음', 508: '자금흐름지표(MFI) 낮음',
+    605: '일목균형표 매수조건', 606: '일목균형표 매도조건',
+    707: '코스피지수 높음', 708: '코스피지수 낮음',
+    807: '코스피지수 높음', 808: '코스닥지수 낮음'
 }
 
 @shared_task
@@ -51,14 +72,10 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         result_data = init_result_data(account, len(df))
         
         # 조건확인하여 필요한 Column 갱신
-        buy_option = ""
-        sell_option = ""
         for cond in buy_condition[0:-2]:  # 매수
-            buy_option += strategy_name_dict[cond[0]] + " "
             df = add_indicator_by_code(cond[0], cond[1:], df)
 
         for cond in sell_condition[0:-2]:  # 매도
-            sell_option += strategy_name_dict[cond[0]] + " "
             df = add_indicator_by_code(cond[0], cond[1:], df)
 
 
@@ -66,20 +83,26 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         # 백테스트 시작
         for i in range(0, len(df)):
             total_weight = 0
+            buy_option = ""
+            sell_option = ""
             if flag:  # 매수
                 for cond in buy_condition[0:-2]:    # 마지막 파라미터 2개 제외, 전략들만
-                    total_weight += call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
-                    
-                    # =============== 해당되는 전략들의 이름만 넣기
-                    # =============== 이름을 한글화한 목록을 추가해서 그걸 넣기
-                    
+                    temp = call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
+                    if temp!=0:
+                        buy_option+=strategy_korean_name_dict[cond[0]] + ", "
+                    total_weight+=temp
+                buy_option=buy_option[:-2]     
                 if total_weight >= buy_condition[-2]:      # 기준선 이상이면 매수
                     account = buy(account, code_number, df.loc[i]['current_price'], buy_condition[-1], df.loc[i]["date"], buy_option, result)  
                     flag = False    # 매수, 매도 번갈아가며
 
             else:       # 매도
                 for cond in sell_condition[0:-2]:
-                    total_weight += call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
+                    temp = call_strategy_by_code(cond[0], cond[1:], df.loc[i-1:i], i)
+                    if temp!=0:
+                        sell_option+=strategy_korean_name_dict[cond[0]] + ", "
+                    total_weight+=temp
+                sell_option=sell_option[:-2]
                 if total_weight >= sell_condition[-2]:      # 기준선 이상이면 매도
                     account = sell(account, code_number, df.loc[i]['current_price'], sell_condition[-1], df.loc[i]["date"], sell_option, result)
                     result_data['win_lose_cnt'] += 1
@@ -98,8 +121,8 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         user.is_backtest = False
         user.save()
         
-        message = 'User Number' + user.id + ' Backtest Request Reject by : ' + str(e)
+        message = 'User Number [' + str(user.id) + '] Backtest Request Reject by : ' + str(e)
         return message
 
-    message = 'User Number' + user.id + ' Backtest Request Finished'
+    message = 'User Number [' + str(user.id) + '] Backtest Request Finished'
     return message

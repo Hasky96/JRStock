@@ -22,7 +22,7 @@ export default function ListItem({ onChecked, checked, index, item }) {
   };
   return (
     <tr
-      className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer"
+      className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer duration-200"
       onClick={() => handleOnClick()}
     >
       <td className="px-3">

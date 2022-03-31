@@ -205,7 +205,7 @@ export default function Header({ category }) {
                 id="header-search-input"
                 autoComplete="off"
                 className="hover:border-primary focus:ring-primary focus:border-primary block w-full h-10 pl-10 pr-12 border-white rounded-lg duration-300 hover:shadow-inner"
-                placeholder="Search..."
+                placeholder="search..."
                 onKeyUp={onKeyUp}
                 // 검색창 포커스 사라졌을 때
                 onBlur={onBlur}

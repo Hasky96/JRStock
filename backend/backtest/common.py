@@ -13,7 +13,7 @@ import sys
 
 from .models import BuySell, DayHistory, YearHistory
 from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, ResultSerializer, YearHistorySerialilzer
-from strategy import *
+from .strategy import *
 
 from stock.models import DayStock, FinancialInfo, BasicInfo
 
@@ -21,14 +21,35 @@ strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
     203: 'macd_golden_cross', 204: 'macd_dead_cross', 205: 'macd_straight', 206: 'macd_reverse',
     307: 'rsi_high', 308: 'rsi_low',
-    407: 'obv_high', 408: 'obv_low'
+    407: 'obv_high', 408: 'obv_low',
+    507: 'mfi_high', 508: 'mfi_low',
+    605: 'ikh_straight', 606: 'ikh_reverse',
+    707: 'ks_high', 708: 'ks_low',
+    807: 'kq_high', 808: 'kq_low'
+}
+
+strategy_korean_name_dict={
+    101: '이동평균선(MA) 상향돌파', 102: '이동평균선(MA) 상향돌파', 103: '이동평균선(MA) 골든크로스', 104: '이동평균선(MA) 데드크로스', 
+    105: '이동평균선(MA) 정배열', 106: '이동평균선(MA) 역배열',
+    203: '이동평균수렴/확산지수(MACD) 골든크로스', 204: '이동평균수렴/확산지수(MACD) 데드크로스', 
+    205: '이동평균수렴/확산지수(MACD) 정배열', 206: '이동평균수렴/확산지수(MACD) 역배열',
+    307: '상대적강도지수(RSI) 높음', 308: '상대적강도지수(RSI) 낮음',
+    407: '누적평균거래량(OBV) 높음', 408: '누적평균거래량(OBV) 낮음',
+    507: '자금흐름지표(MFI) 높음', 508: '자금흐름지표(MFI) 낮음',
+    605: '일목균형표 매수조건', 606: '일목균형표 매도조건',
+    707: '코스피지수 높음', 708: '코스피지수 낮음',
+    807: '코스피지수 높음', 808: '코스닥지수 낮음'
 }
 
 strategy_indicator_dict={
     101: 'SMA', 102: 'SMA', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
     203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
     307: 'RSI', 308: 'RSI',
-    407: 'OBV', 408: 'OBV'
+    407: 'OBV', 408: 'OBV',
+    507: 'MFI', 508: 'MFI',
+    605: 'IKH', 606: 'IKH',
+    707: 'KS', 708: 'KS',
+    807: 'KQ', 808: 'KQ'
 }
 
 def call_strategy_by_code(strategy_code, strategy_params, df, index):
@@ -230,7 +251,7 @@ def make_condition(result, isBuy, strategies, standard, ratio):
     condition = []  # 리턴하기 위한 리스트
     for conditions in strategies:
         option = []
-        buy_sell_option = strategy_name_dict[int(conditions.get('strategy'))]
+        buy_sell_option = strategy_korean_name_dict[int(conditions.get('strategy'))]
         params = ""
         option.append(int(conditions.get('strategy')))
         for param in conditions.get('params').values():
@@ -361,7 +382,7 @@ def end_calculate(account, result_data, result):
         'asset' : result.asset,
         'test_start_date' : result.test_start_date,
         'test_end_date' : result.test_end_date,
-        'commission' : round((result.commission - 1) * 100, 3),
+        'commission' : result.commission,
         'buy_standard' : result.buy_standard,
         'buy_ratio' : result.buy_ratio,
         'sell_standard' : result.sell_standard,
