@@ -180,20 +180,26 @@ export const StockCandleChart = ({
           <div className="flex">
             <p className="mr-1 text-xs font-normal">시가:</p>
             <p className="mr-3 text-xs font-normal">
-              {legends.open.toLocaleString()}
+              {(+legends.open).toLocaleString()}
             </p>
           </div>
           <div className="flex">
             <p className="mr-1 text-xs font-normal">저가:</p>
-            <p className="mr-3 text-xs font-normal">{legends.low}</p>
+            <p className="mr-3 text-xs font-normal">
+              {(+legends.low).toLocaleString()}
+            </p>
           </div>
           <div className="flex">
             <p className="mr-1 text-xs font-normal">고가:</p>
-            <p className="mr-3 text-xs font-normal">{legends.high}</p>
+            <p className="mr-3 text-xs font-normal">
+              {(+legends.high).toLocaleString()}
+            </p>
           </div>
           <div className="flex">
             <p className="mr-1 text-xs font-normal">종가:</p>
-            <p className="mr-3 text-xs font-normal">{legends.close}</p>
+            <p className="mr-3 text-xs font-normal">
+              {(+legends.close).toLocaleString()}
+            </p>
           </div>
         </div>
       </div>
