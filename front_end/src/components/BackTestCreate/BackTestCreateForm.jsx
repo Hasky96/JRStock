@@ -30,7 +30,7 @@ export default function BackTestCreateForm() {
       {
         id: 0,
         strategy: "101",
-        weight: 50,
+        weight: 10,
         params: { ...paramConstructor, ...getParamDefault("101") },
       },
     ],
@@ -38,7 +38,7 @@ export default function BackTestCreateForm() {
       {
         id: 0,
         strategy: "101",
-        weight: 50,
+        weight: 10,
         params: { ...paramConstructor, ...getParamDefault("101") },
       },
     ],
