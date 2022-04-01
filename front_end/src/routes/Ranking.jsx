@@ -113,16 +113,20 @@ export default function Ranking() {
         </div>
       )}
       {/* 랭킹 테이블 */}
-      <div className="mt-5 overflow-y-scroll">
-        <RankingTable data={data} />
-      </div>
+      {!isLoading && (
+        <div className="mt-5 overflow-y-scroll">
+          <RankingTable data={data} />
+        </div>
+      )}
       {/* 페이지 네이션 */}
-      <Pagenation
-        selectedNum={pageNo}
-        totalCnt={totalCount}
-        pageSize={pageSize}
-        setPageNo={setPageNo}
-      ></Pagenation>
+      {!isLoading && (
+        <Pagenation
+          selectedNum={pageNo}
+          totalCnt={totalCount}
+          pageSize={pageSize}
+          setPageNo={setPageNo}
+        ></Pagenation>
+      )}
     </PageContainer>
   );
 }

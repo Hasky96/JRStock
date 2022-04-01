@@ -43,7 +43,19 @@ export function RankingTable({ data }) {
           "매매일수(일)",
         ]}
       />
-      <tbody>{data && rankList()}</tbody>
+      <tbody>
+        {data.length !== 0 ? (
+          rankList()
+        ) : (
+          <tr>
+            <td colSpan="9">
+              <div className="text-center text-lg mt-5 text-gray-500">
+                랭킹 정보가 없습니다.
+              </div>
+            </td>
+          </tr>
+        )}
+      </tbody>
     </table>
   );
 }
