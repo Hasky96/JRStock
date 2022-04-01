@@ -33,9 +33,7 @@ export default function BackTestDetail() {
         setBacktestResult(resultSummary);
         setBasicCondition(conditions);
         setIsLoading(false);
-        console.log("@loading over");
       } else {
-        console.log("@loading");
         setIsTesting(true);
       }
     };
