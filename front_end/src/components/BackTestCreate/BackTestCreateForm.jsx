@@ -17,7 +17,6 @@ export default function BackTestCreateForm() {
     sell_standard: 50,
     sell_ratio: 100,
   };
-  console.log(location.state.company_name);
 
   const [isStockSelected, setIsStockSelected] = useState(false);
   const [values, setValues] = useState({
@@ -26,10 +25,10 @@ export default function BackTestCreateForm() {
     asset: "",
     start_date: "",
     end_date: "",
-    company_name: location.state.company_name
+    company_name: location.state?.company_name
       ? location.state.company_name
       : "",
-    company_code: location.state.company_code
+    company_code: location.state?.company_code
       ? location.state.company_code
       : "",
     buy_strategy: [
