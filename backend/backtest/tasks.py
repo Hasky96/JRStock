@@ -26,7 +26,7 @@ strategy_name_dict={
 }
 
 strategy_indicator_dict={
-    101: 'SMA', 102: 'SMA', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
+    101: 'SMA1', 102: 'SMA1', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
     203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
     307: 'RSI', 308: 'RSI',
     407: 'OBV', 408: 'OBV',
@@ -37,7 +37,7 @@ strategy_indicator_dict={
 }
 
 strategy_korean_name_dict={
-    101: '이동평균선(MA) 상향돌파', 102: '이동평균선(MA) 상향돌파', 103: '이동평균선(MA) 골든크로스', 104: '이동평균선(MA) 데드크로스', 
+    101: '이동평균선(MA) 상향돌파', 102: '이동평균선(MA) 하향돌파', 103: '이동평균선(MA) 골든크로스', 104: '이동평균선(MA) 데드크로스', 
     105: '이동평균선(MA) 정배열', 106: '이동평균선(MA) 역배열',
     203: '이동평균수렴/확산지수(MACD) 골든크로스', 204: '이동평균수렴/확산지수(MACD) 데드크로스', 
     205: '이동평균수렴/확산지수(MACD) 정배열', 206: '이동평균수렴/확산지수(MACD) 역배열',
@@ -69,7 +69,7 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
         df = get_day_stock(code_number, start_date, end_date)
 
         # =====필요한 결과값들 init
-        result_data = init_result_data(account, len(df))
+        result_data = init_result_data(account, len(df), code_number)
         
         # 조건확인하여 필요한 Column 갱신
         for cond in buy_condition[0:-2]:  # 매수
@@ -109,7 +109,7 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
                     flag = True
 
             # =====매일마다 계산
-            result_data = day_calculate(account, result_data, df.loc[i], result)
+            result_data = day_calculate(account, result_data, df.loc[i], result, df.loc[i]['current_price'])
 
         # 최종 계산
         create_database(account)

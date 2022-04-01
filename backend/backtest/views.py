@@ -100,7 +100,8 @@ def test_start(request):
     if serializer.is_valid(raise_exception=True):
         result = serializer.save(user=request.user, basic_info=basic_info)
 
-    commission = (float(commission) / 100) + 1
+    buy_commission = (float(commission) / 100) + 1
+    sell_commission = 1 - (float(commission) / 100)
     account = {
         "balance" : asset,
         "start_price" : asset,
@@ -114,7 +115,8 @@ def test_start(request):
             #     "avg_price":70000
             #     },
         },
-        "commission" : commission,
+        "buy_commission" : buy_commission,
+        "sell_commission" : sell_commission,
         "win_cnt" : 0,
         "buy_sell_list" : [],
         "day_history_list" : [],
