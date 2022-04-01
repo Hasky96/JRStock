@@ -3,7 +3,7 @@ from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -19,7 +19,7 @@ schema_view = get_schema_view(
     ),
     url="https://j6s001.p.ssafy.io/",
     public=True,
-    permission_classes=[AllowAny],
+    permission_classes=[IsAdminUser],
 )
 
 urlpatterns = [
