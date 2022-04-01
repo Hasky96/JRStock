@@ -11,7 +11,7 @@ export default function ToolContent2({ sId }) {
     return str.split("/n").map((content, idx) => {
       return (
         <p
-          className=" text-base leading-normal text-gray-600 my-2 text-ellipsis overflow-hidden whitespace-pre-wrap"
+          className=" text-base leading-normal text-left text-gray-600 my-2 text-ellipsis overflow-hidden whitespace-pre-wrap"
           key={idx}
         >
           {content}
@@ -23,7 +23,6 @@ export default function ToolContent2({ sId }) {
   const paramsList = (params) => {
     const list = [];
     for (const key in params) {
-      if (key === "0") continue;
       list.push(
         <li key={key}>
           <span className="font-bold">{`${paramDict[key]} `}</span>
@@ -34,7 +33,7 @@ export default function ToolContent2({ sId }) {
     list.push(
       <li key={0}>
         <span className="font-bold">{"점수 "}</span>
-        <span>{`${params[0]}`}</span>
+        <span>{`해당 전략 할당 점수`}</span>
       </li>
     );
 
@@ -61,7 +60,11 @@ export default function ToolContent2({ sId }) {
             alt={altDict[sId]}
           />
           {paragraphList(contentDict[sId].info)}
-          {<ul>{paramsList(contentDict[sId].params)}</ul>}
+          {
+            <ul className="text-left font-normal">
+              {paramsList(contentDict[sId].params)}
+            </ul>
+          }
         </div>
         <button
           className="float-right bg-primary text-white rounded-lg px-2 py-2 hover:bg-active duration-300"

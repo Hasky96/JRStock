@@ -1,6 +1,5 @@
 import { createChart } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
-import { nameDict } from "../../../config/backtestConfig";
 
 export const ProfitLineChart = ({
   priceData,
@@ -222,7 +221,7 @@ export const ProfitLineChart = ({
 
       chart.remove();
     };
-  }, [priceData, dayEarnData, period, records]);
+  }, [priceData, dayEarnData, period, records, markers]);
 
   return (
     <div className="parent-container">

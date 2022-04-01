@@ -21,6 +21,7 @@ export default function TradingRecord({ id, isLoading }) {
         page: pageNo,
         size: pageSize,
       });
+      console.log(data);
       const { count, results } = data;
       setTotalCount(count);
       setCurrentRecords(results);
