@@ -167,7 +167,11 @@ def user_update(request, pk):
     new_password = request.data.get('new_password')
     user = get_object_or_404(User, pk=pk)
     
-    serializer = UserInfoSerializer(instance=user, data=request.data)
+    data = request.data.copy()
+    data['is_admin'] = user.is_admin
+    data['is_google'] = user.is_google
+    
+    serializer = UserInfoSerializer(instance=user, data=data)
     
     if serializer.is_valid(raise_exception=True):
         user = serializer.save()
