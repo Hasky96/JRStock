@@ -285,6 +285,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
                     period={period}
                     records={tradeRecord}
                     markers={markers}
+                    name="종목"
                   />
                 )
               ) : (
@@ -294,6 +295,7 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
                   period={period}
                   records={tradeRecord}
                   markers={markers}
+                  name="자산"
                 />
               )}
 

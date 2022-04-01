@@ -7,6 +7,7 @@ export const ProfitLineChart = ({
   period,
   records,
   markers,
+  name,
 }) => {
   const zeroFill = (s) => {
     return ("00" + s).slice(-2);
@@ -228,11 +229,11 @@ export const ProfitLineChart = ({
       <div className="absolute z-10 top-0 left-0">
         <div className="opacity-100 text-sm font-semibold text-gray-500">
           <div className="flex my-1">
-            <p className="mr-3">현재 자산</p>
+            <p className="mr-3">{name === "종목" ? "주가" : "현재 자산"}</p>
             <p className="mr-3">{legends.price.toLocaleString()}원</p>
           </div>
           <div className="flex my-1">
-            <p className="mr-3 my-0">수익</p>
+            <p className="mr-3 my-0">자산 변동</p>
             <p>{legends.earn.toLocaleString()}원</p>
           </div>
           <div>

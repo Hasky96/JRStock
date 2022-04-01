@@ -165,15 +165,15 @@ export const CandleChart = ({ title, candleData, volumeData, period }) => {
       <div className={styles["market-three-line-legend"]}>
         <div className={styles["legend-title"]}>{title}</div>
         <div className={styles["legend-content"]}>
-          {"시가 " + legends.open}
+          {"시가 " + (+legends.open).toLocaleString()}
           <br />
-          {"고가 " + legends.high}
+          {"고가 " + (+legends.high).toLocaleString()}
           <br />
-          {"저가 " + legends.low}
+          {"저가 " + (+legends.low).toLocaleString()}
           <br />
-          {"종가 " + legends.close}
+          {"종가 " + (+legends.close).toLocaleString()}
           <br />
-          {"거래량 " + legends.volume}
+          {"거래량 " + (+legends.volume).toLocaleString()}
         </div>
         <div>{legends.dateStr}</div>
       </div>

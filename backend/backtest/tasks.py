@@ -12,17 +12,19 @@ django.setup()
 from .models import Result
 from accounts.models import User
 from celery import shared_task
+
 from .common import *
+from .strategy import *
 
 strategy_name_dict={
     101: 'ma_up_pass', 102: 'ma_down_pass', 103: 'ma_golden_cross', 104: 'ma_dead_cross', 105: 'ma_straight', 106: 'ma_reverse',
     203: 'macd_golden_cross', 204: 'macd_dead_cross', 205: 'macd_straight', 206: 'macd_reverse',
     307: 'rsi_high', 308: 'rsi_low',
     407: 'obv_high', 408: 'obv_low',
-    507: 'MFI', 508: 'MFI',
-    605: 'IKH', 606: 'IKH',
-    707: 'KS', 708: 'KS',
-    807: 'KQ', 808: 'KQ'
+    507: 'mfi_high', 508: 'mfi_low',
+    605: 'ikh_straight', 606: 'ikh_reverse',
+    707: 'ks_high', 708: 'ks_low',
+    807: 'kq_high', 808: 'kq_low'
 }
 
 strategy_indicator_dict={
@@ -48,6 +50,32 @@ strategy_korean_name_dict={
     707: '코스피지수 높음', 708: '코스피지수 낮음',
     807: '코스피지수 높음', 808: '코스닥지수 낮음'
 }
+
+def call_strategy_by_code(strategy_code, strategy_params, df, index):
+    """ 코드로 전략 실행하는 함수 : 동적으로 함수 호출, 호출할 함수 이름과 일치해야함
+
+    Args:
+        strategy_code (int): 전략코드   101
+        strategy (list): 전략 파라미터가 담긴 리스트   [101, 5, 5, 30]
+        df (dataFrame): 주식 데이터프레임
+
+    Returns:
+        int: 매매조건이 맞으면 가중치만큼, 안맞으면 0
+    """
+    return getattr(sys.modules[__name__], strategy_name_dict[strategy_code])(strategy_params, df, index)
+
+def add_indicator_by_code(strategy_code, strategy_params, df):
+    """ 코드로 지표 추가하는 함수 : 동적으로 함수 호출
+
+    Args:
+        strategy_code (int): 전략코드   101
+        strategy (list): 전략 파라미터가 담긴 리스트   [101, 5, 5, 30]
+        df (dataFrame): 주식 데이터프레임
+
+    Returns:
+        dataFrame: 컬럼 추가된 주식 데이터프레임
+    """
+    return getattr(sys.modules[__name__], strategy_indicator_dict[strategy_code])(strategy_params, df)
 
 @shared_task
 def backtest(account, code_number, start_date, end_date, buy_condition, sell_condition, result_id, user_id):
@@ -126,3 +154,4 @@ def backtest(account, code_number, start_date, end_date, buy_condition, sell_con
 
     message = 'User Number [' + str(user.id) + '] Backtest Request Finished'
     return message
+
