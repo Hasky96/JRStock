@@ -291,9 +291,12 @@ def make_condition(result, isBuy, strategies, standard, ratio):
         for param in conditions.get('params').values():
             if param:
                 params += str(param) + " "
-                option.append(int(param))
+                if str(param).find('.') != -1:
+                    option.append(float(param))
+                else: option.append(int(param))
         weight = conditions.get('weight')
         option.append(int(conditions.get('weight')))
+        print(option)
         condition.append(option)
         
         condition_info = {
