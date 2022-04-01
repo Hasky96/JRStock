@@ -85,7 +85,7 @@ export default function BasicCondition({
               id="title"
               name="title"
               type="text"
-              placeholder="벡테스트 전략 제목을 입력해주세요."
+              placeholder="백테스트 전략 제목을 입력해주세요."
               required
               autoComplete="off"
               className={styles.inputTag}
@@ -96,8 +96,11 @@ export default function BasicCondition({
         </div>
       </div>
       <div className="w-full h-30 grid grid-cols-12 border-0 border-b-1 border-gray-200 shadow rounded text-center mt-3 p-3 gap-y-5">
-        <div className="col-span-12 text-left text-xl font-semibold">
+        <div className="flex gap-x-2 col-span-12 text-left text-xl font-semibold">
           기본 조건
+          <div className="text-gray-500 text-sm my-auto">
+            테스트는 일봉차트 기준으로 진행됩니다.
+          </div>
         </div>
         <div className="col-span-6 xl:col-span-4 text-left px-5">
           <label>종목 선택</label>
