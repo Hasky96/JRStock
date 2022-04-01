@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ko from "date-fns/locale/ko";
 import { getAvailableDate } from "../../api/stock";
+import { useLocation } from "react-router-dom";
 
 const inputPriceFormat = (str) => {
   if (str === "0") {
@@ -34,6 +35,7 @@ export default function BasicCondition({
   const [maxDate, setMaxDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date("2022/01/01"));
   const [endDate, setEndDate] = useState(new Date());
+  const location = useLocation();
 
   const fetchDate = async (company_code) => {
     const res = await getAvailableDate(company_code);
@@ -49,6 +51,10 @@ export default function BasicCondition({
       setMaxDate(new Date(end_date));
       handleStateChange("start_date", start_date);
       handleStateChange("end_date", end_date);
+    }
+
+    if (location.state?.company_name && location.state?.company_code) {
+      setIsStockSelected(true);
     }
   }, [values.company_code]);
 
