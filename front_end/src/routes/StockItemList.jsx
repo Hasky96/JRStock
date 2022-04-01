@@ -114,9 +114,13 @@ export default function StockItemList() {
         <li
           key={"stock" + i}
           className="grid grid-cols-12 h-12 hover:bg-indigo-50 hover:cursor-pointer duration-200"
+          onClick={goDetailPage.bind(
+            this,
+            stocks[i].financial_info.basic_info.code_number
+          )}
         >
           <div className="col-span-1 my-auto grid grid-cols-2">
-            <p className="col-span-1">
+            <p className="col-span-1" onClick={(e) => e.stopPropagation()}>
               <input
                 id="total-stock"
                 name="total-stock"
@@ -135,32 +139,12 @@ export default function StockItemList() {
                 }
               />
             </p>
-            <p
-              className="col-span-1"
-              onClick={goDetailPage.bind(
-                this,
-                stocks[i].financial_info.basic_info.code_number
-              )}
-            >
-              {(pageNo - 1) * pageSize + i + 1}
-            </p>
+            <p className="col-span-1">{(pageNo - 1) * pageSize + i + 1}</p>
           </div>
-          <p
-            className="col-span-2 my-auto text-left ml-10"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
+          <p className="col-span-2 my-auto text-left ml-10">
             {stocks[i].financial_info.basic_info.company_name}
           </p>
-          <p
-            className="col-span-1 my-auto text-right mr-5"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
+          <p className="col-span-1 my-auto text-right mr-5">
             {(+stocks[i].current_price).toLocaleString()}
           </p>
           <p
@@ -171,10 +155,6 @@ export default function StockItemList() {
                 ? "col-span-2 my-auto text-blue-600"
                 : "col-span-2 my-auto text-gray-600"
             }
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
           >
             {stocks[i].changes > 0
               ? "▲ " + (+stocks[i].changes).toLocaleString()
@@ -183,51 +163,19 @@ export default function StockItemList() {
               : "- " + (+stocks[i].changes).toLocaleString()}{" "}
             ({stocks[i].chages_ratio + "%"})
           </p>
-          <p
-            className="col-span-1 my-auto text-right mr-5"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
+          <p className="col-span-1 my-auto text-right mr-5">
             {(+stocks[i].volume).toLocaleString()}
           </p>
-          <p
-            className="col-span-1 my-auto text-right mr-5"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
+          <p className="col-span-1 my-auto text-right mr-5">
             {(+stocks[i].start_price).toLocaleString()}
           </p>
-          <p
-            className="col-span-1 my-auto text-right mr-5"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
+          <p className="col-span-1 my-auto text-right mr-5">
             {(+stocks[i].high_price).toLocaleString()}
           </p>
-          <p
-            className="col-span-1 my-auto text-right mr-5"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
+          <p className="col-span-1 my-auto text-right mr-5">
             {(+stocks[i].low_price).toLocaleString()}
           </p>
-          <p
-            className="col-span-2 my-auto"
-            onClick={goDetailPage.bind(
-              this,
-              stocks[i].financial_info.basic_info.code_number
-            )}
-          >
-            {costMap(stocks[i].market_cap)}
-          </p>
+          <p className="col-span-2 my-auto">{costMap(stocks[i].market_cap)}</p>
         </li>
       );
     }
