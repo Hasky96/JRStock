@@ -214,7 +214,6 @@ export const ProfitLineChart = ({
 
     const width = chartContainerRef.current.clientWidth;
     const height = chartContainerRef.current.clientWidth;
-
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);

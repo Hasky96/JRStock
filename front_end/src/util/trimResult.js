@@ -1,3 +1,4 @@
+import { API_MEDIA_URL } from "../config";
 import { nameDict, parameters, nameToId } from "../config/backtestConfig";
 
 export const trimResultSummary = async ({
@@ -31,7 +32,9 @@ export const trimResultSummary = async ({
           created_at: created_at,
           title: title,
           user: user.name,
-          profile: user.profile_img || user.profile_img_url,
+          profile: user.profile_img
+            ? API_MEDIA_URL + user.profile_img
+            : user.profile_img_url,
           company_name: basic_info.company_name,
           code_number: basic_info.code_number,
           min_earn: min_earn,
@@ -89,13 +92,42 @@ export const trimDaily = async (data) => {
 
 export const trimStockDaily = async (data) => {
   const trimmedStockData = [];
+  const candleData = [];
+  const candleVolumeData = [];
 
-  await data.forEach(({ date, current_price }, index) => {
-    trimmedStockData.push({ time: date, value: parseInt(current_price) });
-  });
+  await data.forEach(
+    (
+      {
+        date,
+        current_price,
+        high_price,
+        low_price,
+        start_price,
+        volume,
+        changes,
+      },
+      index
+    ) => {
+      trimmedStockData.push({ time: date, value: parseInt(current_price) });
+      candleData.push({
+        time: date,
+        open: start_price,
+        close: current_price,
+        low: low_price,
+        high: high_price,
+      });
+      candleVolumeData.push({
+        time: date,
+        value: volume,
+        color: parseFloat(changes) < 0 ? "#2563eb" : "#ef4444",
+      });
+    }
+  );
 
   return {
+    candleData,
     trimmedStockData,
+    candleVolumeData,
   };
 };
 

@@ -255,6 +255,14 @@ export const nameDict = {
   rsi_low: "상대적강도지수(RSI) 낮음",
   obv_high: "누적평균거래량(OBV) 높음",
   obv_low: "누적평균거래량(OBV) 낮음",
+  mfi_high: "자금흐름지표(MFI) 높음",
+  mfi_low: "자금흐름지표(MFI) 낮음",
+  ikh_straight: "일목균형표 매수조건",
+  ikh_reverse: "일목균형표 매도조건",
+  ks_high: "코스피지수 높음",
+  ks_low: "코스피지수 낮음",
+  kq_high: "코스닥지수 높음",
+  kq_low: "코스닥지수 낮음",
 };
 
 export const nameToId = {
@@ -272,4 +280,12 @@ export const nameToId = {
   rsi_low: 308,
   obv_high: 407,
   obv_low: 408,
+  mfi_high: 507,
+  mfi_low: 508,
+  ikh_straight: 605,
+  ikh_reverse: 606,
+  ks_high: 707,
+  ks_low: 708,
+  kq_high: 807,
+  kq_low: 808,
 };

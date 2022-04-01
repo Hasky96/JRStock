@@ -72,7 +72,7 @@ export default function TradeCondition({
         ...obj,
         params: { ...obj["params"] },
       }));
-      newStrategy[index]["params"][param] = e.target.value;
+      newStrategy[index]["params"][param] = +e.target.value;
 
       return {
         ...state,
@@ -186,11 +186,12 @@ export default function TradeCondition({
       </div>
       <div className="col-span-2 text-left px-5">
         <label htmlFor={`${type}_standard`} className="relative pl-1">
-          매매 기준 점수
+          {name} 기준 점수
           <Tooltip iPos={"left-[100px] top-0"} cPos={"top-6"}>
             <div className="text-black text-base font-normal">
               {name} 전략들의 세부 설정 점수 총 합계가{" "}
               <strong>매매 기준 점수</strong> 이상일 경우 {name}를 진행합니다.
+              자연수를 입력해주세요.
             </div>
           </Tooltip>
         </label>
@@ -203,7 +204,8 @@ export default function TradeCondition({
             autoComplete="off"
             max={100}
             min={1}
-            placeholder="1 ~ 100 "
+            step={1}
+            placeholder="1 ~ 100"
             defaultValue={configDefault.standard}
             className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
             onChange={(e) => handleInputChange(e)}
@@ -241,9 +243,9 @@ export default function TradeCondition({
           <button
             type="button"
             onClick={(e) => handleAndButton(e)}
-            className="w-full py-1 bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
+            className="my-3 w-full py-1 bg-primary text-white shadow-sm text-sm font-medium rounded-md hover:bg-active duration-300"
           >
-            and
+            조건 추가하기
           </button>
         ) : (
           <button

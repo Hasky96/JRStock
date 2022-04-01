@@ -29,7 +29,6 @@ export default function BackTestDetail() {
     const fetchAndSetDetail = async () => {
       const result = await fetchBacktestDetail(id);
       if (result.final_asset) {
-        console.log(result);
         const { resultSummary, conditions } = await trimResultSummary(result);
         setBacktestResult(resultSummary);
         setBasicCondition(conditions);
