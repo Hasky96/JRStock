@@ -129,7 +129,6 @@ export default function UserUpdate() {
         data["profile_img"] = values.profile_img;
       }
     }
-    console.log(data);
 
     const formData = new FormData();
     for (let key in data) {
