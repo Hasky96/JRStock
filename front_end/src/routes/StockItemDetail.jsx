@@ -32,24 +32,32 @@ export default function StockItemDetail() {
   const tabInfo = ["종합정보", "뉴스", "종목토론 게시판"];
 
   const init = async () => {
-    const resDetail = await getDetail(id);
-    setDetail(resDetail.data);
+    let isMount = true;
+    try {
+      const resDetail = await getDetail(id);
+      setDetail(resDetail.data);
+    } catch {
+      isMount = false;
+      navigate("/*", { replace: true });
+    }
 
     setIsFinInit(false);
 
-    const resStock = await getDayStock(id);
-    setStock(resStock.data[resStock.data.length - 1]);
+    if (isMount) {
+      const resStock = await getDayStock(id);
+      setStock(resStock.data[resStock.data.length - 1]);
 
-    try {
-      const resLive = await getLive(id);
-      setLive(resLive.data);
-      setIsLive(true);
-    } catch (e) {
-      console.log(e);
-      setIsError(true);
-      toast.error("실시간 데이터가 없습니다!");
+      try {
+        const resLive = await getLive(id);
+        setLive(resLive.data);
+        setIsLive(true);
+      } catch (e) {
+        console.log(e);
+        setIsError(true);
+        toast.error("실시간 데이터가 없습니다!");
+      }
+      setIsLiveInit(false);
     }
-    setIsLiveInit(false);
   };
 
   const updateLive = async () => {
