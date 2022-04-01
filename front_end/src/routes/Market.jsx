@@ -233,7 +233,7 @@ export default function Market() {
               <TabBar setCurrentTab={setKospiTab} tabInfo={kospiTabInfo} />
             </div>
 
-            {isInit ? (
+            {isInit || !data ? (
               <div
                 className={classNames(
                   "flex justify-center my-10",
@@ -285,7 +285,7 @@ export default function Market() {
             <div className="mx-5">
               <TabBar setCurrentTab={setKosdaqTab} tabInfo={kosdaqTabInfo} />
             </div>
-            {isInit ? (
+            {isInit || !data ? (
               <div
                 className={classNames(
                   "flex justify-center my-10",
