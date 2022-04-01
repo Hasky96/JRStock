@@ -296,8 +296,8 @@ export default function StockItemList() {
   };
 
   // 관심 종목 삭제
-  const handleDeleteButton = () => {
-    const status = deleteBookMark();
+  const handleDeleteButton = async () => {
+    const status = await deleteBookMark();
     if (status) {
       init();
       toast.success("관심종목 삭제에 성공하였습니다.");
