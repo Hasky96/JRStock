@@ -19,6 +19,7 @@ export default function UserUpdate() {
   const [passwordErr, setPasswordErr] = useState(true);
   const [passwordValid, setPasswordValid] = useState(false);
   const [lookPassword, setLookPassword] = useState(false);
+  const [fileInput, setFileInput] = useState([]);
   const inputBoxStyle =
     "appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ";
   const disabledInputBoxStyle =
@@ -75,6 +76,7 @@ export default function UserUpdate() {
 
   const handleImageChange = (e) => {
     e.preventDefault();
+    setFileInput(e.target.value);
     if (!e.target.files[0]) {
       return;
     }
@@ -89,6 +91,7 @@ export default function UserUpdate() {
 
   const handleImageDelete = (e) => {
     e.preventDefault();
+    setFileInput([]);
     handleValueChange("profile_img_preview", "");
     handleValueChange("profile_img", "");
   };
@@ -105,14 +108,17 @@ export default function UserUpdate() {
       setPasswordErr(false);
       return;
     }
+
     const data = {
       name: values.name,
       new_password: values.password,
+      profile_img: "",
     };
 
     if (values.profile_img) {
       data["profile_img"] = values.profile_img;
     }
+    console.log(data);
 
     const formData = new FormData();
     for (let key in data) {
@@ -245,6 +251,7 @@ export default function UserUpdate() {
                 name="profile_img"
                 type="file"
                 className="hidden"
+                value={fileInput}
                 accept="image/png, image/gif, image/jpeg"
                 onChange={(e) => handleImageChange(e)}
               />
