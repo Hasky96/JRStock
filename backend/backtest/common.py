@@ -13,7 +13,6 @@ import sys
 
 from .models import BuySell, DayHistory, YearHistory
 from .serializers import BuySellSerializer, ConditionInfoSerializer, DayHistorySerialilzer, ResultSerializer, YearHistorySerialilzer
-from .strategy import *
 
 from stock.models import DayStock, FinancialInfo, BasicInfo
 
@@ -27,56 +26,6 @@ strategy_name_dict={
     707: 'ks_high', 708: 'ks_low',
     807: 'kq_high', 808: 'kq_low'
 }
-
-strategy_korean_name_dict={
-    101: '이동평균선(MA) 상향돌파', 102: '이동평균선(MA) 하향돌파', 103: '이동평균선(MA) 골든크로스', 104: '이동평균선(MA) 데드크로스', 
-    105: '이동평균선(MA) 정배열', 106: '이동평균선(MA) 역배열',
-    203: '이동평균수렴/확산지수(MACD) 골든크로스', 204: '이동평균수렴/확산지수(MACD) 데드크로스', 
-    205: '이동평균수렴/확산지수(MACD) 정배열', 206: '이동평균수렴/확산지수(MACD) 역배열',
-    307: '상대적강도지수(RSI) 높음', 308: '상대적강도지수(RSI) 낮음',
-    407: '누적평균거래량(OBV) 높음', 408: '누적평균거래량(OBV) 낮음',
-    507: '자금흐름지표(MFI) 높음', 508: '자금흐름지표(MFI) 낮음',
-    605: '일목균형표 매수조건', 606: '일목균형표 매도조건',
-    707: '코스피지수 높음', 708: '코스피지수 낮음',
-    807: '코스닥지수 높음', 808: '코스닥지수 낮음'
-}
-
-strategy_indicator_dict={
-    101: 'SMA1', 102: 'SMA1', 103: 'SMA', 104: 'SMA', 105: 'SMA', 106: 'SMA',
-    203: 'MACD', 204: 'MACD', 205: 'MACD', 206: 'MACD',
-    307: 'RSI', 308: 'RSI',
-    407: 'OBV', 408: 'OBV',
-    507: 'MFI', 508: 'MFI',
-    605: 'IKH', 606: 'IKH',
-    707: 'KS', 708: 'KS',
-    807: 'KQ', 808: 'KQ'
-}
-
-def call_strategy_by_code(strategy_code, strategy_params, df, index):
-    """ 코드로 전략 실행하는 함수 : 동적으로 함수 호출, 호출할 함수 이름과 일치해야함
-
-    Args:
-        strategy_code (int): 전략코드   101
-        strategy (list): 전략 파라미터가 담긴 리스트   [101, 5, 5, 30]
-        df (dataFrame): 주식 데이터프레임
-
-    Returns:
-        int: 매매조건이 맞으면 가중치만큼, 안맞으면 0
-    """
-    return getattr(sys.modules[__name__], strategy_name_dict[strategy_code])(strategy_params, df, index)
-
-def add_indicator_by_code(strategy_code, strategy_params, df):
-    """ 코드로 지표 추가하는 함수 : 동적으로 함수 호출
-
-    Args:
-        strategy_code (int): 전략코드   101
-        strategy (list): 전략 파라미터가 담긴 리스트   [101, 5, 5, 30]
-        df (dataFrame): 주식 데이터프레임
-
-    Returns:
-        dataFrame: 컬럼 추가된 주식 데이터프레임
-    """
-    return getattr(sys.modules[__name__], strategy_indicator_dict[strategy_code])(strategy_params, df)
 
 def get_day_stock(code_number, start_date, end_date):
     """ 주식 select 함수
