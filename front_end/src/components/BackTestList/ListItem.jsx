@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { ReactComponent as Spinner } from "../../assets/spinner_small.svg";
+import { ReactComponent as Delete } from "../../assets/trashcan.svg";
 
-export default function ListItem({ onChecked, checked, index, item }) {
+export default function ListItem({ index, item, handleDeleteButton }) {
   const navigate = useNavigate();
 
   const paintElement = () => {
@@ -10,10 +12,18 @@ export default function ListItem({ onChecked, checked, index, item }) {
       if (key === "id") continue;
       elementArray.push(
         <td key={key} className="mx-3">
-          {item[key]}
+          {item[key] === "테스트 중" ? <Spinner /> : item[key]}
         </td>
       );
     }
+
+    elementArray.push(
+      <td key={item.id} className="mx-3">
+        <button type="button" onClick={(e) => handleDeleteButton(e, item.id)}>
+          <Delete fill="#ff825c" />
+        </button>
+      </td>
+    );
 
     return elementArray;
   };
@@ -25,18 +35,6 @@ export default function ListItem({ onChecked, checked, index, item }) {
       className="h-12 border-b hover:bg-indigo-50 hover:cursor-pointer duration-200"
       onClick={() => handleOnClick()}
     >
-      <td className="px-3">
-        <input
-          id="checkbox"
-          name="checkbox"
-          type="checkbox"
-          className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded duration-300"
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => onChecked(e, item.id)}
-          checked={checked}
-        />
-      </td>
-
       <td>{index + 1}</td>
       {paintElement()}
     </tr>

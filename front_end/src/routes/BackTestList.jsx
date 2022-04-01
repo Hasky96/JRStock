@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getBacktestList } from "../api/backtest";
+import { getBacktestList, deleteBacktest } from "../api/backtest";
 import PageContainer from "../components/PageContainer";
 import ListTitle from "../components/BackTestList/ListTitle";
 import ListItem from "../components/BackTestList/ListItem";
 import Pagenation2 from "../components/Pagenation2";
 import SearchBar from "../components/BackTestList/SearchBar";
 import { ReactComponent as Create } from "../assets/create.svg";
-import { ReactComponent as Spinner } from "../assets/spinner.svg";
+import { ReactComponent as Spinner } from "../assets/spinner_small.svg";
+import { toast } from "react-toastify";
 
 export default function BackTestList() {
   const [isLoading, setIsLoading] = useState(true);
   const [backTestItems, setbackTestItems] = useState([]);
-  const [checkedList, setcheckedList] = useState([]);
   const [totalCount, setTotalCount] = useState(1);
   const [pageNo, setPageNo] = useState(1);
+  const [deleteToggle, setDeleteToggle] = useState(false);
   const pageSize = 10;
 
   useEffect(() => {
@@ -26,22 +27,20 @@ export default function BackTestList() {
       setIsLoading(false);
     }
     fetchAndSetBacktestList();
-  }, [pageNo]);
+  }, [pageNo, deleteToggle]);
 
-  const onCheckedAll = (e) => {
-    if (e.target.checked) {
-      setcheckedList(backTestItems.map((item) => item.id));
-    } else {
-      setcheckedList([]);
+  const handleDeleteButton = async (e, id) => {
+    e.stopPropagation();
+    const answer = window.confirm("삭제하시겠습니까?");
+    if (!answer) {
+      toast.warning("취소하였습니다.");
+      return;
     }
-  };
-
-  // 개별 체크 클릭 시
-  const onChecked = (e, checkedId) => {
-    if (e.target.checked) {
-      setcheckedList([...checkedList, checkedId]);
-    } else {
-      setcheckedList(checkedList.filter((id) => id !== checkedId));
+    const res = await deleteBacktest(id);
+    console.log(res);
+    if (res.status === 200) {
+      toast.success("삭제되었습니다.");
+      setDeleteToggle((state) => !state);
     }
   };
 
@@ -59,13 +58,10 @@ export default function BackTestList() {
         key={index}
         item={newItem}
         index={index}
-        checked={checkedList.includes(item.id) ? true : false}
-        onChecked={onChecked}
+        handleDeleteButton={handleDeleteButton}
       />
     );
   });
-
-  const onSearch = (word) => {};
 
   return (
     <PageContainer>
@@ -82,35 +78,28 @@ export default function BackTestList() {
                 <div className="col-span-2 my-auto">백테스트 생성</div>
               </button>
             </Link>
-            <div className="w-56">
+            {/* <div className="w-56">
               <SearchBar onSearch={onSearch} />
-            </div>
+            </div> */}
           </div>
 
-          <table className="table-auto w-full text-left mt-5">
+          <table className="table-auto w-full text-left mt-5 text-center">
             <colgroup>
-              <col span="1" style={{ width: 5 + "%" }} />
               <col span="1" style={{ width: 5 + "%" }} />
               <col span="1" style={{ width: 60 + "%" }} />
               <col span="1" style={{ width: 10 + "%" }} />
               <col span="1" style={{ width: 15 + "%" }} />
+              <col span="1" style={{ width: 5 + "%" }} />
             </colgroup>
             <ListTitle
-              onCheckedAll={onCheckedAll}
-              checked={
-                checkedList.length &&
-                checkedList.length === backTestItems.length
-                  ? true
-                  : false
-              }
-              titles={["No", "테스트 이름", "상태", "생성일"]}
+              titles={["No", "테스트 이름", "상태", "생성일", "삭제"]}
             />
             {backTestItems.length ? (
               <tbody>{paintBackTestItems}</tbody>
             ) : (
               <tbody>
                 <tr>
-                  <td colSpan="4" className="text-center py-5">
+                  <td colSpan="5" className="text-center py-5">
                     생성된 백테스트가 없습니다.
                   </td>
                 </tr>

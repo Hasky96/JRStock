@@ -54,8 +54,14 @@ async function getBacktestAnnually(backtestId) {
   return await api.get(`backtest/year/${backtestId}`);
 }
 
+async function deleteBacktest(backtestId) {
+  const authApi = loginApiInstance();
+  return await authApi.delete(`backtest/delete/${backtestId}`);
+}
+
 export {
   startBacktest,
+  deleteBacktest,
   getBacktestList,
   getBacktestDetail,
   getBacktestCondition,

@@ -16,6 +16,7 @@ import { assetKey, profitKey } from "../../../config/backtestConfig";
 import { AnnualProfit } from "../Profit/AnnualProfit";
 import "./ResultSummary.css";
 import ReactTooltip from "react-tooltip";
+import { StockCandleChart } from "./StockCandleChart";
 
 function date_ascending(a, b) {
   var dateA = new Date(a["time"]).getTime();
@@ -34,9 +35,17 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
   const [lineData, setLineData] = useState([]);
   const [barData, setBarData] = useState([]);
   const [stockData, setStockData] = useState([]);
+  const [stockCandleData, setStockCandleData] = useState([]);
+  const [stockVolumeData, setStockVolumeData] = useState([]);
   const [isDailyData, setIsDailyData] = useState(false);
   const [period, setPeriod] = useState("1W");
   const [isStockData, setIsStockData] = useState(true);
+  const [isCandleData, setIsCandleData] = useState(false);
+
+  const intervals = ["1D", "1W", "1M", "1Y"];
+  const stockIntervals = ["일봉", "1D", "1W", "1M", "1Y"];
+  // const stockIntervals = ["1D", "1W", "1M", "1Y"];
+  const [nowIntervals, setNowIntervals] = useState(stockIntervals);
 
   const [labels, setLabels] = useState([]);
   const [marketAnnual, setMarketAnnual] = useState([]);
@@ -76,11 +85,14 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
       );
 
       const { lineChartData, barChartData } = await trimDaily(data);
-      const { trimmedStockData } = await trimStockDaily(stockData);
+      const { trimmedStockData, candleData, candleVolumeData } =
+        await trimStockDaily(stockData);
 
       setLineData(lineChartData);
       setBarData(barChartData);
       setStockData(trimmedStockData);
+      setStockCandleData(candleData);
+      setStockVolumeData(candleVolumeData);
       setIsDailyData(true);
     }
 
@@ -114,14 +126,21 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
     }
   }, [isLoading, resultSummary]);
 
-  const intervals = ["1D", "1W", "1M", "1Y"];
-  const paintSwitcher = intervals.map((el, idx) => (
+  const handleSwitcherClick = (e) => {
+    if (e.target.innerText === "일봉") {
+      setIsCandleData(true);
+      setPeriod(e.target.innerText);
+    } else {
+      setIsCandleData(false);
+      setPeriod(e.target.innerText);
+    }
+    window.dispatchEvent(new Event("resize"));
+  };
+
+  const paintSwitcher = nowIntervals.map((el, idx) => (
     <button
       key={idx}
-      onClick={(e) => {
-        setPeriod(e.target.innerText);
-        window.dispatchEvent(new Event("resize"));
-      }}
+      onClick={(e) => handleSwitcherClick(e)}
       className={
         period === el
           ? "result-switcher-item result-switcher-active-item"
@@ -222,7 +241,10 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
         <div className="chart-container rounded shadow-lg p-3 mt-5 text-lg">
           <div className="flex gap-3">
             <button
-              onClick={() => setIsStockData((state) => !state)}
+              onClick={() => {
+                setIsStockData((state) => !state);
+                setNowIntervals(stockIntervals);
+              }}
               className={classNames(
                 "font-semibold",
                 isStockData ? "" : "text-gray-300"
@@ -232,7 +254,12 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
             </button>
             <div>|</div>
             <button
-              onClick={() => setIsStockData((state) => !state)}
+              onClick={() => {
+                setIsStockData((state) => !state);
+                setNowIntervals(intervals);
+                setIsCandleData(false);
+                setPeriod("1W");
+              }}
               className={classNames(
                 "font-semibold",
                 isStockData ? "text-gray-300" : ""
@@ -244,13 +271,22 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
           {isDailyData && isTradeRecord && (
             <>
               {isStockData ? (
-                <ProfitLineChart
-                  priceData={stockData}
-                  dayEarnData={barData}
-                  period={period}
-                  records={tradeRecord}
-                  markers={markers}
-                />
+                isCandleData ? (
+                  <StockCandleChart
+                    candleData={stockCandleData}
+                    volumeData={stockVolumeData}
+                    markers={markers}
+                    period={6}
+                  />
+                ) : (
+                  <ProfitLineChart
+                    priceData={stockData}
+                    dayEarnData={barData}
+                    period={period}
+                    records={tradeRecord}
+                    markers={markers}
+                  />
+                )
               ) : (
                 <ProfitLineChart
                   priceData={lineData}
