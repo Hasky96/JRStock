@@ -72,12 +72,12 @@ def test_start(request):
     commission = request.data.get('commission')                     # 수수료
     
     buy_strategy = request.data.get('buy_strategy')                 # 매수조건
-    buy_standard = request.data.get('buy_standard')                 # 매수비중
-    buy_ratio = request.data.get('buy_ratio')                       # 매수비율
+    buy_standard = int(request.data.get('buy_standard'))                 # 매수비중
+    buy_ratio = int(request.data.get('buy_ratio'))                       # 매수비율
     
     sell_strategy = request.data.get('sell_strategy')               # 매도조건
-    sell_standard = request.data.get('sell_standard')               # 매수비중
-    sell_ratio = request.data.get('sell_ratio')                     # 매수비율
+    sell_standard = int(request.data.get('sell_standard'))               # 매수비중
+    sell_ratio = int(request.data.get('sell_ratio'))                     # 매수비율
     
     result_base = {
         'title' : title,
