@@ -13,6 +13,7 @@ export default function GoogleUserUpdateForm() {
   });
   const [userId, setUserId] = useState(null);
   const [fileInput, setFileInput] = useState([]);
+  const [isImgChangedOnce, setIsImgChangedOnce] = useState(false);
   const inputBoxStyle =
     "appearance-none relative block w-full px-3 py-2 border border-primary placeholder-gray-900 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ";
   const disabledInputBoxStyle =
@@ -52,6 +53,7 @@ export default function GoogleUserUpdateForm() {
 
   const handleImageChange = (e) => {
     e.preventDefault();
+    setIsImgChangedOnce(true);
     setFileInput(e.target.value);
     if (!e.target.files[0]) {
       return;
@@ -67,6 +69,7 @@ export default function GoogleUserUpdateForm() {
 
   const handleImageDelete = (e) => {
     e.preventDefault();
+    setIsImgChangedOnce(true);
     setFileInput([]);
     handleValueChange("profile_img_preview", "");
     handleValueChange("profile_img", "");
@@ -79,10 +82,17 @@ export default function GoogleUserUpdateForm() {
       profile_img: "",
     };
 
-    if (values.profile_img) {
-      data["profile_img"] = values.profile_img;
+    if (!isImgChangedOnce) {
+      data["profile_img"] = "default";
+    } else {
+      // profile_img
+      // => 한 번이라도 변경 되었으면 file object
+      // => 변경된 적 없이 기존 이미지라면 '/media/<filename>
+      if (values.profile_img) {
+        data["profile_img"] = values.profile_img;
+      }
     }
-    console.log("testing", data);
+
     const formData = new FormData();
     for (let key in data) {
       formData.append(`${key}`, data[key]);
