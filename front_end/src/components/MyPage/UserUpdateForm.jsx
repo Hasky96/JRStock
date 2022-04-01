@@ -75,6 +75,9 @@ export default function UserUpdate() {
 
   const handleImageChange = (e) => {
     e.preventDefault();
+    if (!e.target.files[0]) {
+      return;
+    }
     handleValueChange("profile_img", e.target.files[0]);
 
     const reader = new FileReader();
@@ -242,7 +245,7 @@ export default function UserUpdate() {
                 name="profile_img"
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept="image/png, image/gif, image/jpeg"
                 onChange={(e) => handleImageChange(e)}
               />
             </div>
