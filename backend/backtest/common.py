@@ -266,6 +266,7 @@ def get_stock_price(code_number, date):
         yesterday = datetime.strptime(date, '%Y-%m-%d') - timedelta(days=cnt)
         yesterday = yesterday.strftime('%Y-%m-%d')
         day_stock_list = DayStock.objects.filter(code_number=code_number).filter(date=yesterday)
+        cnt += 1
     return day_stock_list[0].current_price
 
 def get_kospi_price_by_date(date):
@@ -290,9 +291,12 @@ def make_condition(result, isBuy, strategies, standard, ratio):
         for param in conditions.get('params').values():
             if param:
                 params += str(param) + " "
-                option.append(int(param))
+                if str(param).find('.') != -1:
+                    option.append(float(param))
+                else: option.append(int(param))
         weight = conditions.get('weight')
         option.append(int(conditions.get('weight')))
+        print(option)
         condition.append(option)
         
         condition_info = {

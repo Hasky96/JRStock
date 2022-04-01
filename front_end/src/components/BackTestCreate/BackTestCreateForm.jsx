@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BasicCondition from "./BasicCondition";
 import TradeCondition from "./TradeCondition";
 import { paramConstructor, getParamDefault } from "../../config/backtestConfig";
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { startBacktest } from "../../api/backtest";
 
 export default function BackTestCreateForm() {
+  let location = useLocation();
   const navigate = useNavigate();
   const valueDefault = {
     commission: 0.15,
@@ -24,8 +25,12 @@ export default function BackTestCreateForm() {
     asset: "",
     start_date: "",
     end_date: "",
-    company_name: "",
-    company_code: "",
+    company_name: location.state?.company_name
+      ? location.state.company_name
+      : "",
+    company_code: location.state?.company_code
+      ? location.state.company_code
+      : "",
     buy_strategy: [
       {
         id: 0,
