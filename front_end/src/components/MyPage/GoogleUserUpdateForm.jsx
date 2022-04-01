@@ -82,7 +82,7 @@ export default function GoogleUserUpdateForm() {
     if (values.profile_img) {
       data["profile_img"] = values.profile_img;
     }
-
+    console.log("testing", data);
     const formData = new FormData();
     for (let key in data) {
       formData.append(`${key}`, data[key]);
