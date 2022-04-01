@@ -22,3 +22,26 @@ module.exports = {
   },
   plugins: [require("@tailwindcss/forms")],
 };
+
+// z-index 대략 정리
+/**
+ * Header.jsx = 150
+ * OnOffToggle = 10
+ * Pagenation, Pagenation2 = 10
+ * StockSelectModal = 20000
+ * StrategyConfig = 100
+ * ProfitLineChart = 10
+ * Dialog = 500
+ * Loading = 30
+ * Tooltip = 아이콘-80, 내용 - 140
+ * Tooltip2 = 60
+ * Landing = 10
+ * CandleChart = 20
+ * interested = 50
+ * MyStock Modal = 500
+ * passwordHide = 20
+ * Sidebar = 200
+ * Dialog2 = 500
+ * CandleChart = 20
+ * StockItemList Modal = 500
+ */

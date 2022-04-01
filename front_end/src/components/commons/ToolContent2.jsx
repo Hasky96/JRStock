@@ -66,7 +66,7 @@ export default function ToolContent2({ sId }) {
             </ul>
           }
         </div>
-        <button
+        <a
           className="float-right bg-primary text-white rounded-lg px-2 py-2 hover:bg-active duration-300"
           onClick={(e) => {
             e.preventDefault();
@@ -75,7 +75,7 @@ export default function ToolContent2({ sId }) {
           }}
         >
           자세히 보기
-        </button>
+        </a>
       </div>
     );
   };

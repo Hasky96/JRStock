@@ -17,13 +17,13 @@ export default function BoardCreate() {
     setContent(e.target.value);
   };
 
-  const create = () => {
+  const create = async () => {
     if (!title.trim()) {
       alert("제목을 입력해주세요.");
     } else if (!content.trim()) {
       alert("내용을 입력해주세요.");
     } else {
-      createBoard(title, content, id);
+      await createBoard(title, content, id);
       navigate(`/stock/${id}/board`);
     }
   };

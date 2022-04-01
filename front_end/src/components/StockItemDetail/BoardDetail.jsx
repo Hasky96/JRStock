@@ -48,8 +48,10 @@ export default function BoardDetail() {
 
   // 게시글 삭제
   const clickDeleteBoard = async () => {
-    await deleteBoard(boardId);
-    navigate(`/stock/${id}/board`);
+    if (window.confirm("게시글을 삭제하시겠습니까?")) {
+      await deleteBoard(boardId);
+      navigate(`/stock/${id}/board`);
+    }
   };
 
   // 게시글 수정

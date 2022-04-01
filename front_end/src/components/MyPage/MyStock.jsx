@@ -713,7 +713,7 @@ export default function StockItemList() {
       {/* 모달창 */}
       {isShowModal && (
         <div
-          className="fixed inset-0 flex justify-center items-center z-50 py-20 bg-gray-500 bg-opacity-75 transition-opacity"
+          className="fixed inset-0 flex justify-center items-center z-[500] py-20 bg-gray-500 bg-opacity-75 transition-opacity"
           id="overlay"
         >
           <div className="bg-gray-200 max-w-xl py-2 px-3 rounded shadow-xl text-gray-800 max-h-[75vh] overflow-y-scroll">
