@@ -114,11 +114,12 @@ export default function UserUpdate() {
       new_password: values.password,
       profile_img: "",
     };
-
+    // profile_img
+    // => 한 번이라도 변경 되었으면 file object
+    // => 변경된 적 없이 기존 이미지라면 '/media/<filename>
     if (values.profile_img) {
       data["profile_img"] = values.profile_img;
     }
-    console.log(data);
 
     const formData = new FormData();
     for (let key in data) {
