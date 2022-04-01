@@ -24,6 +24,7 @@ export default function TradeCondition({
   const [strategyCount, setStrategyCount] = useState(1);
   const [paintSelect, setPaintSelect] = useState([]);
 
+  // 삭제 버튼 클릭 시
   const handleDeleteButton = (target) => {
     setValues((state) => {
       const newStrategy = state[`${type}_strategy`].map((obj) => ({ ...obj }));
@@ -39,6 +40,7 @@ export default function TradeCondition({
     setStrategyCount((state) => state - 1);
   };
 
+  // 추가 and 버튼 클릭 시
   const handleAndButton = (e) => {
     e.preventDefault();
     setValues((state) => {
@@ -63,6 +65,7 @@ export default function TradeCondition({
     setStrategyCount((state) => state + 1);
   };
 
+  // 전략 변수들 (params) input 변경 시
   const handleParamChange = (e, index, param) => {
     setValues((state) => {
       const newStrategy = state[`${type}_strategy`].map((obj) => ({
@@ -78,6 +81,7 @@ export default function TradeCondition({
     });
   };
 
+  // 전략 점수 변경 시
   const handleWeightChange = (e, index) => {
     setValues((state) => {
       const newStrategy = state[`${type}_strategy`].map((obj) => ({
@@ -93,6 +97,7 @@ export default function TradeCondition({
     });
   };
 
+  // 전략 삭제 버튼 그리기
   const paintDeleteButton = (i) => {
     return (
       <div
@@ -104,6 +109,7 @@ export default function TradeCondition({
     );
   };
 
+  // 전략 변수 input form 그리기
   const paintParamInput = (strategy, i) => {
     const params = parameters[strategy];
     return params.map((param, index) => (
@@ -116,7 +122,8 @@ export default function TradeCondition({
           name={`${type}_${i}_${param}`}
           type="number"
           required
-          min={1}
+          min={param === 2 ? 0 : 1}
+          step={param === 2 ? 0.1 : 1}
           value={values[`${type}_strategy`][i]["params"][param]}
           onChange={(e) => handleParamChange(e, i, param)}
           className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 block sm:text-sm border border-gray-300 rounded-md"
@@ -124,6 +131,8 @@ export default function TradeCondition({
       </div>
     ));
   };
+
+  // values 변경 시마다 선택된 전략 다시 그리기
   useEffect(() => {
     const paintSelect = [];
     const strategies = values[`${type}_strategy`]; // strategies: Array

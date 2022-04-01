@@ -179,7 +179,7 @@ export default function BasicCondition({
         </div>
 
         <div className="-ml-5 lg:ml-0 col-span-6 xl:col-span-3 text-left">
-          <label htmlFor="commission">수수료 (%)</label>
+          <label htmlFor="commission">수수료 + 슬리피지 (%)</label>
           <div className="flex items-center">
             <input
               id="commission"
@@ -188,7 +188,7 @@ export default function BasicCondition({
               required
               autoComplete="off"
               step="0.001"
-              defaultValue={0.015}
+              defaultValue={0.15}
               placeholder="소수점 셋째 자리까지 가능"
               className="h-8 shadow-sm focus:ring-active focus:border-active mt-1 sm:text-sm border border-gray-300 rounded-md"
               onChange={(e) => handleInputChange(e)}

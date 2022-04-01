@@ -68,11 +68,11 @@ export const paramDict = {
 export const configParam = {
   101: {
     1: 3,
-    2: 1,
+    2: 0.5,
   },
   102: {
     1: 3,
-    2: 1,
+    2: 0.5,
   },
   103: {
     3: 2,
