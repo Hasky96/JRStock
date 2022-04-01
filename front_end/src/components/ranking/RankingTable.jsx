@@ -1,12 +1,13 @@
 import styles from "./list.module.css";
 import RankItem from "./RankItem";
 import ListTitle from "./ListTitle";
+import { ReactComponent as Spinner } from "../../assets/rankingSpinner.svg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function RankingTable({ data }) {
+export function RankingTable({ data, isLoading }) {
   const rankList = () => {
     const list = [];
     data.forEach((el, idx) => {
@@ -22,13 +23,13 @@ export function RankingTable({ data }) {
       <colgroup>
         <col span="1" style={{ width: 7 + "%" }} />
         <col span="1" style={{ width: 7 + "%" }} />
+        <col span="1" style={{ width: 15 + "%" }} />
+        <col span="1" style={{ width: 15 + "%" }} />
+        <col span="1" style={{ width: 8 + "%" }} />
         <col span="1" style={{ width: 10 + "%" }} />
-        <col span="1" style={{ width: 12 + "%" }} />
-        <col span="1" style={{ width: 12 + "%" }} />
-        <col span="1" style={{ width: 14 + "%" }} />
-        <col span="1" style={{ width: 14 + "%" }} />
-        <col span="1" style={{ width: 14 + "%" }} />
-        <col span="1" style={{ width: 14 + "%" }} />
+        <col span="1" style={{ width: 10 + "%" }} />
+        <col span="1" style={{ width: 10 + "%" }} />
+        <col span="1" style={{ width: 10 + "%" }} />
       </colgroup>
       <ListTitle
         titles={[
@@ -43,16 +44,28 @@ export function RankingTable({ data }) {
           "매매일수(일)",
         ]}
       />
+
       <tbody>
+        {isLoading && (
+          <tr>
+            <td colSpan="9">
+              <div className="flex justify-center mt-5 h-10">
+                <Spinner />
+              </div>
+            </td>
+          </tr>
+        )}
         {data.length !== 0 ? (
           rankList()
         ) : (
           <tr>
-            <td colSpan="9">
-              <div className="text-center text-lg mt-5 text-gray-500">
-                랭킹 정보가 없습니다.
-              </div>
-            </td>
+            {!isLoading && (
+              <td colSpan="9">
+                <div className="text-center text-lg mt-5 text-gray-500 h-10">
+                  랭킹 정보가 없습니다.
+                </div>
+              </td>
+            )}
           </tr>
         )}
       </tbody>

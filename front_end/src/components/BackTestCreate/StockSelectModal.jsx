@@ -83,7 +83,7 @@ export default function StockSelectModal({
 
   return (
     <div
-      className="fixed z-20000 inset-0 overflow-y-auto"
+      className="fixed z-[20000] inset-0 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"

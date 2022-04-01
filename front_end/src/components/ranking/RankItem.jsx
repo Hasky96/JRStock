@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { API_MEDIA_URL } from "../../config";
 import styles from "./list.module.css";
+import ReactTooltip from "react-tooltip";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -11,8 +13,27 @@ export default function RankItem({ item }) {
     navigate(`/backtest/${item.id}`);
   };
 
-  const applyTruncate = (content) => {
-    return <div className="block truncate m-auto xl:w-32 w-16">{content}</div>;
+  const applyTruncate = (content, title) => {
+    return (
+      <div>
+        <div
+          className="block truncate m-auto xl:w-32 w-16"
+          data-tip
+          data-for={`${item.id}-${title}`}
+        >
+          {content}
+        </div>
+        <ReactTooltip
+          className="tooltipExtra"
+          id={`${item.id}-${title}`}
+          type="dark"
+          effect="solid"
+          backgroundColor="#E69A8DFF"
+        >
+          <span className="text-base">{content}</span>
+        </ReactTooltip>
+      </div>
+    );
   };
 
   const rankElement = (rank) => {
@@ -46,23 +67,35 @@ export default function RankItem({ item }) {
           />
         </div>
       </td>
-      <td>{applyTruncate(item.user.name ? item.user.name : "-")}</td>
-      <td>{applyTruncate(item.title ? item.title : "-")}</td>
-      <td>
-        {applyTruncate(item.final_rate ? item.final_rate.toFixed(1) : "-")}
-      </td>
-      <td>{applyTruncate(item.asset ? item.asset.toLocaleString() : "-")}</td>
+      <td>{applyTruncate(item.user.name ? item.user.name : "-", "name")}</td>
+      <td>{applyTruncate(item.title ? item.title : "-", "title")}</td>
       <td>
         {applyTruncate(
-          item.final_earn ? item.final_earn.toLocaleString() : "-"
+          item.final_rate ? item.final_rate.toFixed(1) : "-",
+          "final_rate"
+        )}
+      </td>
+      <td>
+        {applyTruncate(item.asset ? item.asset.toLocaleString() : "-", "asset")}
+      </td>
+      <td>
+        {applyTruncate(
+          item.final_earn ? item.final_earn.toLocaleString() : "-",
+          "final_earn"
         )}
       </td>
       <td>
         {applyTruncate(
-          item.final_asset ? item.final_asset.toLocaleString() : "-"
+          item.final_asset ? item.final_asset.toLocaleString() : "-",
+          "final_asset"
         )}
       </td>
-      <td>{applyTruncate(item.trading_days ? item.trading_days : "-")}</td>
+      <td>
+        {applyTruncate(
+          item.trading_days ? item.trading_days : "-",
+          "trading_days"
+        )}
+      </td>
     </tr>
   );
 }

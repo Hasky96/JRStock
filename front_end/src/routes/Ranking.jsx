@@ -8,7 +8,6 @@ import { getBacktestRank } from "../api/ranking";
 import OnOffToggle from "../components/OnOffToggle";
 import Searchbar from "../components/ranking/Searchbar";
 import { RankingTable } from "../components/ranking/RankingTable";
-import { ReactComponent as Spinner } from "../assets/spinner.svg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -107,26 +106,18 @@ export default function Ranking() {
       <div className="text-black">
         <TabBar setCurrentTab={setCurrentTab} tabInfo={tabInfo} />
       </div>
-      {isLoading && (
-        <div className="flex justify-center my-10">
-          <Spinner />
-        </div>
-      )}
+
       {/* 랭킹 테이블 */}
-      {!isLoading && (
-        <div className="mt-5 overflow-y-scroll">
-          <RankingTable data={data} />
-        </div>
-      )}
+      <div className="mt-5 overflow-y-scroll">
+        <RankingTable data={data} isLoading={isLoading} />
+      </div>
       {/* 페이지 네이션 */}
-      {!isLoading && (
-        <Pagenation
-          selectedNum={pageNo}
-          totalCnt={totalCount}
-          pageSize={pageSize}
-          setPageNo={setPageNo}
-        ></Pagenation>
-      )}
+      <Pagenation
+        selectedNum={pageNo}
+        totalCnt={totalCount}
+        pageSize={pageSize}
+        setPageNo={setPageNo}
+      ></Pagenation>
     </PageContainer>
   );
 }
