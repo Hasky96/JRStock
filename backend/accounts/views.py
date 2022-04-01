@@ -172,7 +172,7 @@ def user_update(request, pk):
     
     if data['profile_img'] == "":
         data['profile_img_url'] = 'https://j6s001.p.ssafy.io/media/default_profile.jpg'
-    elif data['profile_img'][1:6] == 'media':
+    elif data['profile_img'] == 'default':
         del data['profile_img']
         
     serializer = UserInfoSerializer(instance=user, data=data)
