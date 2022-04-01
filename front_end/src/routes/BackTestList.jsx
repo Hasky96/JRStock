@@ -83,7 +83,7 @@ export default function BackTestList() {
             </div> */}
           </div>
 
-          <table className="table-auto w-full text-left mt-5 text-center">
+          <table className="table-auto w-full mt-5 text-center">
             <colgroup>
               <col span="1" style={{ width: 5 + "%" }} />
               <col span="1" style={{ width: 60 + "%" }} />

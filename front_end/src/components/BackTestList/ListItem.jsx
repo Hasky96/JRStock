@@ -12,7 +12,13 @@ export default function ListItem({ index, item, handleDeleteButton }) {
       if (key === "id") continue;
       elementArray.push(
         <td key={key} className="mx-3">
-          {item[key] === "테스트 중" ? <Spinner /> : item[key]}
+          {item[key] === "테스트 중" ? (
+            <div className="flex justify-center">
+              <Spinner />
+            </div>
+          ) : (
+            item[key]
+          )}
         </td>
       );
     }

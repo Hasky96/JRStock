@@ -75,6 +75,9 @@ export default function UserUpdate() {
 
   const handleImageChange = (e) => {
     e.preventDefault();
+    if (!e.target.files[0]) {
+      return;
+    }
     handleValueChange("profile_img", e.target.files[0]);
 
     const reader = new FileReader();
@@ -102,13 +105,14 @@ export default function UserUpdate() {
       setPasswordErr(false);
       return;
     }
-
-    // 회원가입 정보 보내기
     const data = {
       name: values.name,
       new_password: values.password,
-      profile_img: values.profile_img,
     };
+
+    if (values.profile_img) {
+      data["profile_img"] = values.profile_img;
+    }
 
     const formData = new FormData();
     for (let key in data) {
@@ -231,7 +235,7 @@ export default function UserUpdate() {
               </label>
               <button
                 type="button"
-                onClick={() => handleImageDelete()}
+                onClick={(e) => handleImageDelete(e)}
                 className="ml-3 w-30 h-10 rounded-lg shadow-lg p-2 text-primary border hover:bg-active hover:text-white duration-300 font-bold"
               >
                 삭제
@@ -241,7 +245,7 @@ export default function UserUpdate() {
                 name="profile_img"
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept="image/png, image/gif, image/jpeg"
                 onChange={(e) => handleImageChange(e)}
               />
             </div>

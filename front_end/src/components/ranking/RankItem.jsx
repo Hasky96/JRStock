@@ -57,7 +57,7 @@ export default function RankItem({ item }) {
       <td>
         <div className="xl:w-12 w-10 p-1 m-auto">
           <img
-            className="rounded-full"
+            className="rounded-full w-10 h-10"
             src={
               item.user.profile_img
                 ? API_MEDIA_URL + `${item.user.profile_img}`

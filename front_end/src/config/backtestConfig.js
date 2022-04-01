@@ -216,7 +216,7 @@ export const profitKey = [
   {
     title: "시장초과 수익률",
     isToolTip: true,
-    content: "내 수익률과 시장 수익률(KOSPI)의 차이",
+    content: "내 수익률과 시장 수익률(선택한 종목)의 차이",
   },
   {
     title: "승률",

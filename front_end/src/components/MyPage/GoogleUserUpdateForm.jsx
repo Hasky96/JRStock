@@ -51,6 +51,9 @@ export default function GoogleUserUpdateForm() {
 
   const handleImageChange = (e) => {
     e.preventDefault();
+    if (!e.target.files[0]) {
+      return;
+    }
     handleValueChange("profile_img", e.target.files[0]);
 
     const reader = new FileReader();
@@ -67,11 +70,14 @@ export default function GoogleUserUpdateForm() {
   };
 
   const handleSubmit = async () => {
-    // 회원가입 정보 보내기
     const data = {
       name: values.name,
-      profile_img: values.profile_img,
+      new_password: values.password,
     };
+
+    if (values.profile_img) {
+      data["profile_img"] = values.profile_img;
+    }
 
     const formData = new FormData();
     for (let key in data) {
@@ -88,7 +94,6 @@ export default function GoogleUserUpdateForm() {
         toast.error("회원 정보 수정에 실패하였습니다.");
       });
   };
-
   return (
     <div className="w-full sm:w-96 shadow-lg p-5">
       <form className="space-y-6">
@@ -165,7 +170,7 @@ export default function GoogleUserUpdateForm() {
                 name="profile_img"
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept="image/png, image/gif, image/jpeg"
                 onChange={(e) => handleImageChange(e)}
               />
             </div>
