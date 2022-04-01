@@ -15,15 +15,12 @@ export default function Interested() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const init = async () => {
+  const init = async (isUpdate) => {
     const res = await getInterest({ page: 1, size: 5 });
     setStocks(res.data.results);
     setStockCount(res.data.count);
-    if (!isInit) {
+    if (isUpdate) {
       setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
     }
     let temp = [];
     for (let stock of res.data.results) {
@@ -43,6 +40,7 @@ export default function Interested() {
     }
     setLives(temp);
     setIsInit(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -86,7 +84,7 @@ export default function Interested() {
   const TENSEC_MS = 10000;
   useEffect(() => {
     const interval = setInterval(() => {
-      init();
+      init(true);
     }, TENSEC_MS);
 
     return () => clearInterval(interval);

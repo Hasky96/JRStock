@@ -42,6 +42,13 @@ async function getBacktestDaily(backtestId) {
   const api = apiInstance();
   return await api.get(`backtest/day/${backtestId}`);
 }
+
+async function getStockDaily(code, start, end) {
+  const api = apiInstance();
+  const paramURL = `?start=${start}&end=${end}`;
+  return await api.get(`stock/data/start-end/${code}` + paramURL);
+}
+
 async function getBacktestAnnually(backtestId) {
   const api = apiInstance();
   return await api.get(`backtest/year/${backtestId}`);
@@ -55,4 +62,5 @@ export {
   getBacktestTradeRecord,
   getBacktestDaily,
   getBacktestAnnually,
+  getStockDaily,
 };

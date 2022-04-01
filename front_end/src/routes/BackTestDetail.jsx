@@ -20,26 +20,27 @@ export default function BackTestDetail() {
   const [basicCondition, setBasicCondition] = useState("");
   const [firstAccess, setFirstAccess] = useState(true);
 
-  const fetchBacktestDetail = async (backtestId) => {
-    const res = await getBacktestDetail(backtestId);
-    return res.data;
-  };
-
-  const fetchAndSetDetail = async () => {
-    const result = await fetchBacktestDetail(id);
-    if (result.final_asset) {
-      const { resultSummary, conditions } = await trimResultSummary(result);
-      setBacktestResult(resultSummary);
-      setBasicCondition(conditions);
-      setIsLoading(false);
-      console.log("@loading over");
-    } else {
-      console.log("@loading");
-      setIsTesting(true);
-    }
-  };
-
   useEffect(() => {
+    const fetchBacktestDetail = async (backtestId) => {
+      const res = await getBacktestDetail(backtestId);
+      return res.data;
+    };
+
+    const fetchAndSetDetail = async () => {
+      const result = await fetchBacktestDetail(id);
+      if (result.final_asset) {
+        console.log(result);
+        const { resultSummary, conditions } = await trimResultSummary(result);
+        setBacktestResult(resultSummary);
+        setBasicCondition(conditions);
+        setIsLoading(false);
+        console.log("@loading over");
+      } else {
+        console.log("@loading");
+        setIsTesting(true);
+      }
+    };
+
     if (!firstAccess) {
       return;
     }
@@ -83,7 +84,7 @@ export default function BackTestDetail() {
           <Spinner />
           <div className="font-semibold">
             {isTesting &&
-              "백테스트가 진행 중입니다. 설정 기간에 따라 최대 30초 이상 소요됩니다."}
+              "백테스트가 진행 중입니다. 설정 기간이 길수록 많은 시간이 소요됩니다. "}
           </div>
         </div>
       ) : (

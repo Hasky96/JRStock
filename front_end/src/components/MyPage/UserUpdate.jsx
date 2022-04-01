@@ -11,7 +11,7 @@ export default function UserUpdate() {
   useEffect(() => {
     const fetchAndSetGoogle = async () => {
       const res = await userDetail().catch((err) => err);
-      console.log(res);
+
       const { is_google } = res;
       if (is_google) {
         setIsGoogle(true);

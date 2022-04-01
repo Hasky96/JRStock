@@ -2,12 +2,17 @@ import { nameDict, parameters, nameToId } from "../config/backtestConfig";
 
 export const trimResultSummary = async ({
   basic_info,
+  title,
+  user,
+  created_at,
   test_start_date,
   test_end_date,
   asset,
   final_asset,
   final_earn,
   final_rate,
+  max_earn,
+  min_earn,
   avg_day_earn_rate,
   avg_year_earn_rate,
   market_over_rate,
@@ -22,7 +27,17 @@ export const trimResultSummary = async ({
   if (final_asset) {
     return {
       resultSummary: {
-        basicInfo: [basic_info.company_name, basic_info.code_number],
+        basicInfo: {
+          created_at: created_at,
+          title: title,
+          user: user.name,
+          profile: user.profile_img || user.profile_img_url,
+          company_name: basic_info.company_name,
+          code_number: basic_info.code_number,
+          min_earn: min_earn,
+          max_earn: max_earn,
+        },
+
         assetResult: [
           parseInt(asset).toLocaleString(),
           parseInt(final_earn).toLocaleString(),
@@ -72,6 +87,18 @@ export const trimDaily = async (data) => {
   };
 };
 
+export const trimStockDaily = async (data) => {
+  const trimmedStockData = [];
+
+  await data.forEach(({ date, current_price }, index) => {
+    trimmedStockData.push({ time: date, value: parseInt(current_price) });
+  });
+
+  return {
+    trimmedStockData,
+  };
+};
+
 export const trimAnnually = async (data) => {
   const labels = [];
   const marketData = [];
@@ -106,14 +133,13 @@ export const trimRecords = async (data) => {
         stock_price,
       };
 
-      const win = isWin ? "승" : "패";
+      const win = isWin ? "sell 승" : "sell 패";
       markers.push({
         time: date,
         position: isBuy ? "belowBar" : "aboveBar",
-        color: isBuy ? "#3b82f6" : "#ef4444",
+        color: isBuy ? "#18216d" : isWin ? "#ef4444" : "#3b82f6",
         shape: isBuy ? "arrowUp" : "arrowDown",
         text: isBuy ? `buy` : win,
-        // text: isBuy ? `buy` : `sell @` + win,
       });
     }
   );

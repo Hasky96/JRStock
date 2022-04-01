@@ -3,8 +3,14 @@ import {
   getBacktestAnnually,
   getBacktestDaily,
   getBacktestTradeRecord,
+  getStockDaily,
 } from "../../../api/backtest";
-import { trimAnnually, trimDaily, trimRecords } from "../../../util/trimResult";
+import {
+  trimAnnually,
+  trimDaily,
+  trimRecords,
+  trimStockDaily,
+} from "../../../util/trimResult";
 import { ProfitLineChart } from "./ProfitLineChart";
 import { assetKey, profitKey } from "../../../config/backtestConfig";
 import { AnnualProfit } from "../Profit/AnnualProfit";
@@ -17,14 +23,20 @@ function date_ascending(a, b) {
   return dateA > dateB ? 1 : -1;
 }
 
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default function ResultSummary({ resultSummary, isLoading, id }) {
   const [assetResult, setAssetResult] = useState([]);
   const [profitResult, setProfitResult] = useState([]);
 
   const [lineData, setLineData] = useState([]);
   const [barData, setBarData] = useState([]);
+  const [stockData, setStockData] = useState([]);
   const [isDailyData, setIsDailyData] = useState(false);
   const [period, setPeriod] = useState("1W");
+  const [isStockData, setIsStockData] = useState(true);
 
   const [labels, setLabels] = useState([]);
   const [marketAnnual, setMarketAnnual] = useState([]);
@@ -37,6 +49,10 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
 
   const fetchBacktestDaily = async (backtestId) => {
     const res = await getBacktestDaily(backtestId);
+    return res.data;
+  };
+  const fetchStockDaily = async (code, start, end) => {
+    const res = await getStockDaily(code, start, end);
     return res.data;
   };
 
@@ -53,10 +69,18 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
   useEffect(() => {
     async function fetchAndSetDaily() {
       const data = await fetchBacktestDaily(id);
+      const stockData = await fetchStockDaily(
+        resultSummary.basicInfo.code_number,
+        resultSummary.assetResult[3],
+        resultSummary.assetResult[4]
+      );
+
       const { lineChartData, barChartData } = await trimDaily(data);
+      const { trimmedStockData } = await trimStockDaily(stockData);
 
       setLineData(lineChartData);
       setBarData(barChartData);
+      setStockData(trimmedStockData);
       setIsDailyData(true);
     }
 
@@ -157,10 +181,29 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
+      <div className="relative w-[600px] h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 rounded text-center p-3 gap-x-2">
+        <div className="col-span-6 text-left text-lg font-semibold pb-2 flex items-end justify-between">
+          <div className="flex items-end mr-10">
+            <img
+              className="rounded-full w-8 mr-2"
+              src={resultSummary.basicInfo.profile}
+              alt="profile_img"
+            />
+            {resultSummary.basicInfo.user} <p className="text-sm mr-5">님의</p>
+            <span className="underline decoration-secondary decoration-4 underline-offset-2">
+              {resultSummary.basicInfo.title}
+            </span>
+          </div>
+          <p className="text-sm">
+            {resultSummary.basicInfo.created_at.slice(0, 10)}
+          </p>
+        </div>
+      </div>
       <div className="flex flex-col xl:flex-row gap-3">
         <div className="relative h-30 grid grid-cols-6 border-0 border-b-1 border-gray-200 shadow rounded text-center p-3 gap-x-2">
           <div className="col-span-6 text-left text-lg pb-2 font-semibold flex">
-            {resultSummary.basicInfo[0]} ({resultSummary.basicInfo[1]})
+            {resultSummary.basicInfo.company_name} (
+            {resultSummary.basicInfo.code_number})
           </div>
 
           {paintAssetKey}
@@ -177,16 +220,47 @@ export default function ResultSummary({ resultSummary, isLoading, id }) {
 
       <div className="w-full flex flex-col items-center justify-center gap-3">
         <div className="chart-container rounded shadow-lg p-3 mt-5 text-lg">
-          <div className="font-semibold">자산 운용 차트</div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsStockData((state) => !state)}
+              className={classNames(
+                "font-semibold",
+                isStockData ? "" : "text-gray-300"
+              )}
+            >
+              종목 차트
+            </button>
+            <div>|</div>
+            <button
+              onClick={() => setIsStockData((state) => !state)}
+              className={classNames(
+                "font-semibold",
+                isStockData ? "text-gray-300" : ""
+              )}
+            >
+              자산 운용 차트
+            </button>
+          </div>
           {isDailyData && isTradeRecord && (
             <>
-              <ProfitLineChart
-                priceData={lineData}
-                dayEarnData={barData}
-                period={period}
-                records={tradeRecord}
-                markers={markers}
-              />
+              {isStockData ? (
+                <ProfitLineChart
+                  priceData={stockData}
+                  dayEarnData={barData}
+                  period={period}
+                  records={tradeRecord}
+                  markers={markers}
+                />
+              ) : (
+                <ProfitLineChart
+                  priceData={lineData}
+                  dayEarnData={barData}
+                  period={period}
+                  records={tradeRecord}
+                  markers={markers}
+                />
+              )}
+
               {paintSwitcher}
             </>
           )}
