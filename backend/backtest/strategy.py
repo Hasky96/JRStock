@@ -15,6 +15,20 @@ def SMA(params, df):
         df[f'sma{period}']=df['current_price'].rolling(window=period).mean()
     return df
 
+def SMA1(params, df):
+    """ 단순이동평균 (Simple Moving Average)
+
+    Args:
+        params (list): [period1, err, weight]
+        df (dataframe): 주식 데이터 프레임
+
+    Returns:
+        dataframe: 열 추가된 주식 데이터 프레임
+    """
+    period=params[0]
+    df[f'sma{period}']=df['current_price'].rolling(window=period).mean()
+    return df
+
 def EMA(df, period, column='current_price'):
     """ 지수이동평균 (Exponential Moving Average)
 
