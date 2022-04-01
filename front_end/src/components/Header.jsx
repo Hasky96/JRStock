@@ -174,7 +174,7 @@ export default function Header({ category }) {
   return (
     <div className="relative">
       {/* Header 상단 고정 */}
-      <div className="fixed w-full pl-4 pr-24 z-30">
+      <div className="fixed w-full pl-4 pr-24 z-[150]">
         <div className="grid grid-cols-12 mt-6 mx-6 rounded-xl bg-primary h-[60px]">
           {/* 카테고리 그리드 */}
           <div className="col-span-7 text-3xl my-auto ml-5 text-indigo-50">
