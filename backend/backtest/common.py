@@ -326,6 +326,7 @@ def init_result_data(account, trading_days, code_number):
         'max_earn' : account['balance'], # 최고 수익
         'min_earn' : account['balance'], # 최저 수익
         'min_earn_after_max' : account['balance'], # 최고 수익 이후 최저 수익
+        'mdd_list' : [], # 최고 수익 이후 최저 수익들의 모음
         'start_market_price' : get_stock_price(code_number, account['start_date']), # 시작날짜 코스피 가격
         'end_market_price' : get_stock_price(code_number, account['end_date']), # 종료날자 코스피 가격
         'win_lose_cnt' : 0, # 판매 횟수
@@ -339,16 +340,12 @@ def day_calculate(account, result_data, stock, result, price):
         result_data['current_asset'] += (int(price) * int(account['stocks'][code_num]['amount']))
     
     if result_data['max_earn'] < result_data['current_asset']:
+        result_data['mdd_list'].append(round((result_data['min_earn_after_max'] - result_data['max_earn']) / result_data['max_earn'] * 100, 3)) # 이전 MDD값 저장
         result_data['max_earn'] = result_data['current_asset']
-        result_data['min_earn_after_max'] = result_data['current_asset']
-        
-    if result_data['min_earn'] > result_data['current_asset']:
-        result_data['min_earn'] = result_data['current_asset']
-    
-    if result_data['min_earn_after_max'] > result_data['current_asset']:
         result_data['min_earn_after_max'] = result_data['current_asset']
             
     result_data['min_earn'] = min(result_data['min_earn'], result_data['current_asset'])
+    result_data['min_earn_after_max'] = min(result_data['min_earn_after_max'], result_data['current_asset'])
     
     day_earn = (result_data['current_asset'] - account['pre_price'])
     day_earn_rate = day_earn / account['pre_price']
@@ -396,13 +393,14 @@ def create_database(account):
 def end_calculate(account, result_data, result): 
     # 마지막 날을 기준으로 마지막 연도 평균 계산
     result_data = year_calculate(account, result_data, account['end_date'], result, 1)
+    result_data['mdd_list'].append(round((result_data['min_earn_after_max'] - result_data['max_earn']) / result_data['max_earn'] * 100, 3)) # 마지막 MDD값 저장
     
     result_data['avg_year_earn_rate'] = round(result_data['avg_year_earn_rate'] / result_data['year_cnt'], 3)
     result_data['my_profit_loss'] = int(account['pre_price']) - int(account['start_price'])
     result_data['my_final_rate'] = round(result_data['my_profit_loss'] / int(account['start_price']) * 100, 3)
     result_data['market_rate'] = round((float(result_data['end_market_price']) - float(result_data['start_market_price'])) / float(result_data['start_market_price']) * 100, 3)
     result_data['market_over_price'] = round(result_data['my_final_rate'] - result_data['market_rate'], 3)
-    result_data['mdd'] = round((result_data['min_earn_after_max'] - result_data['max_earn']) / result_data['max_earn'] * 100, 3)
+    result_data['mdd'] = min(result_data['mdd_list'])
     result_data['avg_day_earn_rate'] = round(result_data['avg_day_earn_rate'] / result_data['trading_days'], 3)
     max_earn_rate = round((result_data['max_earn'] - account['start_price']) / account['start_price'] * 100, 3)
     min_earn_rate = round((result_data['min_earn'] - account['start_price']) / account['start_price'] * 100, 3)
