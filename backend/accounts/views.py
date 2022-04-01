@@ -17,7 +17,6 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 from accounts.serializers import UserSerializer, UserInfoSerializer
 
-from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from allauth.socialaccount.providers.google import views as google_view
 
@@ -170,6 +169,9 @@ def user_update(request, pk):
     data = request.data.copy()
     data['is_admin'] = user.is_admin
     data['is_google'] = user.is_google
+    
+    if data['profile_img'] == "":
+        data['profile_img_url'] = 'https://j6s001.p.ssafy.io/media/default_profile.jpg'
     
     serializer = UserInfoSerializer(instance=user, data=data)
     

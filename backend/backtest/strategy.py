@@ -189,7 +189,6 @@ def KS(params, df):
     start_date=df.iloc[0]['date']
     end_date=df.iloc[-1]['date']
     kospi=get_day_stock("kospi", start_date, end_date)
-    kospi=object_to_dataframe(kospi)
     df['ks_open']=kospi['start_price']
     df['ks_close']=kospi['current_price']
     df[f'ks_ma{period}']=kospi['current_price'].rolling(window=period).mean()
@@ -201,7 +200,6 @@ def KQ(params, df):
     start_date=df.iloc[0]['date']
     end_date=df.iloc[-1]['date']
     kosdaq=get_day_stock("kosdaq", start_date, end_date)
-    kosdaq=object_to_dataframe(kosdaq)
     df['kq_open']=kosdaq['start_price']
     df['kq_close']=kosdaq['current_price']
     df[f'kq_ma{period}']=kosdaq['current_price'].rolling(window=period).mean()
