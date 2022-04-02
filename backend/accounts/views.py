@@ -172,7 +172,9 @@ def user_update(request, pk):
     
     if data['profile_img'] == "":
         data['profile_img_url'] = 'https://j6s001.p.ssafy.io/media/default_profile.jpg'
-    
+    elif data['profile_img'] == 'default':
+        del data['profile_img']
+        
     serializer = UserInfoSerializer(instance=user, data=data)
     
     if serializer.is_valid(raise_exception=True):
@@ -182,6 +184,7 @@ def user_update(request, pk):
             user.save()
             
         return Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_200_OK)
 
 @swagger_auto_schema(
     method='delete',

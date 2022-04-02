@@ -42,9 +42,9 @@ export default function BackTestCreateForm() {
     sell_strategy: [
       {
         id: 0,
-        strategy: "101",
+        strategy: "102",
         weight: 10,
-        params: { ...paramConstructor, ...getParamDefault("101") },
+        params: { ...paramConstructor, ...getParamDefault("102") },
       },
     ],
   });
