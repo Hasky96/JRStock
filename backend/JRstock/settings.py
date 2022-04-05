@@ -1,5 +1,7 @@
 import os
 from datetime import timedelta
+import firebase_admin
+from firebase_admin import credentials
 
 # 숨겨둔 키를 불러오는 코드
 from pathlib import Path
@@ -15,6 +17,11 @@ secrets = json.loads(open(SECRET_BASE_FILE).read())
 for key, value in secrets.items():
     setattr(sys.modules[__name__], key, value)
 # 여기까지
+
+# FCM
+cred_path = os.path.join(BASE_DIR, 'serviceAccountKey.json')
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
 
 DEBUG = True
 
@@ -71,7 +78,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3000', 'https://j6s001.p.ssafy.io']
+CORS_ORIGIN_WHITELIST = ['http://10.0.2.2:3000', 'http://127.0.0.1:3000', 'http://localhost:3000', 'https://j6s001.p.ssafy.io']
 CORS_ALLOW_CREDENTIALS = True
 
 # CELERY 세팅
